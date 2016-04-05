@@ -17,6 +17,7 @@ typedef struct DataFile {
     char *fileName;
     FILE *fp;
     char **headers;
+    int headerNdx;
     size_t numCols;
     struct DataFile *nextFile;
 } DataFile;
@@ -28,7 +29,6 @@ typedef struct DataFiles {
     size_t nameLen;
 } DataFiles;
 
-int getColumnsArray(json_t *record, DataFiles *dataFiles, int j);
-int getColumnsObject(json_t *record, DataFiles *dataFiles, int j);
+void parseHeaders(json_t *record, DataFiles *dataFiles, char *fileName, json_t *primaryKey);
 
 #endif /* Json2CSV_h */

@@ -151,6 +151,82 @@ DataFile* getDataFileByName(DataFile *df, const char *name){
     
 }
 
+void printDataFile(DataFile *dataFile) {
+    printf("Filename: %s\n", dataFile->fileName);
+    
+    printf("HEADERS: \n");
+    for (int i = 0; i < dataFile->numCols; i++) {
+        printf("%s\n", dataFile->headers[i]);
+    }
+}
+
+void printDataFiles(DataFiles *dataFiles) {
+    printDataFile(dataFiles->main);
+    printf("Output path: %s\n", dataFiles->outputPath);
+    printf("Name: %s\n", dataFiles->name);
+    printf("\n");
+}
+
+void parseHeaders(json_t *record, DataFiles *dataFiles, char *fileName, json_t *primaryKey) {
+    json_t *value;
+    const char *key;
+    DataFile *dataFile = getDataFileByName(dataFiles->main, fileName);
+    int headerNdx = 0;
+    
+    //if we're looking at an object
+    if (json_is_object(record)) {
+        //getting id to pass down to child data files
+        if (primaryKey == NULL) {
+            primaryKey = json_object();
+            json_object_set_new(primaryKey, "id", json_object_get(record, "id"));
+        }
+        
+        json_object_foreach(record, key, value) {
+            if (json_is_array(value)) {
+
+            }
+            //if record is object handle file creation
+            //then recurse through for sub objects
+            else if (json_is_object(value)) {
+
+            }
+            //if just regular value
+            else {
+                headerNdx = dataFile->headerNdx;
+                dataFile->headers[headerNdx] = calloc(strlen(key) + 1, sizeof(char));
+                strcpy(dataFile->headers[headerNdx], key);
+                dataFile->headerNdx++;
+            }
+        }
+    }
+    else if (json_is_array(record)) {
+        json_object_foreach(record, key, value) {
+            if (json_is_array(value)) {
+//                parseHeaders(value, dataFiles, primaryKey);
+            }
+            else if (json_is_object(value)) {
+//                (value, dataFiles, primaryKey);
+            }
+            else {
+//                main_file->headers[j] = calloc(strlen(key) + 1, sizeof(char));
+//                strcpy(main_file->headers[j], key);
+//                j++;
+            }
+        }
+    }
+    else {
+        
+    }
+}
+
+//inserting data
+int parseJSON(json_t *record, DataFiles *dataFiles, size_t recordNum) {
+    DataFile *main_file = dataFiles->main;
+
+    return 0;
+}
+
+
 int interpRecJson(json_t *json, DataFiles *dataFiles) {
     json_t *record;
     DataFile *main_file = dataFiles->main;
@@ -171,67 +247,18 @@ int interpRecJson(json_t *json, DataFiles *dataFiles) {
             return 5;
         }
         
-        //if we're at the first object, use it to grab all the columns
+        //looking at first object
+        //make headers
         if (i == 0) {
             main_file->numCols = json_object_size(record);
-           	main_file->headers = calloc(main_file->numCols, sizeof(char*));
+            main_file->headers = calloc(main_file->numCols, sizeof(char*));
             
-            getColumnsObject(record, dataFiles, 0);
+            parseHeaders(record, dataFiles, dataFiles->main->fileName, NULL);
         }
-    }
+        
+        //add data in
+        parseJSON(record, dataFiles, i);
     
-    return 0;
-}
-
-int getColumnsObject(json_t *record, DataFiles *dataFiles, int j) {
-    json_t *value;
-    const char *key;
-    DataFile *main_file = dataFiles->main;
-    
-    json_object_foreach(record, key, value) {
-        printf("HRE\n");
-        //if its an array handle the file creation
-        //then recurse through the array for sub objects
-        if (json_is_array(value)) {
-            printf("ARRAY\n");
-            getColumnsArray(value, dataFiles, j);
-        }
-        //if record is object handle file creation
-        //then recurse through for sub objects
-        else if (json_is_object(value)) {
-            printf("OBJECT\n");
-            getColumnsObject(value, dataFiles, j);
-        }
-        //if just regular value
-        else {
-            printf("COMETHING\n");
-            main_file->headers[j] = calloc(strlen(key) + 1, sizeof(char));
-            strcpy(main_file->headers[j], key);
-            j++;
-            printf("HERE");
-        }
-    }
-    
-    return 0;
-}
-
-int getColumnsArray(json_t *record, DataFiles *dataFiles, int j) {
-    json_t *value;
-    const char *key;
-    DataFile *main_file = dataFiles->main;
-    
-    json_object_foreach(record, key, value) {
-        if (json_is_array(value)) {
-            getColumnsArray(value, dataFiles, j);
-        }
-        else if (json_is_object(value)) {
-            getColumnsObject(value, dataFiles, j);
-        }
-        else {
-            main_file->headers[j] = calloc(strlen(key) + 1, sizeof(char));
-            strcpy(main_file->headers[j], key);
-            j++;
-        }
     }
     
     return 0;
@@ -522,6 +549,7 @@ DataFiles* buildDataFileStruct(char *inputFile)
     dataFiles->main = calloc(1, sizeof(DataFile));
     dataFiles->main->fp = fopen(filename, "w+");
     dataFiles->main->fileName = filename;
+    dataFiles->main->headerNdx = 0;
     
     return dataFiles;
 }
