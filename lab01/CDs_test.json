@@ -1,0 +1,518 @@
+[
+ {
+  "artist": "Dierks Bentley",
+  "id": 1,
+  "albumName": "Dark Side Of The Moon",
+  "writer": {
+   "firstName": "Steven",
+   "lastName": "Thompson"
+  },
+  "bandMembers": [
+   "Paul",
+   "Ryan",
+   "Joshua",
+   "Steven"
+  ],
+  "tracks": [
+   {
+    "trackNumber": 1,
+    "name": "Little Drummer Boy",
+    "duration": "9:08"
+   }
+  ]
+ },
+ {
+  "artist": "Atmosphere",
+  "id": 2,
+  "albumName": "All Or Nothing",
+  "writer": {
+   "firstName": "Brian",
+   "lastName": "Smith"
+  },
+  "bandMembers": [
+   "Michael",
+   "Donald",
+   "Charles",
+   "Richard"
+  ],
+  "tracks": [
+   {
+    "trackNumber": 1,
+    "name": "Candy",
+    "duration": "13:10"
+   }
+  ]
+ },
+ {
+  "artist": "U2",
+  "id": 3,
+  "albumName": "The Eminem Show",
+  "writer": {
+   "firstName": "Daniel",
+   "lastName": "Garcia"
+  },
+  "bandMembers": [
+   "Margaret",
+   "Brian"
+  ],
+  "tracks": [
+   {
+    "trackNumber": 1,
+    "name": "Make That Money",
+    "duration": "11:30"
+   }
+  ]
+ },
+ {
+  "artist": "Will Smith",
+  "id": 4,
+  "albumName": "Money, Power & Respect",
+  "writer": {
+   "firstName": "Gary",
+   "lastName": "Rodriguez"
+  },
+  "bandMembers": [
+   "Ryan"
+  ],
+  "tracks": [
+   {
+    "trackNumber": 1,
+    "name": "Waggy",
+    "duration": "5:43"
+   },
+   {
+    "trackNumber": 2,
+    "name": "Give It Up",
+    "duration": "0:43"
+   },
+   {
+    "trackNumber": 3,
+    "name": "Insomia",
+    "duration": "0:58"
+   },
+   {
+    "trackNumber": 4,
+    "name": "Money",
+    "duration": "12:55"
+   },
+   {
+    "trackNumber": 5,
+    "name": "All Or Nothing",
+    "duration": "10:11"
+   },
+   {
+    "trackNumber": 6,
+    "name": "I Heard It Through The Grapevine",
+    "duration": "7:49"
+   },
+   {
+    "trackNumber": 7,
+    "name": "What Child Is This?",
+    "duration": "3:00"
+   },
+   {
+    "trackNumber": 8,
+    "name": "Fire",
+    "duration": "5:10"
+   },
+   {
+    "trackNumber": 9,
+    "name": "My Head's In Mississippi",
+    "duration": "8:54"
+   },
+   {
+    "trackNumber": 10,
+    "name": "Catch All The Fish",
+    "duration": "13:28"
+   },
+   {
+    "trackNumber": 11,
+    "name": "Anything Like Me",
+    "duration": "10:53"
+   },
+   {
+    "trackNumber": 12,
+    "name": "Santa Claus Is Comin' To Town",
+    "duration": "1:40"
+   },
+   {
+    "trackNumber": 13,
+    "name": "My Head's In Mississippi",
+    "duration": "10:47"
+   },
+   {
+    "trackNumber": 14,
+    "name": "I Want You",
+    "duration": "4:51"
+   },
+   {
+    "trackNumber": 15,
+    "name": "After The Dance",
+    "duration": "2:46"
+   },
+   {
+    "trackNumber": 16,
+    "name": "Beautiful Life",
+    "duration": "6:30"
+   }
+  ]
+ },
+ {
+  "artist": "Jack Johnson",
+  "id": 5,
+  "albumName": "We Can't Dance",
+  "writer": {
+   "firstName": "Mark",
+   "lastName": "Rodriguez"
+  },
+  "bandMembers": [
+   "Joseph",
+   "Edward",
+   "Nicholas",
+   "Ryan",
+   "William"
+  ],
+  "tracks": [
+   {
+    "trackNumber": 1,
+    "name": "Alone With You",
+    "duration": "3:14"
+   },
+   {
+    "trackNumber": 2,
+    "name": "I Love You",
+    "duration": "6:43"
+   }
+  ]
+ },
+ {
+  "artist": "Chris Brown",
+  "id": 6,
+  "albumName": "Wheelhouse",
+  "bandMembers": [
+   "Ryan"
+  ],
+  "tracks": [
+   {
+    "trackNumber": 1,
+    "name": "Pearl Necklace",
+    "duration": "4:07"
+   },
+   {
+    "trackNumber": 2,
+    "name": "Heaven",
+    "duration": "0:14"
+   },
+   {
+    "trackNumber": 3,
+    "name": "The Christmas Song",
+    "duration": "3:09"
+   },
+   {
+    "trackNumber": 4,
+    "name": "Where Do You Go",
+    "duration": "1:47"
+   },
+   {
+    "trackNumber": 5,
+    "name": "STEAM MACHINE (LIVE)",
+    "duration": "8:32"
+   },
+   {
+    "trackNumber": 6,
+    "name": "Mercy Mercy Me (The Ecology)",
+    "duration": "6:18"
+   },
+   {
+    "trackNumber": 7,
+    "name": "Us And Them",
+    "duration": "5:45"
+   },
+   {
+    "trackNumber": 8,
+    "name": "OH YEAH / TECHNOLOGIC (LIVE)",
+    "duration": "4:19"
+   },
+   {
+    "trackNumber": 9,
+    "name": "Carol Of The Bells",
+    "duration": "12:20"
+   },
+   {
+    "trackNumber": 10,
+    "name": "Ride It",
+    "duration": "3:17"
+   },
+   {
+    "trackNumber": 11,
+    "name": "White Christmas",
+    "duration": "11:12"
+   },
+   {
+    "trackNumber": 12,
+    "name": "TELEVISION RULES THE NATION / CRESCENDOLLS (LIVE)",
+    "duration": "3:43"
+   },
+   {
+    "trackNumber": 13,
+    "name": "Gimme All Your Lovin'",
+    "duration": "0:04"
+   }
+  ]
+ },
+ {
+  "artist": "John Mellencamp",
+  "id": 7,
+  "albumName": "Greatest Hits",
+  "bandMembers": [
+   "Elizabeth",
+   "Timothy"
+  ],
+  "tracks": [
+   {
+    "trackNumber": 1,
+    "name": "Pathetic",
+    "duration": "11:15"
+   },
+   {
+    "trackNumber": 2,
+    "name": "Give It Up",
+    "duration": "10:55"
+   },
+   {
+    "trackNumber": 3,
+    "name": "Make That Money",
+    "duration": "5:34"
+   },
+   {
+    "trackNumber": 4,
+    "name": "Intro",
+    "duration": "13:01"
+   },
+   {
+    "trackNumber": 5,
+    "name": "Make That Money",
+    "duration": "1:01"
+   },
+   {
+    "trackNumber": 6,
+    "name": "Stuck In The Middle (Feat. Jared Cotter)",
+    "duration": "3:60"
+   },
+   {
+    "trackNumber": 7,
+    "name": "Voyeur",
+    "duration": "8:29"
+   },
+   {
+    "trackNumber": 8,
+    "name": "Dysentery Gary",
+    "duration": "11:59"
+   },
+   {
+    "trackNumber": 9,
+    "name": "I Hope That's Me",
+    "duration": "2:27"
+   },
+   {
+    "trackNumber": 10,
+    "name": "Viva Las Vegas",
+    "duration": "2:53"
+   },
+   {
+    "trackNumber": 11,
+    "name": "Pearl Necklace",
+    "duration": "8:34"
+   },
+   {
+    "trackNumber": 12,
+    "name": "Some Children See Him",
+    "duration": "1:06"
+   },
+   {
+    "trackNumber": 13,
+    "name": "ONE MORE TIME / AERODYNAMIC (LIVE)",
+    "duration": "13:50"
+   },
+   {
+    "trackNumber": 14,
+    "name": "La Grange",
+    "duration": "3:59"
+   },
+   {
+    "trackNumber": 15,
+    "name": "What's Going On",
+    "duration": "0:54"
+   },
+   {
+    "trackNumber": 16,
+    "name": "Not Now",
+    "duration": "11:33"
+   },
+   {
+    "trackNumber": 17,
+    "name": "Degenerate",
+    "duration": "9:51"
+   },
+   {
+    "trackNumber": 18,
+    "name": "Lemmings",
+    "duration": "4:04"
+   },
+   {
+    "trackNumber": 19,
+    "name": "AROUND THE WORLD",
+    "duration": "8:31"
+   },
+   {
+    "trackNumber": 20,
+    "name": "Tush",
+    "duration": "7:16"
+   }
+  ]
+ },
+ {
+  "artist": "Ray Charles",
+  "id": 8,
+  "albumName": "A Christmas Collection",
+  "writer": {
+   "firstName": "Karen",
+   "lastName": "Garcia"
+  },
+  "bandMembers": [
+   "Lisa",
+   "Donald",
+   "Kevin"
+  ],
+  "tracks": [
+   {
+    "trackNumber": 1,
+    "name": "I Love You",
+    "duration": "4:42"
+   },
+   {
+    "trackNumber": 2,
+    "name": "I'm Sorry",
+    "duration": "2:57"
+   },
+   {
+    "trackNumber": 3,
+    "name": "All Or Nothing",
+    "duration": "9:16"
+   },
+   {
+    "trackNumber": 4,
+    "name": "Us And Them",
+    "duration": "0:44"
+   }
+  ]
+ },
+ {
+  "artist": "Atmosphere",
+  "id": 9,
+  "albumName": "Late Registration",
+  "writer": {
+   "firstName": "Susan",
+   "lastName": "Hernandez"
+  },
+  "bandMembers": [
+   "Kenneth",
+   "Charles",
+   "Kevin",
+   "Brian",
+   "Steven"
+  ],
+  "tracks": [
+   {
+    "trackNumber": 1,
+    "name": "Men In Black",
+    "duration": "9:60"
+   },
+   {
+    "trackNumber": 2,
+    "name": "Emo",
+    "duration": "7:01"
+   },
+   {
+    "trackNumber": 3,
+    "name": "Wild Angels",
+    "duration": "12:03"
+   },
+   {
+    "trackNumber": 4,
+    "name": "Distant Lover",
+    "duration": "6:00"
+   },
+   {
+    "trackNumber": 5,
+    "name": "This Christmas",
+    "duration": "4:49"
+   },
+   {
+    "trackNumber": 6,
+    "name": "Legs",
+    "duration": "11:20"
+   },
+   {
+    "trackNumber": 7,
+    "name": "Cry",
+    "duration": "6:16"
+   },
+   {
+    "trackNumber": 8,
+    "name": "Us And Them",
+    "duration": "7:52"
+   },
+   {
+    "trackNumber": 9,
+    "name": "Do You",
+    "duration": "3:31"
+   },
+   {
+    "trackNumber": 10,
+    "name": "Welcome to the Jungle",
+    "duration": "1:59"
+   }
+  ]
+ },
+ {
+  "artist": "Will Smith",
+  "id": 10,
+  "albumName": "All Or Nothing",
+  "writer": {
+   "firstName": "George",
+   "lastName": "Martinez"
+  },
+  "bandMembers": [
+   "James",
+   "Ryan"
+  ],
+  "tracks": [
+   {
+    "trackNumber": 1,
+    "name": "Degenerate",
+    "duration": "12:12"
+   },
+   {
+    "trackNumber": 2,
+    "name": "Anything Like Me",
+    "duration": "1:02"
+   },
+   {
+    "trackNumber": 3,
+    "name": "Wild Angels",
+    "duration": "2:10"
+   },
+   {
+    "trackNumber": 4,
+    "name": "I Wana Go To The Sun",
+    "duration": "11:56"
+   },
+   {
+    "trackNumber": 5,
+    "name": "Down",
+    "duration": "5:49"
+   }
+  ]
+ }
+]

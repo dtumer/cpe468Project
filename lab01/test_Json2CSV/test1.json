@@ -1,0 +1,12 @@
+{
+"id":1,
+"name":"Fred Smith",
+"major": "cs",
+"classes":["cpe101", "cpe102"],
+"fullName":{"first":"Fred","middle":"R.","Last":"Smith"},
+    "grades":[{"class":"cpe101","grade":"A"},{"class":"cpe101","grade":"A-"}]
+}
+{
+"id":2,
+"name":"bob turner"
+}

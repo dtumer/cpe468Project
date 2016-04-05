@@ -1,0 +1,509 @@
+[
+ {
+  "bookName": "The Importance of Being Earnest: A Trivial Comedy for Serious People",
+  "id": 1,
+  "numPages": 930,
+  "author": {
+   "firstName": "Jacob",
+   "lastName": "Thomas"
+  },
+  "publisher": "Scholastic",
+  "characters": [
+   {
+    "firstName": "Charles",
+    "lastName": "Smith"
+   },
+   {
+    "firstName": "Jennifer",
+    "lastName": "Taylor"
+   },
+   {
+    "firstName": "Jeffrey",
+    "lastName": "Garcia"
+   },
+   {
+    "firstName": "Michael",
+    "lastName": "Garcia"
+   },
+   {
+    "firstName": "Brian",
+    "lastName": "Smith"
+   },
+   {
+    "firstName": "Daniel",
+    "lastName": "Brown"
+   },
+   {
+    "firstName": "Donald",
+    "lastName": "Wilson"
+   },
+   {
+    "firstName": "Richard",
+    "lastName": "Smith"
+   }
+  ],
+  "edition": 2,
+  "genres": [
+   "Adventure"
+  ]
+ },
+ {
+  "bookName": "Jane Eyre: An Autobiography",
+  "id": 2,
+  "numPages": 97,
+  "author": {
+   "firstName": "Jacob",
+   "lastName": "Thompson"
+  },
+  "publisher": "Phoenix",
+  "characters": [
+   {
+    "firstName": "Jacob",
+    "lastName": "White"
+   },
+   {
+    "firstName": "Mark",
+    "lastName": "Garcia"
+   },
+   {
+    "firstName": "Paul",
+    "lastName": "Thomas"
+   },
+   {
+    "firstName": "Jason",
+    "lastName": "Miller"
+   }
+  ],
+  "edition": 2,
+  "genres": [
+   "Horror"
+  ]
+ },
+ {
+  "bookName": "Max und Moritz: Eine Bubengeschichte in sieben Streichen",
+  "id": 3,
+  "numPages": 1,
+  "author": {
+   "firstName": "Joshua",
+   "lastName": "Anderson"
+  },
+  "publisher": "Hachette Livre",
+  "edition": 8,
+  "genres": [
+   "Adventure"
+  ]
+ },
+ {
+  "bookName": "The Yellow Wallpaper",
+  "id": 4,
+  "numPages": 666,
+  "author": {
+   "firstName": "Sandra",
+   "lastName": "Martinez"
+  },
+  "publisher": "RELX Group",
+  "characters": [
+   {
+    "firstName": "Margaret",
+    "lastName": "Thompson"
+   },
+   {
+    "firstName": "Susan",
+    "lastName": "Moore"
+   },
+   {
+    "firstName": "Patricia",
+    "lastName": "Miller"
+   }
+  ],
+  "edition": 4,
+  "genres": [
+   "Romance",
+   "Action"
+  ]
+ },
+ {
+  "bookName": "Emma",
+  "id": 5,
+  "numPages": 669,
+  "author": {
+   "firstName": "Patricia",
+   "lastName": "Martin"
+  },
+  "genres": [
+   "Comedy"
+  ],
+  "characters": [
+   {
+    "firstName": "Gary",
+    "lastName": "Miller"
+   },
+   {
+    "firstName": "William",
+    "lastName": "Anderson"
+   }
+  ]
+ },
+ {
+  "bookName": "Heart of Darkness",
+  "id": 6,
+  "numPages": 882,
+  "author": {
+   "firstName": "Dorothy",
+   "lastName": "Brown"
+  },
+  "characters": [
+   {
+    "firstName": "John",
+    "lastName": "Jackson"
+   },
+   {
+    "firstName": "Mark",
+    "lastName": "Rodriguez"
+   },
+   {
+    "firstName": "Sarah",
+    "lastName": "Thompson"
+   },
+   {
+    "firstName": "Edward",
+    "lastName": "Jackson"
+   },
+   {
+    "firstName": "Ryan",
+    "lastName": "Jones"
+   },
+   {
+    "firstName": "Charles",
+    "lastName": "Anderson"
+   },
+   {
+    "firstName": "Gary",
+    "lastName": "Moore"
+   },
+   {
+    "firstName": "Jessica",
+    "lastName": "Thompson"
+   },
+   {
+    "firstName": "Jeffrey",
+    "lastName": "White"
+   }
+  ],
+  "edition": 6,
+  "genres": [
+   "Action"
+  ]
+ },
+ {
+  "bookName": "Ulysses",
+  "id": 7,
+  "numPages": 8,
+  "author": {
+   "firstName": "Daniel",
+   "lastName": "Smith"
+  },
+  "publisher": "Penguin Random House",
+  "genres": [],
+  "characters": [
+   {
+    "firstName": "David",
+    "lastName": "Williams"
+   },
+   {
+    "firstName": "Jeffrey",
+    "lastName": "Miller"
+   },
+   {
+    "firstName": "Ronald",
+    "lastName": "Taylor"
+   },
+   {
+    "firstName": "Linda",
+    "lastName": "Johnson"
+   },
+   {
+    "firstName": "Gary",
+    "lastName": "Taylor"
+   },
+   {
+    "firstName": "Mark",
+    "lastName": "Johnson"
+   },
+   {
+    "firstName": "Nancy",
+    "lastName": "Anderson"
+   },
+   {
+    "firstName": "Dorothy",
+    "lastName": "Jackson"
+   },
+   {
+    "firstName": "Elizabeth",
+    "lastName": "Martinez"
+   },
+   {
+    "firstName": "Nancy",
+    "lastName": "White"
+   }
+  ]
+ },
+ {
+  "bookName": "The Count of Monte Cristo",
+  "id": 8,
+  "numPages": 319,
+  "author": {
+   "firstName": "David",
+   "lastName": "Taylor"
+  },
+  "publisher": "Phoenix",
+  "edition": 3,
+  "genres": [
+   "Horror"
+  ]
+ },
+ {
+  "bookName": "Tractatus Logico-Philosophicus",
+  "id": 9,
+  "numPages": 238,
+  "author": {
+   "firstName": "Steven",
+   "lastName": "Davis"
+  },
+  "publisher": "Pearson",
+  "characters": [
+   {
+    "firstName": "Patricia",
+    "lastName": "Thompson"
+   },
+   {
+    "firstName": "Ryan",
+    "lastName": "Martinez"
+   },
+   {
+    "firstName": "James",
+    "lastName": "White"
+   },
+   {
+    "firstName": "Steven",
+    "lastName": "Garcia"
+   },
+   {
+    "firstName": "Jessica",
+    "lastName": "Jackson"
+   },
+   {
+    "firstName": "Paul",
+    "lastName": "White"
+   },
+   {
+    "firstName": "Nicholas",
+    "lastName": "Miller"
+   },
+   {
+    "firstName": "Sandra",
+    "lastName": "Miller"
+   },
+   {
+    "firstName": "Steven",
+    "lastName": "Smith"
+   }
+  ],
+  "edition": 0,
+  "genres": [
+   "Biography",
+   "Fantasy"
+  ]
+ },
+ {
+  "bookName": "My Secret Life, Volumes I. to III.",
+  "id": 10,
+  "numPages": 625,
+  "author": {
+   "firstName": "Barbara",
+   "lastName": "Moore"
+  },
+  "characters": [
+   {
+    "firstName": "Barbara",
+    "lastName": "Martin"
+   },
+   {
+    "firstName": "Jeffrey",
+    "lastName": "Moore"
+   },
+   {
+    "firstName": "Betty",
+    "lastName": "Thomas"
+   },
+   {
+    "firstName": "Donald",
+    "lastName": "Jackson"
+   },
+   {
+    "firstName": "Michael",
+    "lastName": "Garcia"
+   },
+   {
+    "firstName": "Kenneth",
+    "lastName": "Martinez"
+   },
+   {
+    "firstName": "Daniel",
+    "lastName": "Anderson"
+   },
+   {
+    "firstName": "Joseph",
+    "lastName": "Jackson"
+   },
+   {
+    "firstName": "Christopher",
+    "lastName": "Miller"
+   },
+   {
+    "firstName": "Jessica",
+    "lastName": "Rodriguez"
+   }
+  ],
+  "edition": 2,
+  "genres": [
+   "Comedy",
+   "Crime"
+  ]
+ },
+ {
+  "bookName": "Max und Moritz: Eine Bubengeschichte in sieben Streichen",
+  "id": 11,
+  "numPages": 331,
+  "author": {
+   "firstName": "Andrew",
+   "lastName": "Garcia"
+  },
+  "publisher": "Penguin Random House",
+  "characters": [
+   {
+    "firstName": "Mary",
+    "lastName": "Wilson"
+   },
+   {
+    "firstName": "Richard",
+    "lastName": "Moore"
+   },
+   {
+    "firstName": "Lisa",
+    "lastName": "Wilson"
+   },
+   {
+    "firstName": "Kevin",
+    "lastName": "Moore"
+   }
+  ],
+  "edition": 1,
+  "genres": [
+   "Horror"
+  ]
+ },
+ {
+  "bookName": "Sales Talk",
+  "id": 12,
+  "numPages": 108,
+  "author": {
+   "firstName": "David",
+   "lastName": "Brown"
+  },
+  "publisher": "China South",
+  "characters": [
+   {
+    "firstName": "Nicholas",
+    "lastName": "Anderson"
+   },
+   {
+    "firstName": "Jacob",
+    "lastName": "Brown"
+   },
+   {
+    "firstName": "Susan",
+    "lastName": "Anderson"
+   }
+  ],
+  "edition": 1,
+  "genres": []
+ },
+ {
+  "bookName": "Emma",
+  "id": 13,
+  "numPages": 929,
+  "author": {
+   "firstName": "Donald",
+   "lastName": "Moore"
+  },
+  "publisher": "Pearson",
+  "edition": 4,
+  "genres": [
+   "Action"
+  ]
+ },
+ {
+  "bookName": "The Kama Sutra of Vatsyayana",
+  "id": 14,
+  "numPages": 597,
+  "author": {
+   "firstName": "Kenneth",
+   "lastName": "Smith"
+  },
+  "publisher": "Penguin Random House",
+  "characters": [
+   {
+    "firstName": "Nicholas",
+    "lastName": "Jones"
+   },
+   {
+    "firstName": "Susan",
+    "lastName": "Rodriguez"
+   },
+   {
+    "firstName": "Jennifer",
+    "lastName": "Thompson"
+   },
+   {
+    "firstName": "Jacob",
+    "lastName": "Wilson"
+   }
+  ],
+  "edition": 4,
+  "genres": [
+   "Horror",
+   "Biography"
+  ]
+ },
+ {
+  "bookName": "A Doll's House : a play",
+  "id": 15,
+  "numPages": 773,
+  "author": {
+   "firstName": "Michael",
+   "lastName": "Brown"
+  },
+  "publisher": "Hachette Livre",
+  "characters": [
+   {
+    "firstName": "Kevin",
+    "lastName": "Davis"
+   },
+   {
+    "firstName": "James",
+    "lastName": "Jones"
+   },
+   {
+    "firstName": "Anthony",
+    "lastName": "Miller"
+   },
+   {
+    "firstName": "Elizabeth",
+    "lastName": "Thompson"
+   }
+  ],
+  "edition": 5,
+  "genres": []
+ }
+]
