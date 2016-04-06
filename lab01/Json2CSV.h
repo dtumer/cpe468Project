@@ -13,9 +13,17 @@
 #ifndef Json2CSV_h
 #define Json2CSV_h
 
+typedef struct HeaderNode {
+    char *headerName;
+    struct HeaderNode *nextHeader;
+} HeaderNode;
+
 typedef struct DataFile {
     char *fileName;
     FILE *fp;
+    HeaderNode *firstHeader;
+    HeaderNode *lastHeader;
+    int arrayDepth;
     char **headers;
     int headerNdx;
     size_t numCols;
@@ -29,6 +37,6 @@ typedef struct DataFiles {
     size_t nameLen;
 } DataFiles;
 
-void parseHeaders(json_t *record, DataFiles *dataFiles, char *fileName, json_t *primaryKey);
+void parseHeaders(json_t *record, DataFiles *dataFiles, char *fileName, char *pkName);
 
 #endif /* Json2CSV_h */

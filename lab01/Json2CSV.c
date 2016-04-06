@@ -11,6 +11,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
+#include <limits.h>
 
 #include "smartalloc.h"
 
@@ -41,6 +42,8 @@ DataFile* buildNewDataFile(DataFiles *dataFiles, const char *name)
     new_file->fp = fopen(filePath, "w+");
     new_file->fileName = calloc(strlen(name), sizeof(char*));
     strcpy(new_file->fileName, name);
+    new_file->headerNdx = 0;
+    new_file->arrayDepth = 0;
     
     free(filePath);
     return new_file;
@@ -152,76 +155,122 @@ DataFile* getDataFileByName(DataFile *df, const char *name){
 }
 
 void printDataFile(DataFile *dataFile) {
+    HeaderNode *header = dataFile->firstHeader;
     printf("Filename: %s\n", dataFile->fileName);
     
-    printf("HEADERS: \n");
-    for (int i = 0; i < dataFile->numCols; i++) {
-        printf("%s\n", dataFile->headers[i]);
+    printf("Headers: \n");
+    
+    while (header != NULL) {
+        printf("%s ", header->headerName);
+        header = header->nextHeader;
     }
-}
-
-void printDataFiles(DataFiles *dataFiles) {
-    printDataFile(dataFiles->main);
-    printf("Output path: %s\n", dataFiles->outputPath);
-    printf("Name: %s\n", dataFiles->name);
     printf("\n");
 }
 
-void parseHeaders(json_t *record, DataFiles *dataFiles, char *fileName, json_t *primaryKey) {
-    json_t *value;
+void printDataFiles(DataFiles *dataFiles) {
+    DataFile *df = dataFiles->main;
+    
+    while (df != NULL) {
+        printDataFile(df);
+        printf("\n");
+        
+        df = df->nextFile;
+    }
+}
+
+void addHeader(DataFile *file, const char *key) {
+    HeaderNode *headerNode = calloc(1, sizeof(HeaderNode));
+    
+    headerNode->headerName = calloc(strlen(key), sizeof(char));
+    strcpy(headerNode->headerName, key);
+    
+    if (file->firstHeader == NULL) {
+        file->firstHeader = headerNode;
+        file->lastHeader = headerNode;
+    }
+    else {
+        file->lastHeader->nextHeader = headerNode;
+        file->lastHeader = headerNode;
+    }
+}
+
+//raw speed
+int numPlaces(int n) {
+    if (n < 0) n = (n == INT_MIN) ? INT_MAX : -n;
+    if (n < 10) return 1;
+    if (n < 100) return 2;
+    if (n < 1000) return 3;
+    if (n < 10000) return 4;
+    if (n < 100000) return 5;
+    if (n < 1000000) return 6;
+    if (n < 10000000) return 7;
+    if (n < 100000000) return 8;
+    if (n < 1000000000) return 9;
+    /*      2147483647 is 2^31-1 - add more ifs as needed
+     and adjust this final return as well. */
+    return 10;
+}
+
+void parseHeaders(json_t *record, DataFiles *dataFiles, char *fileName, char *pkName) {
+    json_t *value, *firstRecord;
     const char *key;
+    char *positionHeader;
     DataFile *dataFile = getDataFileByName(dataFiles->main, fileName);
-    int headerNdx = 0;
+    DataFile *file;
     
     //if we're looking at an object
     if (json_is_object(record)) {
-        //getting id to pass down to child data files
-        if (primaryKey == NULL) {
-            primaryKey = json_object();
-            json_object_set_new(primaryKey, "id", json_object_get(record, "id"));
-        }
-        
         json_object_foreach(record, key, value) {
             if (json_is_array(value)) {
+                file = buildNewDataFile(dataFiles, key);
 
+                addHeader(file, pkName);
+                positionHeader = calloc(8 + numPlaces(file->arrayDepth) + 1, sizeof(char));
+                sprintf(positionHeader, "%s%d", "position", file->arrayDepth++);
+                addHeader(file, positionHeader);
+                free(positionHeader);
+
+                parseHeaders(value, dataFiles, file->fileName, pkName);
             }
             //if record is object handle file creation
             //then recurse through for sub objects
             else if (json_is_object(value)) {
+                //create new datafile
+                file = buildNewDataFile(dataFiles, key);
 
+                addHeader(file, pkName);
+                
+                parseHeaders(value, dataFiles, file->fileName, pkName);
             }
             //if just regular value
             else {
-                headerNdx = dataFile->headerNdx;
-                dataFile->headers[headerNdx] = calloc(strlen(key) + 1, sizeof(char));
-                strcpy(dataFile->headers[headerNdx], key);
-                dataFile->headerNdx++;
+                addHeader(dataFile, key);
             }
         }
     }
     else if (json_is_array(record)) {
-        json_object_foreach(record, key, value) {
-            if (json_is_array(value)) {
-//                parseHeaders(value, dataFiles, primaryKey);
-            }
-            else if (json_is_object(value)) {
-//                (value, dataFiles, primaryKey);
-            }
-            else {
-//                main_file->headers[j] = calloc(strlen(key) + 1, sizeof(char));
-//                strcpy(main_file->headers[j], key);
-//                j++;
-            }
-        }
-    }
-    else {
+        firstRecord = json_array_get(record, 0);
         
+        if (json_is_array(firstRecord)) {
+            positionHeader = calloc(8 + numPlaces(dataFile->arrayDepth) + 1, sizeof(char));
+            sprintf(positionHeader, "%s%d", "position", dataFile->arrayDepth++);
+            addHeader(dataFile, positionHeader);
+            free(positionHeader);
+            
+            parseHeaders(firstRecord, dataFiles, fileName, pkName);
+        }
+        else if(json_is_object(firstRecord)) {
+            parseHeaders(firstRecord, dataFiles, fileName, pkName);
+        }
+        else {
+            addHeader(dataFile, "value");
+        }
     }
 }
 
 //inserting data
 int parseJSON(json_t *record, DataFiles *dataFiles, size_t recordNum) {
-    DataFile *main_file = dataFiles->main;
+//    DataFile *main_file = dataFiles->main;
 
     return 0;
 }
@@ -229,8 +278,8 @@ int parseJSON(json_t *record, DataFiles *dataFiles, size_t recordNum) {
 
 int interpRecJson(json_t *json, DataFiles *dataFiles) {
     json_t *record;
-    DataFile *main_file = dataFiles->main;
     size_t i;
+    char *pkName;
     
     if(!json_is_array(json))
     {
@@ -250,10 +299,11 @@ int interpRecJson(json_t *json, DataFiles *dataFiles) {
         //looking at first object
         //make headers
         if (i == 0) {
-            main_file->numCols = json_object_size(record);
-            main_file->headers = calloc(main_file->numCols, sizeof(char*));
+            pkName = malloc(snprintf(NULL, 0, "%s%s", dataFiles->name, "Id") + 1);
+            sprintf(pkName, "%s%s", dataFiles->name, "Id");
             
-            parseHeaders(record, dataFiles, dataFiles->main->fileName, NULL);
+            parseHeaders(record, dataFiles, dataFiles->main->fileName, pkName);
+            printDataFiles(dataFiles);
         }
         
         //add data in
