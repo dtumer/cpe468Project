@@ -24,10 +24,11 @@ typedef struct DataFile {
     HeaderNode *firstHeader;
     HeaderNode *lastHeader;
     int arrayDepth;
+    int numCols;
     char **headers;
     int headerNdx;
-    size_t numCols;
     struct DataFile *nextFile;
+    char **child_data;
 } DataFile;
 
 typedef struct DataFiles {

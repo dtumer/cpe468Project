@@ -44,6 +44,7 @@ DataFile* buildNewDataFile(DataFiles *dataFiles, const char *name)
     strcpy(new_file->fileName, name);
     new_file->headerNdx = 0;
     new_file->arrayDepth = 0;
+    new_file->numCols = 0;
     
     free(filePath);
     return new_file;
@@ -63,6 +64,37 @@ int getHeadersLength(HeaderNode *first) {
     }
     
     return len + numHeaders;
+}
+
+void strArrayToCSV(FILE *fp, char **arr, size_t arrLen)
+{
+    size_t len;
+    char *buffer;
+    
+    len = arrLen;
+    for(size_t i=0; i<arrLen; i++)
+    {
+        if(arr[i] != NULL) {
+            //printf("okaaaaaaaaaaaaaaaa: %s\n", arr[i]);
+            len += strlen(arr[i]);
+        }
+    }
+    
+    buffer = calloc(len + 1, sizeof(char));
+    
+    for(size_t i=0; i<arrLen; i++)
+    {
+        if(i>0)
+        	strcat(buffer, ",");
+        if(arr[i] != NULL) {
+        	strcat(buffer, arr[i]);
+        }
+    }
+    strcat(buffer, "\n");
+
+    fputs(buffer, fp);
+    
+    free(buffer);
 }
 
 //this function writes all the headers to a specified file
@@ -103,25 +135,28 @@ void freeStrArray(char **arr, size_t arrLen)
 {
     for(size_t i=0; i<arrLen; i++)
     {
-        if(arr[i] != NULL)
+        if(arr[i] != NULL) {
         	free(arr[i]);
+            arr[i] = NULL;
+        }
     }
-    free(arr);
 }
 
-int writeStringToArr(char **data, char **headers, size_t numCols, const char *key, char *str)
+int writeStringToArr(char **data, HeaderNode *firstNode, size_t numCols, const char *key, char *str)
 {
-    size_t i, col = -1;
+    size_t i = 0, col = -1;
     
-    for(i=0; i<numCols; i++)
-    {
-        if(strcmp(headers[i], key) == 0)
+    HeaderNode *temp = firstNode;
+    while(temp) {
+        if(strcmp(temp->headerName, key) == 0)
         {
             col = i;
             break;
         }
+        i++;
+        temp = temp->nextHeader;
     }
-    
+
     if(col == -1)
     {
         fprintf(stderr, "ERROR: can't find key \"%s\" in header\n", key);
@@ -134,10 +169,8 @@ int writeStringToArr(char **data, char **headers, size_t numCols, const char *ke
     return 0;
 }
 
-int writeValueToArr(char **data, char **headers, size_t numCols, const char *key, json_t *value)
-{
-    char buffer[1024];
-    
+
+void convertJSONtoString(json_t* value, char* buffer) {
     if(json_is_string(value))
     {
         sprintf(buffer,"\"%s\"",json_string_value(value));
@@ -162,8 +195,21 @@ int writeValueToArr(char **data, char **headers, size_t numCols, const char *key
     {
         strcpy(buffer,"");
     }
-    
-    return writeStringToArr(data, headers, numCols, key, buffer);
+}
+
+int writeValueToArr(char **data, HeaderNode *firstNode, size_t numCols, const char *key, json_t *value)
+{
+    char buffer[1024];
+    convertJSONtoString(value, buffer);
+    return writeStringToArr(data, firstNode, numCols, key, buffer);
+}
+
+int writePkToArr(char **data, json_t *value, int index) {
+    char buffer[1024];
+    convertJSONtoString(value, buffer);
+    data[index] = calloc(strlen(buffer) + 1, sizeof(char));
+    strcpy(data[index], buffer);
+    return 0;
 }
 
 DataFile* getDataFileByName(DataFile *df, const char *name){
@@ -176,34 +222,10 @@ DataFile* getDataFileByName(DataFile *df, const char *name){
     
 }
 
-//void printDataFile(DataFile *dataFile) {
-//    HeaderNode *header = dataFile->firstHeader;
-//    printf("Filename: %s\n", dataFile->fileName);
-//    
-//    printf("Headers: \n");
-//    
-//    while (header != NULL) {
-//        printf("%s ", header->headerName);
-//        header = header->nextHeader;
-//    }
-//    printf("\n");
-//}
-//
-//void printDataFiles(DataFiles *dataFiles) {
-//    DataFile *df = dataFiles->main;
-//    
-//    while (df != NULL) {
-//        printDataFile(df);
-//        printf("\n");
-//        
-//        df = df->nextFile;
-//    }
-//}
-
 //This function adds a header to the headers object in the datafile
 void addHeader(DataFile *file, const char *key) {
     HeaderNode *headerNode = calloc(1, sizeof(HeaderNode));
-    
+    file->numCols++; 
     headerNode->headerName = calloc(strlen(key) + 1, sizeof(char));
     strcpy(headerNode->headerName, key);
     
@@ -320,51 +342,95 @@ void parseHeaders(json_t *record, DataFiles *dataFiles, char *fileName, char *pk
 json_t* getNewPK(json_t* primaryKey, size_t indx) {
     json_t* newPK = json_array();
     json_array_extend(newPK, primaryKey);
-    json_array_append_new(newPK, indx);
+    json_array_append_new(newPK, json_integer(indx));
     return newPK;
 }
 
-//inserting data
-int parseJSON(json_t *record, DataFiles *dataFiles, json_t *primaryKey, json_t* tableName) {
+void printPK(json_t* pk) {
+    size_t index;
     json_t *value;
+    json_array_foreach(pk, index, value) {
+        printf("pk%zu: %" JSON_INTEGER_FORMAT ", ", index, json_integer_value(value));
+    }
+    printf("\n");
+}
+
+//inserting data
+int parseJSON(json_t *record, DataFiles *dataFiles, json_t *primaryKey, const char* tableName) {
+    json_t *value, *newPK = NULL;
     size_t index;
     const char *key;
-    char *positionHeader;
-    DataFile *dataFile = getDataFileByName(dataFiles->main, fileName);
-    DataFile *file;
+    int outer = 0;
+    //char *positionHeader;
+    //DataFile *dataFile = getDataFileByName(dataFiles->main, fileName);
+    DataFile *file = getDataFileByName(dataFiles->main, tableName);
 
     if(json_is_object(record)) {
         if(json_array_size(primaryKey) == 0) {
+            outer = 1;
             json_array_append_new(primaryKey, json_object_get(record, "id"));
+        } else {
+            outer = 0;
         }
         json_object_foreach(record, key, value) {
             if(json_is_object(value)) {
                 parseJSON(value, dataFiles, primaryKey, key);
             } else if(json_is_array(value)) {
-                json_array_foreach(value, index, val) {
-                    json_t* newPK = getNewPK(primaryKey, index);
-                    parseJSON(val, dataFiles, newPK, key);
-                }
+                parseJSON(value, dataFiles, primaryKey, key);
             } else {
+                //printf("1WRITING TO FILE %s for key %s numCols: %d\n",tableName, key, file->numCols);
+                //printPK(primaryKey);
                 //write
+
+                writeValueToArr(file->child_data, file->firstHeader, file->numCols, key, value);
             }
         }
-    } else { //json is array
-        json_array_foreach(record, index, val) {
-            if(json_is_object(val)) {
-                json_t* newPK = getNewPK(primaryKey, index);
-                parseJSON(val, dataFiles, newPK, key);
-            } else if(json_is_array(val)) {
-                json_t* newPK = getNewPK(primaryKey, index);
-                parseJSON(val, dataFiles, newPK, key); 
-            } else {
-                //write tablename, (PK, i, json[i])
+    } else if(json_is_array(record)) { //json is array
+        json_array_foreach(record, index, value) {
+            newPK = getNewPK(primaryKey, index);
+            parseJSON(value, dataFiles, newPK, tableName);
+
+            //major hack alert?
+            if(index == json_array_size(record)-1) {
+                return 0;
             }
+        }
+
+    } else {
+        //atomic values in array
+        writeValueToArr(file->child_data, file->firstHeader, file->numCols, "value", record);
+    }
+
+    //lets use newPK only
+    if(!newPK) {
+        newPK = primaryKey;
+    }
+
+    //write PK's to array
+    json_array_foreach(newPK, index, value) {
+        if(outer == 0) {
+            writePkToArr(file->child_data, value, index); 
         }
     }
+
+    //write data to file 
+    strArrayToCSV(file->fp, file->child_data, file->numCols);
+    //free str array
+    /*int i;
+    for(i = 0; i < file->numCols; i++) {
+        file->child_data[i] = 0;
+    }*/
+    freeStrArray(file->child_data, file->numCols);
     return 0;
 }
 
+void createChildData(DataFiles* df) {
+    DataFile* temp = df->main;
+    while(temp) {
+        temp->child_data = calloc(temp->numCols, sizeof(char*));
+        temp = temp->nextFile;
+    }
+}
 
 int interpRecJson(json_t *json, DataFiles *dataFiles) {
     json_t *record;
@@ -394,203 +460,17 @@ int interpRecJson(json_t *json, DataFiles *dataFiles) {
             
             parseHeaders(record, dataFiles, dataFiles->main->fileName, pkName, 1);
             writeHeaders(dataFiles);
+
+            createChildData(dataFiles);
             
             free(pkName);
         }
-        
+                
         //add data in
-        parseJSON(record, dataFiles, i);
-    }
-    
-    return 0;
-}
+        parseJSON(record, dataFiles, json_array(), dataFiles->main->fileName);
 
-int interpJson(json_t *json, DataFiles *dataFiles)
-{
-    json_t *record, *value, *child_value, *array_value;
-    const char *key, *child_key;
-    DataFile *file, *main_file = dataFiles->main;
-    char **data, **child_data, *idName, buffer[1024], idStr[1024];
-    size_t i, j, k, idNameSize;
-    
-    idNameSize = dataFiles->nameLen + 3;
-    idName = calloc(idNameSize, sizeof(char));
-    strcpy(idName, dataFiles->name);
-    strcat(idName, "Id");
-    
-    if(!json_is_array(json))
-    {
-        fprintf(stderr, "ERROR: root element is not an array\n");
-        return 4;
     }
     
-    for(i = 0; i < json_array_size(json); i++)
-    {
-        //printf("%zu\n", i);
-        record = json_array_get(json, i);
-        
-        if(!json_is_object(record))
-        {
-            fprintf(stderr, "ERROR: first level element is not an object\n");
-            return 5;
-        }
-        
-        if(i == 0)
-        {
-            main_file->numCols = json_object_size(record);
-           	main_file->headers = calloc(main_file->numCols, sizeof(char*));
-            
-            j=0;
-            json_object_foreach(record, key, value)
-            {
-                if(json_is_array(value))
-                {
-                	main_file->numCols--;
-                    file = buildNewDataFile(dataFiles, key);
-                    
-                    array_value = json_array_get(value, 0);
-                    
-                    if(json_is_object(array_value))
-                    {
-                        file->numCols = json_object_size(array_value) + 2;
-                        file->headers = calloc(file->numCols, sizeof(char*));
-                        
-                        file->headers[0] = calloc(idNameSize, sizeof(char));
-                        strcpy(file->headers[0], idName);
-                        
-                        file->headers[1] = calloc(9, sizeof(char));
-                        strcpy(file->headers[1], "position");
-                        
-                        k = 2;
-                        json_object_foreach(array_value, child_key, child_value)
-                        {
-                            file->headers[k] = calloc(strlen(child_key) + 1, sizeof(char));
-                            strcpy(file->headers[k], child_key);
-                            k++;
-                        }
-                    }
-                    // Potentially expand out to arrays of arrays
-                    else
-                    {
-                        file->numCols = 3;
-                        file->headers = calloc(3, sizeof(char*));
-                        
-                        file->headers[0] = calloc(idNameSize, sizeof(char));
-                        strcpy(file->headers[0], idName);
-                        
-                        file->headers[1] = calloc(9, sizeof(char));
-                        strcpy(file->headers[1], "position");
-                        
-                        file->headers[2] = calloc(6, sizeof(char));
-                        strcpy(file->headers[2], "value");
-                        
-                        
-                    }
-//                    strArrayToCSV(file->fp, file->headers, file->numCols);
-                }
-                else if(json_is_object(value))
-                {
-					main_file->numCols--;
-                    file = buildNewDataFile(dataFiles, key);
-                    
-                    file->numCols = json_object_size(value) + 1;
-                    file->headers = calloc(file->numCols, sizeof(char*));
-                    
-                    file->headers[0] = calloc(idNameSize, sizeof(char));
-                    strcpy(file->headers[0], idName);
-                    
-                    k = 1;
-                    json_object_foreach(value, child_key, child_value)
-                    {
-                        file->headers[k] = calloc(strlen(child_key) + 1, sizeof(char));
-                        strcpy(file->headers[k], child_key);
-                        k++;
-                    }
-                    
-//                    strArrayToCSV(file->fp, file->headers, file->numCols);
-                }
-                else
-                {
-                    main_file->headers[j] = calloc(strlen(key) + 1, sizeof(char));
-                    strcpy(main_file->headers[j], key);
-                    j++;
-                }
-                
-            }
-//            strArrayToCSV(main_file->fp, main_file->headers, main_file->numCols);
-        }
-        
-        json_object_foreach(record, key, value) {
-            if(strcmp(key, "id") == 0)
-            {
-                sprintf(idStr,"%lld", json_integer_value(value));
-                break;
-            }
-        }
-        
-        data = calloc(main_file->numCols, sizeof(char*));
-        
-        json_object_foreach(record, key, value)
-        {
-            if(json_is_array(value))
-            {
-                file = getDataFileByName(main_file, key);
-                
-                for(j = 0; j < json_array_size(value); j++)
-                {
-                    child_data = calloc(file->numCols, sizeof(char*));
-                    
-                    writeStringToArr(child_data, file->headers, file->numCols, idName, idStr);
-                    
-                    sprintf(buffer,"%zu", j);
-                    writeStringToArr(child_data, file->headers, file->numCols, "position", buffer);
-                    
-                    array_value = json_array_get(value, j);
-                	
-                    if(json_is_object(array_value))
-                    {
-                        json_object_foreach(array_value, child_key, child_value)
-                        {
-                            writeValueToArr(child_data, file->headers, file->numCols, child_key, child_value);
-                        }
-                    }
-                    else
-                    {
-                        writeValueToArr(child_data, file->headers, file->numCols, "value", array_value);
-                    }
-                
-                	
-//                    strArrayToCSV(file->fp, child_data, file->numCols);
-                    freeStrArray(child_data, file->numCols);
-                }
-            }
-            else if(json_is_object(value))
-            {
-                file = getDataFileByName(main_file, key);
-                
-                child_data = calloc(file->numCols, sizeof(char*));
-                
-                writeStringToArr(child_data, file->headers, file->numCols, idName, idStr);
-                
-                json_object_foreach(value, child_key, child_value)
-                {
-                    writeValueToArr(child_data, file->headers, file->numCols, child_key, child_value);
-                }
-                
-//                strArrayToCSV(file->fp, child_data, file->numCols);
-                freeStrArray(child_data, file->numCols);
-            }
-            else
-            {
-                writeValueToArr(data, main_file->headers, main_file->numCols, key, value);
-            }
-        }
-        
-//        strArrayToCSV(main_file->fp, data, main_file->numCols);
-        freeStrArray(data, main_file->numCols);
-    }
-    
-    free(idName);
     return 0;
 }
 
@@ -661,6 +541,7 @@ void cleanUpDataFile(DataFile *df)
     if(df->nextFile != NULL)
     	cleanUpDataFile(df->nextFile);
     
+    free(df->child_data);
     free(df->fileName);
     fclose(df->fp);
     
@@ -737,5 +618,3 @@ int main(int argc, char *argv[])
     
     return ret;
 }
-
-
