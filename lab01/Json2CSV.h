@@ -37,6 +37,6 @@ typedef struct DataFiles {
     size_t nameLen;
 } DataFiles;
 
-void parseHeaders(json_t *record, DataFiles *dataFiles, char *fileName, char *pkName);
+void parseHeaders(json_t *record, DataFiles *dataFiles, char *fileName, char *pkName, int outer);
 
 #endif /* Json2CSV_h */
