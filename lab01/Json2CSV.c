@@ -268,10 +268,51 @@ void parseHeaders(json_t *record, DataFiles *dataFiles, char *fileName, char *pk
     }
 }
 
-//inserting data
-int parseJSON(json_t *record, DataFiles *dataFiles, size_t recordNum) {
-//    DataFile *main_file = dataFiles->main;
+json_t* getNewPK(json_t* primaryKey, size_t indx) {
+    json_t* newPK = json_array();
+    json_array_extend(newPK, primaryKey);
+    json_array_append_new(newPK, indx);
+    return newPK;
+}
 
+//inserting data
+int parseJSON(json_t *record, DataFiles *dataFiles, json_t *primaryKey, json_t* tableName) {
+    json_t *value;
+    size_t index;
+    const char *key;
+    char *positionHeader;
+    DataFile *dataFile = getDataFileByName(dataFiles->main, fileName);
+    DataFile *file;
+
+    if(json_is_object(record)) {
+        if(json_array_size(primaryKey) == 0) {
+            json_array_append_new(primaryKey, json_object_get(record, "id"));
+        }
+        json_object_foreach(record, key, value) {
+            if(json_is_object(value)) {
+                parseJSON(value, dataFiles, primaryKey, key);
+            } else if(json_is_array(value)) {
+                json_array_foreach(value, index, val) {
+                    json_t* newPK = getNewPK(primaryKey, index);
+                    parseJSON(val, dataFiles, newPK, key);
+                }
+            } else {
+                //write
+            }
+        }
+    } else { //json is array
+        json_array_foreach(record, index, val) {
+            if(json_is_object(val)) {
+                json_t* newPK = getNewPK(primaryKey, index);
+                parseJSON(val, dataFiles, newPK, key);
+            } else if(json_is_array(val)) {
+                json_t* newPK = getNewPK(primaryKey, index);
+                parseJSON(val, dataFiles, newPK, key); 
+            } else {
+                //write tablename, (PK, i, json[i])
+            }
+        }
+    }
     return 0;
 }
 
