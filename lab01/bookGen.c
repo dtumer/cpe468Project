@@ -151,12 +151,48 @@ json_t* getLastName() {
     return json_string(strings[rand() % 20]);
 }
 
+//gets city name
+json_t* getCity() {
+    char* strings[10];
+    strings[0] = "San Luis Obispo";
+    strings[1] = "Los Angeles";
+    strings[2] = "New York City";
+    strings[3] = "Quebec City";
+    strings[4] = "San Francisco";
+    strings[5] = "Davis";
+    strings[6] = "Ann Arbor";
+    strings[7] = "Philidelphia";
+    strings[8] = "San Diego";
+    strings[9] = "Springfield";
+    
+    return json_string(strings[rand() % 10]);
+}
+
+//gets a random json_ingeter with the given range
+json_t* getRandJSONInt(int range) {
+    return json_integer(rand() % range);
+}
+
+//gets address
+json_t* getAddress() {
+    json_t *address = json_object();
+    
+    json_object_set_new(address, "number", getRandJSONInt(1000));
+    json_object_set_new(address, "city", getCity());
+    
+    return address;
+}
+
 // gets author's name
-json_t* getAuthor() {
+json_t* getAuthor(int id) {
     json_t *author = json_object();
     
     json_object_set_new(author, "firstName", getFirstName());
     json_object_set_new(author, "lastName", getLastName());
+    
+    if (id == 1 || rand() % 5 > 0) {
+        json_object_set_new(author, "address", getAddress());
+    }
     
     return author;
 }
@@ -177,11 +213,6 @@ json_t* getPublisher() {
     strings[9] = "Harper Collins";
     
     return json_string(strings[rand() % 10]);
-}
-
-//gets a random json_ingeter with the given range
-json_t* getRandJSONInt(int range) {
-    return json_integer(rand() % range);
 }
 
 //gets number of pages of the book
@@ -254,7 +285,7 @@ json_t* createRecord(int id) {
     
     json_object_set_new(record, "id", json_integer(id));
     json_object_set_new(record, "bookName", getBookName());
-    json_object_set_new(record, "author", getAuthor());
+    json_object_set_new(record, "author", getAuthor(id));
     
     if (id == 1 || rand() % 5 > 0) {
         json_object_set_new(record, "publisher", getPublisher());

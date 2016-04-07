@@ -17,7 +17,7 @@
 
 #include "jansson.h"
 
-DataFile* buildNewDataFile(DataFiles *dataFiles, const char *name)
+DataFile* buildNewDataFile(DataFiles *dataFiles, const char *name, const char *fileName)
 {
     char *filePath;
     DataFile *new_file = dataFiles->main;
@@ -29,11 +29,11 @@ DataFile* buildNewDataFile(DataFiles *dataFiles, const char *name)
     new_file->nextFile = calloc(1, sizeof(DataFile));
     new_file = new_file->nextFile;
     
-    filePath = calloc(strlen(dataFiles->outputPath) + strlen(dataFiles->name) + strlen(name) + 4, sizeof(char*));
+    filePath = calloc(strlen(dataFiles->outputPath) + strlen(dataFiles->name) + strlen(fileName) + 4, sizeof(char*));
     strcpy(filePath, dataFiles->outputPath);
     strcat(filePath, dataFiles->name);
     len = strlen(filePath);
-    strcat(filePath, name);
+    strcat(filePath, fileName);
     strcat(filePath, ".csv");
     
     filePath[len] = toupper(filePath[len]);
@@ -213,8 +213,9 @@ int writePkToArr(char **data, json_t *value, int index) {
 }
 
 DataFile* getDataFileByName(DataFile *df, const char *name){
-    if(df == NULL)
+    if(df == NULL) {
         return NULL;
+    }
     else if(strcmp(df->fileName, name) == 0)
         return df;
     else
@@ -273,7 +274,7 @@ DataFile* getNewDataFile(DataFiles *dataFiles, DataFile *dataFile, const char *k
         fileName = tempFileName;
     }
     
-    file = buildNewDataFile(dataFiles, fileName);
+    file = buildNewDataFile(dataFiles, key, fileName);
     
     if (tempFileName != NULL) {
         free(tempFileName);
@@ -460,15 +461,12 @@ int interpRecJson(json_t *json, DataFiles *dataFiles) {
             
             parseHeaders(record, dataFiles, dataFiles->main->fileName, pkName, 1);
             writeHeaders(dataFiles);
-
             createChildData(dataFiles);
-            
             free(pkName);
         }
-                
+        
         //add data in
         parseJSON(record, dataFiles, json_array(), dataFiles->main->fileName);
-
     }
     
     return 0;
