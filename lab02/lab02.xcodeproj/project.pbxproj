@@ -6,10 +6,21 @@
 	objectVersion = 46;
 	objects = {
 
+/* Begin PBXFileReference section */
+		0FB6CEC31CB5E432007B9F6E /* libTinyFS.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = libTinyFS.h; sourceTree = "<group>"; };
+		0FB6CEC41CB5E5B1007B9F6E /* tinyFS.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = tinyFS.h; sourceTree = "<group>"; };
+		0FB6CEC51CB5E5E2007B9F6E /* Makefile */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.make; path = Makefile; sourceTree = "<group>"; };
+		0FB6CEC61CB5E609007B9F6E /* tests.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = tests.c; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
 /* Begin PBXGroup section */
 		0FB6CEBB1CB5E351007B9F6E = {
 			isa = PBXGroup;
 			children = (
+				0FB6CEC61CB5E609007B9F6E /* tests.c */,
+				0FB6CEC31CB5E432007B9F6E /* libTinyFS.h */,
+				0FB6CEC41CB5E5B1007B9F6E /* tinyFS.h */,
+				0FB6CEC51CB5E5E2007B9F6E /* Makefile */,
 			);
 			sourceTree = "<group>";
 		};
