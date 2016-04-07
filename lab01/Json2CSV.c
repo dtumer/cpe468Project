@@ -397,6 +397,7 @@ int parseJSON(json_t *record, DataFiles *dataFiles, json_t *primaryKey, const ch
         }
 
     } else {
+                //printf("2WRITING TO FILE %s for key %s numCols: %d\n",tableName, "value", file->numCols);
         //atomic values in array
         writeValueToArr(file->child_data, file->firstHeader, file->numCols, "value", record);
     }
@@ -460,6 +461,7 @@ int interpRecJson(json_t *json, DataFiles *dataFiles) {
             
             parseHeaders(record, dataFiles, dataFiles->main->fileName, pkName, 1);
             writeHeaders(dataFiles);
+
 
             createChildData(dataFiles);
             

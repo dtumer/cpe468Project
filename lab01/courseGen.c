@@ -255,13 +255,11 @@ json_t* getMajor() {
 json_t* createStudent() {
     json_t *student = json_object();
     
-    char* firstName = getFirstName();
-    char* lastName = getLastName();
-    char* fullName = (char *)calloc(1, strlen(firstName) + strlen(lastName) + 2);
-    strcpy(fullName, firstName);
-    strcat(fullName, " ");
-    strcat(fullName, lastName);
-    json_object_set_new(student, "name", json_string(fullName));
+    json_t *nameObject = json_object();
+    json_object_set_new(nameObject, "firstName", json_string(getFirstName()));
+    json_object_set_new(nameObject, "lastName", json_string(getLastName()));
+
+    json_object_set_new(student, "name", nameObject);
     json_object_set_new(student, "major", getMajor());
     
     return student;
@@ -283,7 +281,7 @@ json_t* getStudents(int recordNum) {
 }
 
 //Course: ID, course title, {course abrv:course #}, [time/days] offered, [{students}]
-//Student: name, major 
+//Student: [name, major]
 json_t* createRecord(int recordNum)
 {
     json_t *record = json_object();
@@ -295,9 +293,9 @@ json_t* createRecord(int recordNum)
     //if(recordNum == 1 || (rand() % 10) > 0)
         //json_object_set_new(record, "writer", getWriter());
 
-    //if(recordNum == 1 || (rand() % 10) > 0) {
+    if(recordNum == 1 || (rand() % 10) > 0) {
         json_object_set_new(record, "daysAndTime", getDaysAndTime());
-    //}
+    }
     json_object_set_new(record, "students", getStudents(recordNum));
     
     

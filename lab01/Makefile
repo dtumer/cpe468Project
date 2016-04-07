@@ -1,7 +1,7 @@
 CC= gcc
 CFLAGS= -g -Wall -Werror
 
-all: Json2CSV cdGen bookGen
+all: Json2CSV cdGen bookGen courseGen
 
 #Support Files
 smartalloc.o: smartalloc.c
@@ -13,6 +13,9 @@ cdGen: cdGen.c
 
 bookGen: bookGen.c
 	$(CC) $(CFLAGS) -o bookGen bookGen.c libjansson.a
+
+courseGen: courseGen.c
+	$(CC) $(CFLAGS) -o courseGen courseGen.c libjansson.a
 
 Json2CSV: Json2CSV.c smartalloc.o
 	$(CC) $(CFLAGS) -o $@ $^ libjansson.a
