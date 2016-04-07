@@ -510,11 +510,11 @@ int interpRecJson(json_t *json, DataFiles *dataFiles) {
             parseHeaders(record, dataFiles, dataFiles->main->fileName, json_array(), 1);
             writeHeaders(dataFiles);
             createChildData(dataFiles);
-            printDataFiles(dataFiles);
+            //printDataFiles(dataFiles);
         }
         
         //add data in
-        //parseJSON(record, dataFiles, json_array(), dataFiles->main->fileName);
+        parseJSON(record, dataFiles, json_array(), dataFiles->main->fileName);
     }
     
     return 0;
