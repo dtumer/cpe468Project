@@ -1,0 +1,65 @@
+Lab 01
+by Jonathon Elfar, Deniz Tumer, Scott Tucker
+
+DATA FORMATS:
+
+1) CDs
+ - id: The id of the CD
+ - artist: The name of the Artist who made the CD
+ - albumName: The nae of the CD album
+ - writer: {
+      - firstName: The first name of the writer
+      - lastName: The last name of the writer
+   }
+ - bandMembers: [
+      -List of band members in the band (strings)
+   ]
+ - tracks: [ List of tracks on the CD
+      {
+         - trackNumber: The track number of the song
+         - name: The name of the track
+         - duration: The duration of the track
+      }
+   ]
+
+2) Books
+ - id: The id of the Book
+ - bookName: The name of the Book
+ - characters [ List of characters in the book
+      {
+         - firstName: First name of the character
+         - lastName: last name of the character
+      }
+   ]
+ - genres: [
+      List of genres that the book falls under (string values)
+   ]
+ - author: {
+      - firstName: The first name of the author
+      - lastName: The last name of the author
+      - address: {
+           - number: The house number where the author lives
+           - city: The city where the author lives
+        }
+   }
+ - publisher: The publisher that published the book
+ - numPages: The number of pages in the book
+ - edition: The edition of the book
+
+3) Courses
+ - id: The id of the Course
+ - courseTitle: The title of the course
+ - courseAbbrev: {
+      - courseTitleAbbrev: The abbreviation of the course name
+      - courseIdAbbrev: The id of the course abbreviation
+   }
+ - daysAndTime: The days and times of the course
+ - students: [ List of students in the class
+      {
+         - name: { The name of the student
+              - firstName: The first name of the student
+              - lastName: The last name of the student
+           }
+         - major: The major of the student
+      }
+   ]
