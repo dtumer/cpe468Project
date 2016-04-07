@@ -1,6 +1,13 @@
 Lab 01
 by Jonathon Elfar, Deniz Tumer, Scott Tucker
 
+How to run:
+    
+    make all
+
+Runs Json2CSV on the three json files with one object.
+
+
 DATA FORMATS:
 
 1) CDs

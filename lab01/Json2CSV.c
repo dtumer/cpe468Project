@@ -68,11 +68,11 @@ int getHeadersLength(HeaderNode *first) {
 
 void strArrayToCSV(FILE *fp, char **arr, size_t arrLen)
 {
-    size_t len;
+    size_t len, i;
     char *buffer;
     
     len = arrLen;
-    for(size_t i=0; i<arrLen; i++)
+    for(i=0; i<arrLen; i++)
     {
         if(arr[i] != NULL) {
             //printf("okaaaaaaaaaaaaaaaa: %s\n", arr[i]);
@@ -82,7 +82,7 @@ void strArrayToCSV(FILE *fp, char **arr, size_t arrLen)
     
     buffer = calloc(len + 1, sizeof(char));
     
-    for(size_t i=0; i<arrLen; i++)
+    for(i=0; i<arrLen; i++)
     {
         if(i>0)
         	strcat(buffer, ",");
@@ -133,7 +133,8 @@ void writeHeaders(DataFiles *df) {
 
 void freeStrArray(char **arr, size_t arrLen)
 {
-    for(size_t i=0; i<arrLen; i++)
+    size_t i;
+    for(i=0; i<arrLen; i++)
     {
         if(arr[i] != NULL) {
         	free(arr[i]);
