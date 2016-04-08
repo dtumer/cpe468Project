@@ -18,4 +18,5 @@ cleanTFS468:
 tests: tests.c 
 	$(CC) $(CFLAGS) -o tests tests.c libDisk.o libTinyFS.o
 
-
+TestHarness:
+	$(CC) $(CFLAGS) -o TestHarness TestHarness.c
