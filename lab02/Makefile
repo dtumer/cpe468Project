@@ -22,6 +22,9 @@ tests: tests.c
 TestHarness:
 	$(CC) $(CFLAGS) -o TestHarness TestHarness.c BufferManager.c hashmap.c
 
+testHashmap: testHashmap.c
+	$(CC) $(CFLAGS) -o testHashmap hashmap.c testHashmap.c smartalloc.c
+
 cleanTestHarness:
 	rm TestHarness 
 
