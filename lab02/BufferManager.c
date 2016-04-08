@@ -1,4 +1,4 @@
 #include "BufferManager.h"
-#include "hashtable.h"
+#include "hashmap.h"
 
 

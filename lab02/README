@@ -22,6 +22,7 @@ Files in this directory:
 Latest updates:
 
 Apr. 7, 2016: 
+* object files recompiled under 32bit architecture (Unix3.csc)
 * tfs_deleteFile() example added to tests.c
 * readPage() issue fixed. 
 * tfs_numPages() added
