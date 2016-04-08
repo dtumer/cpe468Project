@@ -11,12 +11,28 @@
 		0FB6CEC41CB5E5B1007B9F6E /* tinyFS.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = tinyFS.h; sourceTree = "<group>"; };
 		0FB6CEC51CB5E5E2007B9F6E /* Makefile */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.make; path = Makefile; sourceTree = "<group>"; };
 		0FB6CEC61CB5E609007B9F6E /* tests.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = tests.c; sourceTree = "<group>"; };
+		638E34D21CB823C5006530E0 /* BufferManager.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = BufferManager.c; sourceTree = "<group>"; };
+		638E34D31CB823C5006530E0 /* BufferManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BufferManager.h; sourceTree = "<group>"; };
+		638E34D41CB823C5006530E0 /* hashmap.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = hashmap.c; sourceTree = "<group>"; };
+		638E34D51CB823C5006530E0 /* hashmap.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = hashmap.h; sourceTree = "<group>"; };
+		638E34D61CB823C5006530E0 /* libDisk.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = libDisk.h; sourceTree = "<group>"; };
+		638E34D71CB823C5006530E0 /* libDisk.o */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.objfile"; path = libDisk.o; sourceTree = "<group>"; };
+		638E34D81CB823C5006530E0 /* README */ = {isa = PBXFileReference; lastKnownFileType = text; path = README; sourceTree = "<group>"; };
+		638E34D91CB823C5006530E0 /* TestHarness.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = TestHarness.c; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
 		0FB6CEBB1CB5E351007B9F6E = {
 			isa = PBXGroup;
 			children = (
+				638E34D21CB823C5006530E0 /* BufferManager.c */,
+				638E34D31CB823C5006530E0 /* BufferManager.h */,
+				638E34D41CB823C5006530E0 /* hashmap.c */,
+				638E34D51CB823C5006530E0 /* hashmap.h */,
+				638E34D61CB823C5006530E0 /* libDisk.h */,
+				638E34D71CB823C5006530E0 /* libDisk.o */,
+				638E34D81CB823C5006530E0 /* README */,
+				638E34D91CB823C5006530E0 /* TestHarness.c */,
 				0FB6CEC61CB5E609007B9F6E /* tests.c */,
 				0FB6CEC31CB5E432007B9F6E /* libTinyFS.h */,
 				0FB6CEC41CB5E5B1007B9F6E /* tinyFS.h */,
