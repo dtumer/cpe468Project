@@ -4,6 +4,10 @@
 
 #define BUFFER_SIZE 1000
 
+/* Error code definitions */
+#define BFMG_OK 0
+#define BFMG_ERR -1
+
 //structure defining a location for a page on disk
 typedef struct DiskAddress {
    fileDescriptor FD;
