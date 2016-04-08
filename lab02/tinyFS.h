@@ -27,7 +27,7 @@
 #define IN_FILESIZE 14  /* 4 bytes for size in bytes */
 #define IN_FIRSTFE  18  /* 2 bytes link to first file Extent */
 #define IN_CREATED  20  /* 4 bytes for creation date */
-#define IN_DATA     24  /* 1000 bytes for data */
+#define IN_DATA     24  /* 1000 bytes for data */ 
 
 #define FE_PAGENUM  4   /* 2 bytes for page number, for TFS468 */
 #define FE_DATA     24   /* data starts here in File Extent blocks */

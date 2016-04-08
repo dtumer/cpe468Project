@@ -1,7 +1,21 @@
 CC = gcc
-FLAGS = -Wall -g
+CFLAGS = -Wall -g
+
+all: TFS468 tests
 
 TFS468:
-cp //home/foaad/www/class/468/TFS468/libDisk.o //home/foaad/www/class/468/TFS468/libTinyFS.o //home/foaad/www/class/468/TFS468/*.h .
-tests: tests.c
-$(CC) $(CFLAGS) -o tests tests.c libDisk.o libTinyFS.o
+	wget -N http://users.csc.calpoly.edu/~foaad/class/468/TFS468/libTinyFS.h
+	wget -N http://users.csc.calpoly.edu/~foaad/class/468/TFS468/libTinyFS.o 
+	wget -N http://users.csc.calpoly.edu/~foaad/class/468/TFS468/libDisk.h 
+	wget -N http://users.csc.calpoly.edu/~foaad/class/468/TFS468/libDisk.o 
+	wget -N http://users.csc.calpoly.edu/~foaad/class/468/TFS468/tinyFS.h
+	wget -N http://users.csc.calpoly.edu/~foaad/class/468/TFS468/tests.c
+	wget -N http://users.csc.calpoly.edu/~foaad/class/468/TFS468/README
+
+cleanTFS468:
+	rm libTinyFS.h libTinyFS.o libDisk.h libDisk.o tinyFS.h tests.c README
+
+tests: tests.c 
+	$(CC) $(CFLAGS) -o tests tests.c libDisk.o libTinyFS.o
+
+
