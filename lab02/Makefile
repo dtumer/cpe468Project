@@ -14,6 +14,7 @@ TFS468:
 
 cleanTFS468:
 	rm libTinyFS.h libTinyFS.o libDisk.h libDisk.o tinyFS.h tests.c README
+	rm *.1
 
 tests: tests.c 
 	$(CC) $(CFLAGS) -o tests tests.c libDisk.o libTinyFS.o
