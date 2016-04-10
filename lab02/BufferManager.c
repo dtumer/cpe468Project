@@ -1,9 +1,43 @@
+#include <limits.h>
+#include <stdio.h>
+
 #include "BufferManager.h"
 #include "hashmap.h"
+#include "smartalloc.h"
 
 /* type for a replacement policy function 
    It returns the buffer index of the page that should be evicted */
-typedef int replacement()
+//typedef int replacement();
+
+//global map variable for holding references to disk addresses and their location in the buffer
+map_t diskMap;
+
+//returns the number of digits in a number
+int numDigits(int n) {
+   if (n < 0) n = (n == INT_MIN) ? INT_MAX : -n;
+   if (n < 10) return 1;
+   if (n < 100) return 2;
+   if (n < 1000) return 3;
+   if (n < 10000) return 4;
+   if (n < 100000) return 5;
+   if (n < 1000000) return 6;
+   if (n < 10000000) return 7;
+   if (n < 100000000) return 8;
+   if (n < 1000000000) return 9;
+    
+   return 10;
+}
+
+//converts a disk address to a string value
+char* diskAddressToString(DiskAddress diskAdd) {
+   int lenFD = numDigits(diskAdd.FD);
+   int lenPageId = numDigits(diskAdd.pageId);
+   char *str = calloc(lenFD + 1 + lenPageId + 1, sizeof(char));
+
+   sprintf(str, "%d,%d", diskAdd.FD, diskAdd.pageId);
+
+   return str;
+}
 
 /**
  * commence is called once at the beginning of a program that uses the buffer.
@@ -35,7 +69,7 @@ int commence(char *Database, Buffer *buf, int nBlocks) {
  *    On failure, errno is set.
  */
 int squash(Buffer *buf) {
-   return 0;
+   return BFMG_OK;
 }
 
 /**
@@ -50,6 +84,6 @@ int squash(Buffer *buf) {
  * on error, errno is also set
  */
 int readPage(Buffer *buf, DiskAddress diskPage) {
-   return BFMG_OK
+   return BFMG_OK;
 }
 
