@@ -28,6 +28,18 @@ int numDigits(int n) {
    return 10;
 }
 
+void printHashmapError(int errorCode) {
+    if (errorCode == -1) {
+        printf("ERROR: Map is out of memory!\n");
+    }
+    else if (errorCode == -2) {
+        printf("ERROR: Map is full!\n");
+    }
+    else if (errorCode == -3) {
+        printf("ERROR: There is no such element in the Map!");
+    }
+}
+
 //converts a disk address to a string value
 char* diskAddressToString(DiskAddress diskAdd) {
    int lenFD = numDigits(diskAdd.FD);
@@ -37,6 +49,43 @@ char* diskAddressToString(DiskAddress diskAdd) {
    sprintf(str, "%d,%d", diskAdd.FD, diskAdd.pageId);
 
    return str;
+}
+
+//This function wraps the hashmap get function for ease of use in this file
+int getIndex(DiskAddress diskAdd) {
+    char *diskStr;
+    int *retValue;
+    
+    diskStr = diskAddressToString(diskAdd);
+    error = hashmap_put(diskMap, diskStr, (void**)&retValue);
+    free(diskStr);
+    
+    //print error if the map returned an error
+    if (error != MAP_OK) {
+        printHashmapError(error);
+        return -1;
+    }
+    else {
+        return *retValue;
+    }
+}
+
+//This function wraps the hashmap put function for ease of use in this file
+int putIndex(DiskAddress diskAdd, int index) {
+    char *diskStr;
+    
+    diskStr = diskAddressToString(diskAdd);
+    error = hashmap_put(diskMap, diskStr, &index);
+    free(diskStr);
+    
+    //print error if there is one, return 0 is no error
+    if (error != MAP_OK) {
+        printHashmapError(error);
+        return -1;
+    }
+    else {
+        return 0;
+    }
 }
 
 /**

@@ -11,6 +11,10 @@
 		0FB6CEC41CB5E5B1007B9F6E /* tinyFS.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = tinyFS.h; sourceTree = "<group>"; };
 		0FB6CEC51CB5E5E2007B9F6E /* Makefile */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.make; path = Makefile; sourceTree = "<group>"; };
 		0FB6CEC61CB5E609007B9F6E /* tests.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = tests.c; sourceTree = "<group>"; };
+		0FB6CF4B1CBAF414007B9F6E /* testHashmap.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = testHashmap.c; sourceTree = "<group>"; };
+		0FB6CF4C1CBAF425007B9F6E /* smartalloc.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = smartalloc.c; sourceTree = "<group>"; };
+		0FB6CF4D1CBAF425007B9F6E /* smartalloc.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = smartalloc.h; sourceTree = "<group>"; };
+		0FB6CF4F1CBAF45D007B9F6E /* libTinyFS.o */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.objfile"; path = libTinyFS.o; sourceTree = "<group>"; };
 		638E34D21CB823C5006530E0 /* BufferManager.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = BufferManager.c; sourceTree = "<group>"; };
 		638E34D31CB823C5006530E0 /* BufferManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BufferManager.h; sourceTree = "<group>"; };
 		638E34D41CB823C5006530E0 /* hashmap.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = hashmap.c; sourceTree = "<group>"; };
@@ -34,9 +38,13 @@
 				638E34D81CB823C5006530E0 /* README */,
 				638E34D91CB823C5006530E0 /* TestHarness.c */,
 				0FB6CEC61CB5E609007B9F6E /* tests.c */,
+				0FB6CF4B1CBAF414007B9F6E /* testHashmap.c */,
 				0FB6CEC31CB5E432007B9F6E /* libTinyFS.h */,
 				0FB6CEC41CB5E5B1007B9F6E /* tinyFS.h */,
 				0FB6CEC51CB5E5E2007B9F6E /* Makefile */,
+				0FB6CF4C1CBAF425007B9F6E /* smartalloc.c */,
+				0FB6CF4D1CBAF425007B9F6E /* smartalloc.h */,
+				0FB6CF4F1CBAF45D007B9F6E /* libTinyFS.o */,
 			);
 			sourceTree = "<group>";
 		};
