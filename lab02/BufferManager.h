@@ -25,9 +25,9 @@ typedef struct Buffer {
    char *database;
    int nBlocks;
    Block pages[BUFFER_SIZE];
-   Block timestamp[BUFFER_SIZE];
-   Block pin[BUFFER_SIZE];
-   Block dirty[BUFFER_SIZE];
+   long timestamp[BUFFER_SIZE];
+   char pin[BUFFER_SIZE];
+   char dirty[BUFFER_SIZE];
    int numOccupied;
 } Buffer;
 

@@ -1,5 +1,6 @@
 #include <limits.h>
 #include <stdio.h>
+#include <time.h>
 
 #include "BufferManager.h"
 #include "hashmap.h"
@@ -42,37 +43,39 @@ void printHashmapError(int errorCode) {
 
 //converts a disk address to a string value
 char* diskAddressToString(DiskAddress diskAdd) {
-   int lenFD = numDigits(diskAdd.FD);
-   int lenPageId = numDigits(diskAdd.pageId);
-   char *str = calloc(lenFD + 1 + lenPageId + 1, sizeof(char));
+    int lenFD = numDigits(diskAdd.FD);
+    int lenPageId = numDigits(diskAdd.pageId);
+    
+    char *str = calloc(lenFD + 1 + lenPageId + 1, sizeof(char));
 
-   sprintf(str, "%d,%d", diskAdd.FD, diskAdd.pageId);
+    sprintf(str, "%d,%d", diskAdd.FD, diskAdd.pageId);
 
-   return str;
+    return str;
 }
 
 //This function wraps the hashmap get function for ease of use in this file
 int getIndex(DiskAddress diskAdd) {
-    char *diskStr;
-    int *retValue;
+     char *diskStr;
+     int *retValue, error;
     
-    diskStr = diskAddressToString(diskAdd);
-    error = hashmap_put(diskMap, diskStr, (void**)&retValue);
-    free(diskStr);
+     diskStr = diskAddressToString(diskAdd);
+     error = hashmap_put(diskMap, diskStr, (void**)&retValue);
+     free(diskStr);
     
-    //print error if the map returned an error
-    if (error != MAP_OK) {
-        printHashmapError(error);
-        return -1;
-    }
-    else {
-        return *retValue;
+     //print error if the map returned an error
+     if (error != MAP_OK) {
+         printHashmapError(error);
+         return -1;
+     }
+     else {
+         return *retValue;
     }
 }
 
 //This function wraps the hashmap put function for ease of use in this file
 int putIndex(DiskAddress diskAdd, int index) {
     char *diskStr;
+    int error;
     
     diskStr = diskAddressToString(diskAdd);
     error = hashmap_put(diskMap, diskStr, &index);
@@ -85,6 +88,17 @@ int putIndex(DiskAddress diskAdd, int index) {
     }
     else {
         return 0;
+    }
+}
+
+//finds whether or not there is a Block in the page location specified in the buffer
+int findPageInBuffer(Buffer *buf, int index, Block *retBlock) {
+    if (index >= 0 && index < BUFFER_SIZE) {
+        retBlock = &(buf->pages[index]);
+        return 0;
+    }
+    else {
+        return -1;
     }
 }
 
@@ -103,7 +117,7 @@ int putIndex(DiskAddress diskAdd, int index) {
  * If more error codes are needed, feel free to #define them
  */
 int commence(char *Database, Buffer *buf, int nBlocks) {
-   return 0;
+    return 0;
 }
 
 /**
@@ -118,7 +132,7 @@ int commence(char *Database, Buffer *buf, int nBlocks) {
  *    On failure, errno is set.
  */
 int squash(Buffer *buf) {
-   return BFMG_OK;
+    return BFMG_OK;
 }
 
 /**
@@ -133,6 +147,141 @@ int squash(Buffer *buf) {
  * on error, errno is also set
  */
 int readPage(Buffer *buf, DiskAddress diskPage) {
-   return BFMG_OK;
+    int index = getIndex(diskPage), error, retValue;
+    Block *pageBlock = calloc(1, sizeof(Block));
+    
+    error = findPageInBuffer(buf, index, pageBlock);
+    
+    //check if theres a page block in the specified location
+    if (error) {
+        retValue = BFMG_OK;
+    }
+    else {
+        retValue = BFMG_ERR;
+    }
+    
+    //free temp block
+    free(pageBlock);
+    return retValue;
 }
 
+/**
+ * This function provides write access to the specified tinyFS block.
+ * \param buf       the buffer structure
+ * \param diskPage  tinyFS id o the disk page to be written to
+ *
+ * Will not actually change the content of the disk page. Instead, it simply
+ * performs the activities necessary to let the buffer manager know that a write
+ * operation to the contents of a disk page has been performed.
+ *
+ * returns BFMG_OK if there are no errors and BFMG_ERR if there is an error.
+ * on error, errno is also set
+ */
+int writePage(Buffer *buf, DiskAddress diskPage) {
+    int index = getIndex(diskPage), error, retValue;
+    Block *pageBlock = calloc(1, sizeof(Block));
+    
+    error = findPageInBuffer(buf, index, pageBlock);
+    
+    if (error) {
+        buf->dirty[index] = 'T';
+        buf->timestamp[index] = time(NULL);
+        retValue = BFMG_OK;
+    }
+    else {
+        retValue = BFMG_ERR;
+    }
+    
+    //free temp block
+    free(pageBlock);
+    return retValue;
+}
+
+/**
+ * This function flushes the given page back to disk.
+ * \param buf       the buffer structure
+ * \param diskPage  tinyFS id of the disk page to be flushed
+ *
+ * Finds a page and writes the page to disk using the tinyFS API. Also unsets the dirty
+ * flag associated with the page.
+ *
+ * returns BFMG_OK if there are no errors and BFMG_ERR if there is an error.
+ * on error, errno is also set
+ */
+int flushPage(Buffer *buf, DiskAddress diskPage) {
+    return 0;
+}
+
+/**
+ * This function pins the given page on the buffer.
+ * \param buf       the buffer structure
+ * \param diskPage  tinyFS id of the disk page to be flushed
+ *
+ * Finds a page and sets its pin flag to true. This makes it so that the buffer
+ * replacement policies cannot remove this page from the buffer.
+ *
+ * returns BFMG_OK if there are no errors and BFMG_ERR if there is an error.
+ * on error, errno is also set
+ */
+int pinPage(Buffer *buf, DiskAddress diskPage) {
+    int index = getIndex(diskPage), error, retValue;
+    Block *pageBlock = calloc(1, sizeof(Block));
+    
+    error = findPageInBuffer(buf, index, pageBlock);
+    
+    if (error) {
+        buf->pin[index] = 'T';
+        retValue = BFMG_OK;
+    }
+    else {
+        retValue = BFMG_ERR;
+    }
+    
+    free(pageBlock);
+    return retValue;
+}
+
+/**
+ * This function unpins the given page on the buffer.
+ * \param buf       the buffer structure
+ * \param diskPage  tinyFS id of the disk page to be flushed
+ *
+ * Finds a page and sets its pin flag to false. This allows the buffer replacement
+ * policies to remove the page if necessary from the buffer.
+ *
+ * returns BFMG_OK if there are no errors and BFMG_ERR if there is an error.
+ * on error, errno is also set
+ */
+int unPinPage(Buffer *buf, DiskAddress diskPage) {
+    int index = getIndex(diskPage), error, retValue;
+    Block *pageBlock = calloc(1, sizeof(Block));
+    
+    error = findPageInBuffer(buf, index, pageBlock);
+    
+    if (error) {
+        buf->pin[index] = 'F';
+        retValue = BFMG_OK;
+    }
+    else {
+        retValue = BFMG_ERR;
+    }
+    
+    free(pageBlock);
+    return retValue;
+}
+
+/**
+ * This function creates a new disk page on the tinyFS disk.
+ * \param buf       the buffer structure
+ * \param FD        the descriptor of the file the new page belongs to
+ * \param diskPage  tinyFS id of the disk page to be flushed
+ *
+ * This functoin discovers the next "open" tinyFS page Id in a given file and
+ * creates a tinyFS page with this ID on the tinyFS disk.
+ *
+ * returns BFMG_OK if there are no errors and BFMG_ERR if there is an error.
+ * on error, errno is also set
+ */
+int newPage(Buffer *buf, fileDescriptor FD, DiskAddress *diskPage) {
+    return 0;
+}
