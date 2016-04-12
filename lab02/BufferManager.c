@@ -92,13 +92,12 @@ int putIndex(DiskAddress diskAdd, int index) {
 }
 
 //finds whether or not there is a Block in the page location specified in the buffer
-int findPageInBuffer(Buffer *buf, int index, Block *retBlock) {
+Block* findPageInBuffer(Buffer *buf, int index) {
     if (index >= 0 && index < BUFFER_SIZE) {
-        retBlock = &(buf->pages[index]);
-        return 0;
+        return &(buf->pages[index]);
     }
     else {
-        return -1;
+        return NULL;
     }
 }
 
@@ -147,21 +146,17 @@ int squash(Buffer *buf) {
  * on error, errno is also set
  */
 int readPage(Buffer *buf, DiskAddress diskPage) {
-    int index = getIndex(diskPage), error, retValue;
-    Block *pageBlock = calloc(1, sizeof(Block));
-    
-    error = findPageInBuffer(buf, index, pageBlock);
+    int index = getIndex(diskPage), retValue;
+    Block *pageBlock = findPageInBuffer(buf, index);
     
     //check if theres a page block in the specified location
-    if (error) {
+    if (pageBlock) {
         retValue = BFMG_OK;
     }
     else {
         retValue = BFMG_ERR;
     }
     
-    //free temp block
-    free(pageBlock);
     return retValue;
 }
 
@@ -178,12 +173,10 @@ int readPage(Buffer *buf, DiskAddress diskPage) {
  * on error, errno is also set
  */
 int writePage(Buffer *buf, DiskAddress diskPage) {
-    int index = getIndex(diskPage), error, retValue;
-    Block *pageBlock = calloc(1, sizeof(Block));
+    int index = getIndex(diskPage), retValue;
+    Block *pageBlock = findPageInBuffer(buf, index);
     
-    error = findPageInBuffer(buf, index, pageBlock);
-    
-    if (error) {
+    if (pageBlock) {
         buf->dirty[index] = 'T';
         buf->timestamp[index] = time(NULL);
         retValue = BFMG_OK;
@@ -192,8 +185,6 @@ int writePage(Buffer *buf, DiskAddress diskPage) {
         retValue = BFMG_ERR;
     }
     
-    //free temp block
-    free(pageBlock);
     return retValue;
 }
 
@@ -224,12 +215,10 @@ int flushPage(Buffer *buf, DiskAddress diskPage) {
  * on error, errno is also set
  */
 int pinPage(Buffer *buf, DiskAddress diskPage) {
-    int index = getIndex(diskPage), error, retValue;
-    Block *pageBlock = calloc(1, sizeof(Block));
+    int index = getIndex(diskPage), retValue;
+    Block *pageBlock = findPageInBuffer(buf, index);
     
-    error = findPageInBuffer(buf, index, pageBlock);
-    
-    if (error) {
+    if (pageBlock) {
         buf->pin[index] = 'T';
         retValue = BFMG_OK;
     }
@@ -237,7 +226,6 @@ int pinPage(Buffer *buf, DiskAddress diskPage) {
         retValue = BFMG_ERR;
     }
     
-    free(pageBlock);
     return retValue;
 }
 
@@ -253,12 +241,10 @@ int pinPage(Buffer *buf, DiskAddress diskPage) {
  * on error, errno is also set
  */
 int unPinPage(Buffer *buf, DiskAddress diskPage) {
-    int index = getIndex(diskPage), error, retValue;
-    Block *pageBlock = calloc(1, sizeof(Block));
-    
-    error = findPageInBuffer(buf, index, pageBlock);
-    
-    if (error) {
+    int index = getIndex(diskPage), retValue;
+    Block *pageBlock = findPageInBuffer(buf, index);
+   
+    if (pageBlock) {
         buf->pin[index] = 'F';
         retValue = BFMG_OK;
     }
@@ -266,7 +252,6 @@ int unPinPage(Buffer *buf, DiskAddress diskPage) {
         retValue = BFMG_ERR;
     }
     
-    free(pageBlock);
     return retValue;
 }
 
