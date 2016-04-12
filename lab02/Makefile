@@ -1,7 +1,7 @@
 CC = gcc
 CFLAGS = -Wall -g
 
-all: TFS468 tests
+all: tests
 
 TFS468:
 	wget -N http://users.csc.calpoly.edu/~foaad/class/468/TFS468/libTinyFS.h
