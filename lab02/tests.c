@@ -7,7 +7,7 @@ int main() {
   int index;
   int pageSize = BLOCKSIZE - FE_DATA;
   fileDescriptor a,b,c,d;
-  char buffer[pageSize];
+  unsigned char buffer[pageSize];
   memset(buffer,'1',pageSize);
 
   char* diskName = DEFAULT_DISK_NAME;
