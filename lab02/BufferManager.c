@@ -125,12 +125,33 @@ void freeBuffer(Buffer *buf) {
 	free(buf->dirty);
 }
 
-void cleanupBuffer(Buffer *buf) {
-    //unpin all pages
-    //flush pages
+//unpins all pages and flushes all pages
+int cleanupBuffer(Buffer *buf) {
+    int i, retVal;
+    Block *page;
+        
+    //unpin all pages and flush pages
+    for (i = 0; i < buf->nBlocks; i++) {
+    	page = findPageInBuffer(buf, i);
+    	
+    	if (page != NULL) {
+    		if (buf->pin[i] == 'T') {
+        		buf->pin[i] = 'F';
+       		}
+       		
+       		//flush if dirty
+       		if (buf->dirty[i] == 'T') {
+       			printf("Flushing dirty page %d\n", i);
+       			retVal = flushPage(buf, page->diskAddress);
+       		}
+    	}
+    }
+    
     //clear buffer 
     freeBuffer(buf);
     free(buf);
+    
+    return retVal;
 }
 
 /**
@@ -159,7 +180,6 @@ int commence(char *Database, Buffer *buf, int nBlocks) {
     initBuffer(buf, Database, nBlocks);
 	retVal = 0;
 	
-	
     return retVal;
 }
 
@@ -176,12 +196,6 @@ int commence(char *Database, Buffer *buf, int nBlocks) {
  */
 int squash(Buffer *buf) {
     int tfsErr, retVal;
-
-    //unpin all pages
-    
-    
-    //flushes all dirty pages
-    
     
     //clears all buffer slots
     cleanupBuffer(buf);
