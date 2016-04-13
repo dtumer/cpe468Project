@@ -1,7 +1,7 @@
 CC = gcc
 CFLAGS = -Wall -g
 
-all: TFS468 tests
+all: tests
 
 TFS468:
 	wget -N http://users.csc.calpoly.edu/~foaad/class/468/TFS468/libTinyFS.h
@@ -21,6 +21,9 @@ tests: tests.c
 
 TestHarness: TestHarness.c BufferManager.c
 	$(CC) $(CFLAGS) -o TestHarness TestHarness.c BufferManager.c hashmap.c smartalloc.c
+
+testBM: testBufferManager.c BufferManager.c
+	$(CC) $(CFLAGS) -o testBM BufferManager.c testBufferManager.c hashmap.c smartalloc.c libDisk.o libTinyFS.o
 
 testHashmap: testHashmap.c
 	$(CC) $(CFLAGS) -o testHashmap hashmap.c testHashmap.c smartalloc.c

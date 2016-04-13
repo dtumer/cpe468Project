@@ -2,7 +2,7 @@
 #include "libTinyFS.h"
 #include "libDisk.h"
 
-#define BUFFER_SIZE 1000
+#define MAX_BUFFER_SIZE 1024
 
 /* Error code definitions */
 #define BFMG_OK 0
@@ -24,10 +24,10 @@ typedef struct Block {
 typedef struct Buffer {
    char *database;
    int nBlocks;
-   Block pages[BUFFER_SIZE];
-   long timestamp[BUFFER_SIZE];
-   char pin[BUFFER_SIZE];
-   char dirty[BUFFER_SIZE];
+   Block *pages;
+   long *timestamp;
+   char *pin;
+   char *dirty;
    int numOccupied;
 } Buffer;
 

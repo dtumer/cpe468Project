@@ -7,10 +7,10 @@ int main() {
   int index;
   int pageSize = BLOCKSIZE - FE_DATA;
   fileDescriptor a,b,c,d;
-  char buffer[pageSize];
+  unsigned char buffer[pageSize];
   memset(buffer,'1',pageSize);
 
-  char* diskName = DEFAULT_DISK_NAME;
+//char* diskName = DEFAULT_DISK_NAME;
 
   printf("TinyFS tests \n Creating a new file system:\n");
   tfs_mkfs(DEFAULT_DISK_NAME,DEFAULT_DISK_SIZE);  
@@ -42,4 +42,5 @@ int main() {
   printf("\n Now deleting the file\n");
   tfs_deleteFile(a);
   tfs_readDir();
+    return 0;
 }

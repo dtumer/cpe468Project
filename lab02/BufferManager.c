@@ -92,14 +92,45 @@ int putIndex(DiskAddress diskAdd, int index) {
 }
 
 //finds whether or not there is a Block in the page location specified in the buffer
-int findPageInBuffer(Buffer *buf, int index, Block *retBlock) {
-    if (index >= 0 && index < BUFFER_SIZE) {
-        retBlock = &(buf->pages[index]);
-        return 0;
+Block* findPageInBuffer(Buffer *buf, int index) {
+    if (index >= 0 && index < buf->nBlocks) {
+        return &(buf->pages[index]);
     }
     else {
-        return -1;
+        return NULL;
     }
+}
+
+//intiializes the buffer
+void initBuffer(Buffer *buf, char *database, int nBlocks) {
+    
+    //copy database name over
+    buf->database = calloc(strlen(database) + 1, sizeof(char));
+    strcpy(buf->database, database);
+    
+    buf->nBlocks = nBlocks;
+    buf->pages = calloc(nBlocks, sizeof(Block));
+    buf->timestamp = calloc(nBlocks, sizeof(long));
+    buf->pin = calloc(nBlocks, sizeof(char));
+    buf->dirty = calloc(nBlocks, sizeof(char));
+    buf->numOccupied = 0;
+}
+
+//frees everything associated with the buffer
+void freeBuffer(Buffer *buf) {
+	free(buf->database);
+	free(buf->pages);
+	free(buf->timestamp);
+	free(buf->pin);
+	free(buf->dirty);
+}
+
+void cleanupBuffer(Buffer *buf) {
+    //unpin all pages
+    //flush pages
+    //clear buffer 
+    freeBuffer(buf);
+    free(buf);
 }
 
 /**
@@ -117,7 +148,19 @@ int findPageInBuffer(Buffer *buf, int index, Block *retBlock) {
  * If more error codes are needed, feel free to #define them
  */
 int commence(char *Database, Buffer *buf, int nBlocks) {
-    return 0;
+    int tfsErr, retVal;
+
+    tfsErr = tfs_mount(Database);
+
+    if (tfsErr != 0) {
+        tfs_mkfs(Database, DEFAULT_DISK_SIZE);
+    }
+    
+    initBuffer(buf, Database, nBlocks);
+	retVal = 0;
+	
+	
+    return retVal;
 }
 
 /**
@@ -132,7 +175,28 @@ int commence(char *Database, Buffer *buf, int nBlocks) {
  *    On failure, errno is set.
  */
 int squash(Buffer *buf) {
-    return BFMG_OK;
+    int tfsErr, retVal;
+
+    //unpin all pages
+    
+    
+    //flushes all dirty pages
+    
+    
+    //clears all buffer slots
+    cleanupBuffer(buf);
+    
+    //closes tinyFS disk associated with buffer
+    tfsErr = tfs_unmount();
+    
+    if (tfsErr) {
+        retVal = BFMG_ERR;
+    }
+    else {
+        retVal = BFMG_OK;
+    }
+    
+    return retVal;
 }
 
 /**
@@ -147,21 +211,17 @@ int squash(Buffer *buf) {
  * on error, errno is also set
  */
 int readPage(Buffer *buf, DiskAddress diskPage) {
-    int index = getIndex(diskPage), error, retValue;
-    Block *pageBlock = calloc(1, sizeof(Block));
-    
-    error = findPageInBuffer(buf, index, pageBlock);
+    int index = getIndex(diskPage), retValue;
+    Block *pageBlock = findPageInBuffer(buf, index);
     
     //check if theres a page block in the specified location
-    if (error) {
+    if (pageBlock) {
         retValue = BFMG_OK;
     }
     else {
         retValue = BFMG_ERR;
     }
     
-    //free temp block
-    free(pageBlock);
     return retValue;
 }
 
@@ -178,12 +238,10 @@ int readPage(Buffer *buf, DiskAddress diskPage) {
  * on error, errno is also set
  */
 int writePage(Buffer *buf, DiskAddress diskPage) {
-    int index = getIndex(diskPage), error, retValue;
-    Block *pageBlock = calloc(1, sizeof(Block));
+    int index = getIndex(diskPage), retValue;
+    Block *pageBlock = findPageInBuffer(buf, index);
     
-    error = findPageInBuffer(buf, index, pageBlock);
-    
-    if (error) {
+    if (pageBlock) {
         buf->dirty[index] = 'T';
         buf->timestamp[index] = time(NULL);
         retValue = BFMG_OK;
@@ -192,8 +250,6 @@ int writePage(Buffer *buf, DiskAddress diskPage) {
         retValue = BFMG_ERR;
     }
     
-    //free temp block
-    free(pageBlock);
     return retValue;
 }
 
@@ -224,12 +280,10 @@ int flushPage(Buffer *buf, DiskAddress diskPage) {
  * on error, errno is also set
  */
 int pinPage(Buffer *buf, DiskAddress diskPage) {
-    int index = getIndex(diskPage), error, retValue;
-    Block *pageBlock = calloc(1, sizeof(Block));
+    int index = getIndex(diskPage), retValue;
+    Block *pageBlock = findPageInBuffer(buf, index);
     
-    error = findPageInBuffer(buf, index, pageBlock);
-    
-    if (error) {
+    if (pageBlock) {
         buf->pin[index] = 'T';
         retValue = BFMG_OK;
     }
@@ -237,7 +291,6 @@ int pinPage(Buffer *buf, DiskAddress diskPage) {
         retValue = BFMG_ERR;
     }
     
-    free(pageBlock);
     return retValue;
 }
 
@@ -253,12 +306,10 @@ int pinPage(Buffer *buf, DiskAddress diskPage) {
  * on error, errno is also set
  */
 int unPinPage(Buffer *buf, DiskAddress diskPage) {
-    int index = getIndex(diskPage), error, retValue;
-    Block *pageBlock = calloc(1, sizeof(Block));
-    
-    error = findPageInBuffer(buf, index, pageBlock);
-    
-    if (error) {
+    int index = getIndex(diskPage), retValue;
+    Block *pageBlock = findPageInBuffer(buf, index);
+   
+    if (pageBlock) {
         buf->pin[index] = 'F';
         retValue = BFMG_OK;
     }
@@ -266,7 +317,6 @@ int unPinPage(Buffer *buf, DiskAddress diskPage) {
         retValue = BFMG_ERR;
     }
     
-    free(pageBlock);
     return retValue;
 }
 
