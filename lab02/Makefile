@@ -22,6 +22,9 @@ tests: tests.c
 TestHarness: TestHarness.c BufferManager.c
 	$(CC) $(CFLAGS) -o TestHarness TestHarness.c BufferManager.c hashmap.c smartalloc.c
 
+testBM: testBufferManager.c BufferManager.c
+	$(CC) $(CFLAGS) -o testBM BufferManager.c testBufferManager.c hashmap.c smartalloc.c libDisk.o libTinyFS.o
+
 testHashmap: testHashmap.c
 	$(CC) $(CFLAGS) -o testHashmap hashmap.c testHashmap.c smartalloc.c
 

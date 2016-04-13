@@ -93,12 +93,44 @@ int putIndex(DiskAddress diskAdd, int index) {
 
 //finds whether or not there is a Block in the page location specified in the buffer
 Block* findPageInBuffer(Buffer *buf, int index) {
-    if (index >= 0 && index < BUFFER_SIZE) {
+    if (index >= 0 && index < buf->nBlocks) {
         return &(buf->pages[index]);
     }
     else {
         return NULL;
     }
+}
+
+//intiializes the buffer
+void initBuffer(Buffer *buf, char *database, int nBlocks) {
+    
+    //copy database name over
+    buf->database = calloc(strlen(database) + 1, sizeof(char));
+    strcpy(buf->database, database);
+    
+    buf->nBlocks = nBlocks;
+    buf->pages = calloc(nBlocks, sizeof(Block));
+    buf->timestamp = calloc(nBlocks, sizeof(long));
+    buf->pin = calloc(nBlocks, sizeof(char));
+    buf->dirty = calloc(nBlocks, sizeof(char));
+    buf->numOccupied = 0;
+}
+
+//frees everything associated with the buffer
+void freeBuffer(Buffer *buf) {
+	free(buf->database);
+	free(buf->pages);
+	free(buf->timestamp);
+	free(buf->pin);
+	free(buf->dirty);
+}
+
+void cleanupBuffer(Buffer *buf) {
+    //unpin all pages
+    //flush pages
+    //clear buffer 
+    freeBuffer(buf);
+    free(buf);
 }
 
 /**
@@ -116,7 +148,19 @@ Block* findPageInBuffer(Buffer *buf, int index) {
  * If more error codes are needed, feel free to #define them
  */
 int commence(char *Database, Buffer *buf, int nBlocks) {
-    return 0;
+    int tfsErr, retVal;
+
+    tfsErr = tfs_mount(Database);
+
+    if (tfsErr != 0) {
+        tfs_mkfs(Database, DEFAULT_DISK_SIZE);
+    }
+    
+    initBuffer(buf, Database, nBlocks);
+	retVal = 0;
+	
+	
+    return retVal;
 }
 
 /**
@@ -131,7 +175,28 @@ int commence(char *Database, Buffer *buf, int nBlocks) {
  *    On failure, errno is set.
  */
 int squash(Buffer *buf) {
-    return BFMG_OK;
+    int tfsErr, retVal;
+
+    //unpin all pages
+    
+    
+    //flushes all dirty pages
+    
+    
+    //clears all buffer slots
+    cleanupBuffer(buf);
+    
+    //closes tinyFS disk associated with buffer
+    tfsErr = tfs_unmount();
+    
+    if (tfsErr) {
+        retVal = BFMG_ERR;
+    }
+    else {
+        retVal = BFMG_OK;
+    }
+    
+    return retVal;
 }
 
 /**
