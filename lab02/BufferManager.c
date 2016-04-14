@@ -279,7 +279,21 @@ int writePage(Buffer *buf, DiskAddress diskPage) {
  * on error, errno is also set
  */
 int flushPage(Buffer *buf, DiskAddress diskPage) {
-    return 0;
+    int index = getIndex(diskPage);
+    Block *pageBlock = findPageInBuffer(buf, index);
+
+    //Exits if page is not in the buffer
+    if (!pageBlock) {
+        return BFMG_ERR;
+    }
+
+    //Writes the selected page's data to disk
+    tfs_writePage(diskPage.FD, diskPage.pageId, pageBlock->block); 
+
+    //Unset dirty flag
+    buf->dirty[index] = 'F';
+    
+    return BFMG_OK;
 }
 
 /**

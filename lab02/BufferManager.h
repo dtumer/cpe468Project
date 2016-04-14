@@ -16,7 +16,7 @@ typedef struct DiskAddress {
 
 //structure defining a block in the buffer
 typedef struct Block {
-   char block[BLOCKSIZE];
+   unsigned char block[BLOCKSIZE];
    DiskAddress diskAddress;
 } Block;
 
