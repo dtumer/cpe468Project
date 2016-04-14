@@ -39,3 +39,9 @@ int flushPage(Buffer *buf, DiskAddress diskPage);
 int pinPage(Buffer *buf, DiskAddress diskPage);
 int unPinPage(Buffer *buf, DiskAddress diskPage);
 int newPage(Buffer *buf, fileDescriptor FD, DiskAddress *diskPage);
+
+//test functions
+void checkpoint(Buffer * buf);
+int pageDump(Buffer *buf, int index);
+int printPage(Buffer *buf, DiskAddress diskPage);
+int printBlock(Buffer *buf, DiskAddress diskPage);
