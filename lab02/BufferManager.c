@@ -101,13 +101,6 @@ Block* findPageInBuffer(Buffer *buf, int index) {
     }
 }
 
-int flushPageWithBlock(Buffer *buf, Block *pageBlock) {
-    //Writes the selected page's data to disk
-    tfs_writePage(pageBlock->diskAddress.FD, pageBlock->diskAddress.pageId, pageBlock->block);
-    
-    return BFMG_OK;
-}
-
 //intiializes the buffer
 void initBuffer(Buffer *buf, char *database, int nBlocks) {
     
@@ -125,11 +118,11 @@ void initBuffer(Buffer *buf, char *database, int nBlocks) {
 
 //unpins all pages, flushes all pages and frees all data
 int cleanupBuffer(Buffer *buf) {
-    int i, retVal=0;
-    Block *page;
+    int i;
+    Block *pageBlock;
         
     for (i = 0; i < buf->nBlocks; i++) {
-    	page = buf->pages[i];
+    	pageBlock = buf->pages[i];
     	
     	if (page != NULL) {
     		//unpin page
@@ -139,16 +132,12 @@ int cleanupBuffer(Buffer *buf) {
        		
        		//flush if dirty
        		if (buf->dirty[i] == 'T') {
-       			printf("Flushing dirty page %d\n", i);
-                retVal = flushPageWithBlock(buf, page);
-                if(retVal != BFMG_OK)
-                    return retVal;
-                
+       			tfs_writePage(pageBlock->diskAddress.FD, pageBlock->diskAddress.pageId, pageBlock->block);
                 buf->dirty[i] = 'F';
        		}
             
             //free the page
-            free(page);
+            free(pageBlock);
             buf->pages[i] = NULL;
     	}
     }
@@ -290,7 +279,6 @@ int writePage(Buffer *buf, DiskAddress diskPage) {
  * on error, errno is also set
  */
 int flushPage(Buffer *buf, DiskAddress diskPage) {
-    int retVal=0;
     int index = getIndex(diskPage);
     Block *pageBlock = findPageInBuffer(buf, index);
 
@@ -300,10 +288,8 @@ int flushPage(Buffer *buf, DiskAddress diskPage) {
     }
     
     //Writes the selected page's data to disk
-    retVal = flushPageWithBlock(buf, pageBlock);
-    if(retVal != BFMG_OK)
-        return retVal;
-
+    tfs_writePage(pageBlock->diskAddress.FD, pageBlock->diskAddress.pageId, pageBlock->block);
+    
     //Unset dirty flag
     buf->dirty[index] = 'F';
     
@@ -375,6 +361,16 @@ int unPinPage(Buffer *buf, DiskAddress diskPage) {
  * on error, errno is also set
  */
 int newPage(Buffer *buf, fileDescriptor FD, DiskAddress *diskPage) {
+    Block *pageBlock = calloc(1, sizeof(Block));
+    
+    diskPage->FD = FD;
+    diskPage->pageId = tfs_numPages(FD) + 1;
+    
+    tfs_writePage(FD, diskPage->pageId, pageBlock->block);
+    
+    //do eviction
+    
+    
     return 0;
 }
 
