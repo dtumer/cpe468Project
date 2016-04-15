@@ -24,7 +24,7 @@ typedef struct Block {
 typedef struct Buffer {
    char *database;
    int nBlocks;
-   Block *pages;
+   Block **pages;
    long *timestamp;
    char *pin;
    char *dirty;

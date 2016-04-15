@@ -94,11 +94,18 @@ int putIndex(DiskAddress diskAdd, int index) {
 //finds whether or not there is a Block in the page location specified in the buffer
 Block* findPageInBuffer(Buffer *buf, int index) {
     if (index >= 0 && index < buf->nBlocks) {
-        return &(buf->pages[index]);
+        return buf->pages[index];
     }
     else {
         return NULL;
     }
+}
+
+int flushPageWithBlock(Buffer *buf, Block *pageBlock) {
+    //Writes the selected page's data to disk
+    tfs_writePage(pageBlock->diskAddress.FD, pageBlock->diskAddress.pageId, pageBlock->block);
+    
+    return BFMG_OK;
 }
 
 //intiializes the buffer
@@ -109,49 +116,52 @@ void initBuffer(Buffer *buf, char *database, int nBlocks) {
     strcpy(buf->database, database);
     
     buf->nBlocks = nBlocks;
-    buf->pages = calloc(nBlocks, sizeof(Block));
+    buf->pages = calloc(nBlocks, sizeof(Block*));
     buf->timestamp = calloc(nBlocks, sizeof(long));
     buf->pin = calloc(nBlocks, sizeof(char));
     buf->dirty = calloc(nBlocks, sizeof(char));
     buf->numOccupied = 0;
 }
 
-//frees everything associated with the buffer
-void freeBuffer(Buffer *buf) {
-	free(buf->database);
-	free(buf->pages);
-	free(buf->timestamp);
-	free(buf->pin);
-	free(buf->dirty);
-}
-
-//unpins all pages and flushes all pages
+//unpins all pages, flushes all pages and frees all data
 int cleanupBuffer(Buffer *buf) {
-    int i, retVal;
+    int i, retVal=0;
     Block *page;
         
-    //unpin all pages and flush pages
     for (i = 0; i < buf->nBlocks; i++) {
-    	page = findPageInBuffer(buf, i);
+    	page = buf->pages[i];
     	
     	if (page != NULL) {
-    		if (buf->pin[i] == 'T') {
+    		//unpin page
+            if (buf->pin[i] == 'T') {
         		buf->pin[i] = 'F';
        		}
        		
        		//flush if dirty
        		if (buf->dirty[i] == 'T') {
        			printf("Flushing dirty page %d\n", i);
-       			retVal = flushPage(buf, page->diskAddress);
+                retVal = flushPageWithBlock(buf, page);
+                if(retVal != BFMG_OK)
+                    return retVal;
+                
+                buf->dirty[i] = 'F';
        		}
+            
+            //free the page
+            free(page);
+            buf->pages[i] = NULL;
     	}
     }
     
     //clear buffer 
-    freeBuffer(buf);
+    free(buf->database);
+    free(buf->pages);
+    free(buf->timestamp);
+    free(buf->pin);
+    free(buf->dirty);
     free(buf);
     
-    return retVal;
+    return BFMG_OK;
 }
 
 /**
@@ -175,6 +185,7 @@ int commence(char *Database, Buffer *buf, int nBlocks) {
 
     if (tfsErr != 0) {
         tfs_mkfs(Database, DEFAULT_DISK_SIZE);
+        //do we need to mount it here?
     }
     
     initBuffer(buf, Database, nBlocks);
@@ -279,6 +290,7 @@ int writePage(Buffer *buf, DiskAddress diskPage) {
  * on error, errno is also set
  */
 int flushPage(Buffer *buf, DiskAddress diskPage) {
+    int retVal=0;
     int index = getIndex(diskPage);
     Block *pageBlock = findPageInBuffer(buf, index);
 
@@ -286,9 +298,11 @@ int flushPage(Buffer *buf, DiskAddress diskPage) {
     if (!pageBlock) {
         return BFMG_ERR;
     }
-
+    
     //Writes the selected page's data to disk
-    tfs_writePage(diskPage.FD, diskPage.pageId, pageBlock->block); 
+    retVal = flushPageWithBlock(buf, pageBlock);
+    if(retVal != BFMG_OK)
+        return retVal;
 
     //Unset dirty flag
     buf->dirty[index] = 'F';
@@ -392,7 +406,7 @@ void checkpoint(Buffer * buf) {
         }
         else {
             printf("Slot %d:\n", i);
-            printf("\ttinyFS blockID: %d\n", buf->pages[i].diskAddress.pageId);
+            printf("\ttinyFS blockID: %d\n", buf->pages[i]->diskAddress.pageId);
             printf("\ttimestamps for the block: %ld\n", buf->timestamp[i]);
             printf("\tpin flag: %d\n", buf->pin[i]);
             printf("\tdirty flag: %d\n", buf->dirty[i]);
