@@ -1,14 +1,19 @@
 #include <limits.h>
 #include <stdio.h>
-#include <time.h>
+#include <sys/time.h>
+#include <sys/types.h>
 
 #include "BufferManager.h"
 #include "hashmap.h"
 #include "smartalloc.h"
 
+int lru_evict(Buffer *buf);
 /* type for a replacement policy function 
    It returns the buffer index of the page that should be evicted */
-//typedef int replacement();
+static evictFn evictionPolicy = lru_evict;
+/* using an operation counter rather than a timestamp because it's simpler*/
+/* change to timevals, and alter the buffer struct accordingly?*/
+static unsigned long ops = 0;
 
 //global map variable for holding references to disk addresses and their location in the buffer
 map_t diskMap;
@@ -30,13 +35,13 @@ int numDigits(int n) {
 }
 
 void printHashmapError(int errorCode) {
-    if (errorCode == -1) {
+    if (errorCode == MAP_OMEM) {
         printf("ERROR: Map is out of memory!\n");
     }
-    else if (errorCode == -2) {
+    else if (errorCode == MAP_FULL) {
         printf("ERROR: Map is full!\n");
     }
-    else if (errorCode == -3) {
+    else if (errorCode == MAP_MISSING) {
         printf("ERROR: There is no such element in the Map!");
     }
 }
@@ -50,6 +55,7 @@ char* diskAddressToString(DiskAddress diskAdd) {
 
     sprintf(str, "%d,%d", diskAdd.FD, diskAdd.pageId);
 
+   
     return str;
 }
 
@@ -64,6 +70,7 @@ int getIndex(DiskAddress diskAdd) {
     
      //print error if the map returned an error
      if (error != MAP_OK) {
+        /* if not in map, error should be MAP_MISSING */
          printHashmapError(error);
          return -1;
      }
@@ -101,7 +108,9 @@ Block* findPageInBuffer(Buffer *buf, int index) {
     }
 }
 
-//intiializes the buffer
+/*initializes the buffer
+ 
+ */
 void initBuffer(Buffer *buf, char *database, int nBlocks) {
     
     //copy database name over
@@ -109,10 +118,12 @@ void initBuffer(Buffer *buf, char *database, int nBlocks) {
     strcpy(buf->database, database);
     
     buf->nBlocks = nBlocks;
+   /* allocate the page arrays for nBlocks pages */
     buf->pages = calloc(nBlocks, sizeof(Block));
-    buf->timestamp = calloc(nBlocks, sizeof(long));
+    buf->timestamp = calloc(nBlocks, sizeof(unsigned long));
     buf->pin = calloc(nBlocks, sizeof(char));
     buf->dirty = calloc(nBlocks, sizeof(char));
+   /* a new buffer has no pages occupied */
     buf->numOccupied = 0;
 }
 
@@ -125,7 +136,9 @@ void freeBuffer(Buffer *buf) {
 	free(buf->dirty);
 }
 
-//unpins all pages and flushes all pages
+/* unpins all pages and flushes all pages
+   called by squash()
+ */
 int cleanupBuffer(Buffer *buf) {
     int i, retVal;
     Block *page;
@@ -165,6 +178,9 @@ int cleanupBuffer(Buffer *buf) {
  * Load any pages that might be needed into the buffer. 
  * In our case, pages needed are:
  *
+ * Commence requires that the buffer be a valid pointer (i.e. retrieved from malloc or 
+ *  the address of a local variable).
+ *
  * Commence returns BFMG_OK upon success, BFMG_ERR upon other failure
  * If more error codes are needed, feel free to #define them
  */
@@ -174,11 +190,12 @@ int commence(char *Database, Buffer *buf, int nBlocks) {
     tfsErr = tfs_mount(Database);
 
     if (tfsErr != 0) {
-        tfs_mkfs(Database, DEFAULT_DISK_SIZE);
+       /* */
+       tfs_mkfs(Database, DEFAULT_DISK_SIZE);
     }
     
     initBuffer(buf, Database, nBlocks);
-	retVal = 0;
+    retVal = BFMG_OK;
 	
     return retVal;
 }
@@ -221,21 +238,46 @@ int squash(Buffer *buf) {
  * readPage guarantees that after its return, the parameter page will be in the 
  * buffer. Further calls can use the other map-access function (not yet defined)
  * to access the page read by this function.
- * returns BFMG_OK if there are no errors and BFMG_ERR if something is wrong.
+ * returns the index of the requested page, or BFMG_ERR if something is wrong.
  * on error, errno is also set
  */
 int readPage(Buffer *buf, DiskAddress diskPage) {
+   /* index is now the index in buffer of that page if it exists,
+    retrieved from the hashmap,
+    and -1 otherwise */
     int index = getIndex(diskPage), retValue;
+   
+   /* not in the hashmap, need to retrieve it from disk */
+   if (index == -1) {
+      
+   }
+   
+    int evictSlot;
+   /* after findPageInBuffer call, pageblock is a ptr to the block or null*/
     Block *pageBlock = findPageInBuffer(buf, index);
     
     //check if theres a page block in the specified location
     if (pageBlock) {
-        retValue = BFMG_OK;
+       retValue = BFMG_OK;
+       
     }
     else {
         retValue = BFMG_ERR;
+       errno =
     }
-    
+   /* if there are empty slots in the buffer, put the new page into the 
+      first empty one */
+   if (buf->numOccupied < buf->nBlocks) {
+      /* numOccupied is the first open index */
+      tfs_readPage()
+   } else {
+      /* something needs to be evicted */
+      evictSlot = evictionPolicy(buf);
+   }
+   
+   
+   
+    buf->timestamp[index] = ops++;
     return retValue;
 }
 
@@ -257,7 +299,7 @@ int writePage(Buffer *buf, DiskAddress diskPage) {
     
     if (pageBlock) {
         buf->dirty[index] = 'T';
-        buf->timestamp[index] = time(NULL);
+        buf->timestamp[index] = ops++;
         retValue = BFMG_OK;
     }
     else {
@@ -393,7 +435,7 @@ void checkpoint(Buffer * buf) {
         else {
             printf("Slot %d:\n", i);
             printf("\ttinyFS blockID: %d\n", buf->pages[i].diskAddress.pageId);
-            printf("\ttimestamps for the block: %ld\n", buf->timestamp[i]);
+            printf("\ttimestamps for the block: %lu\n", buf->timestamp[i]);
             printf("\tpin flag: %d\n", buf->pin[i]);
             printf("\tdirty flag: %d\n", buf->dirty[i]);
         }
@@ -462,6 +504,38 @@ int printBlock(Buffer *buf, DiskAddress diskPage) {
     fwrite(block, BLOCKSIZE, 1, stdout);
     
     return BFMG_OK;
+}
+
+/* 
+ * lru_evict analyzes the state of the input buffer and returns the slot which should be flushed/dropped,
+ * and returns that. Called by readPage
+ * readPage and writePage update the timestamp for
+ * blocks used.
+ * Least Recently Used algorithm finds the oldest
+ * timestamp (i.e. the block which has been inactive
+ * for longest) and returns that index.
+ *
+ **/
+int lru_evict(Buffer *buf) {
+   int i, oldestIndex;
+   unsigned long oldest = 0;
+   
+   if (buf == NULL) {
+      fprintf(stderr, "Null buffer ptr passed to eviction fn\n")
+   }
+   /* find the oldest page by iterating through 
+      timestamps*/
+   for (i = 0; i < buf->nBlocks; i++) {
+      if (buf->timestamp[i] <= oldest) {
+         oldestIndex = i;
+         oldest = buf->timestamp[i];
+      }
+      
+   }
+   
+   printf("oldest slot: %d, with timestamp: %ul\n", oldestIndex, oldest);
+   
+   return oldestIndex;
 }
 
 
