@@ -23,6 +23,7 @@
 		638E34D71CB823C5006530E0 /* libDisk.o */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.objfile"; path = libDisk.o; sourceTree = "<group>"; };
 		638E34D81CB823C5006530E0 /* README */ = {isa = PBXFileReference; lastKnownFileType = text; path = README; sourceTree = "<group>"; };
 		638E34D91CB823C5006530E0 /* TestHarness.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = TestHarness.c; sourceTree = "<group>"; };
+		CBC418B91CBF1B2D00EAA309 /* testBufferManager.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = testBufferManager.c; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
@@ -45,6 +46,7 @@
 				0FB6CF4C1CBAF425007B9F6E /* smartalloc.c */,
 				0FB6CF4D1CBAF425007B9F6E /* smartalloc.h */,
 				0FB6CF4F1CBAF45D007B9F6E /* libTinyFS.o */,
+				CBC418B91CBF1B2D00EAA309 /* testBufferManager.c */,
 			);
 			sourceTree = "<group>";
 		};
