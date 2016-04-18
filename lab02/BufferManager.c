@@ -94,7 +94,7 @@ int putIndex(DiskAddress diskAdd, int index) {
 //finds whether or not there is a Block in the page location specified in the buffer
 Block* findPageInBuffer(Buffer *buf, int index) {
     if (index >= 0 && index < buf->nBlocks) {
-        return &(buf->pages[index]);
+        return buf->pages[index];
     }
     else {
         return NULL;
@@ -109,49 +109,48 @@ void initBuffer(Buffer *buf, char *database, int nBlocks) {
     strcpy(buf->database, database);
     
     buf->nBlocks = nBlocks;
-    buf->pages = calloc(nBlocks, sizeof(Block));
+    buf->pages = calloc(nBlocks, sizeof(Block*));
     buf->timestamp = calloc(nBlocks, sizeof(long));
     buf->pin = calloc(nBlocks, sizeof(char));
     buf->dirty = calloc(nBlocks, sizeof(char));
     buf->numOccupied = 0;
 }
 
-//frees everything associated with the buffer
-void freeBuffer(Buffer *buf) {
-	free(buf->database);
-	free(buf->pages);
-	free(buf->timestamp);
-	free(buf->pin);
-	free(buf->dirty);
-}
-
-//unpins all pages and flushes all pages
+//unpins all pages, flushes all pages and frees all data
 int cleanupBuffer(Buffer *buf) {
-    int i, retVal;
-    Block *page;
+    int i;
+    Block *pageBlock;
         
-    //unpin all pages and flush pages
     for (i = 0; i < buf->nBlocks; i++) {
-    	page = findPageInBuffer(buf, i);
+    	pageBlock = buf->pages[i];
     	
     	if (page != NULL) {
-    		if (buf->pin[i] == 'T') {
+    		//unpin page
+            if (buf->pin[i] == 'T') {
         		buf->pin[i] = 'F';
        		}
        		
        		//flush if dirty
        		if (buf->dirty[i] == 'T') {
-       			printf("Flushing dirty page %d\n", i);
-       			retVal = flushPage(buf, page->diskAddress);
+       			tfs_writePage(pageBlock->diskAddress.FD, pageBlock->diskAddress.pageId, pageBlock->block);
+                buf->dirty[i] = 'F';
        		}
+            
+            //free the page
+            free(pageBlock);
+            buf->pages[i] = NULL;
     	}
     }
     
     //clear buffer 
-    freeBuffer(buf);
+    free(buf->database);
+    free(buf->pages);
+    free(buf->timestamp);
+    free(buf->pin);
+    free(buf->dirty);
     free(buf);
     
-    return retVal;
+    return BFMG_OK;
 }
 
 /**
@@ -175,6 +174,7 @@ int commence(char *Database, Buffer *buf, int nBlocks) {
 
     if (tfsErr != 0) {
         tfs_mkfs(Database, DEFAULT_DISK_SIZE);
+        //do we need to mount it here?
     }
     
     initBuffer(buf, Database, nBlocks);
@@ -279,7 +279,21 @@ int writePage(Buffer *buf, DiskAddress diskPage) {
  * on error, errno is also set
  */
 int flushPage(Buffer *buf, DiskAddress diskPage) {
-    return 0;
+    int index = getIndex(diskPage);
+    Block *pageBlock = findPageInBuffer(buf, index);
+
+    //Exits if page is not in the buffer
+    if (!pageBlock) {
+        return BFMG_ERR;
+    }
+    
+    //Writes the selected page's data to disk
+    tfs_writePage(pageBlock->diskAddress.FD, pageBlock->diskAddress.pageId, pageBlock->block);
+    
+    //Unset dirty flag
+    buf->dirty[index] = 'F';
+    
+    return BFMG_OK;
 }
 
 /**
@@ -340,12 +354,124 @@ int unPinPage(Buffer *buf, DiskAddress diskPage) {
  * \param FD        the descriptor of the file the new page belongs to
  * \param diskPage  tinyFS id of the disk page to be flushed
  *
- * This functoin discovers the next "open" tinyFS page Id in a given file and
+ * This function discovers the next "open" tinyFS page Id in a given file and
  * creates a tinyFS page with this ID on the tinyFS disk.
  *
  * returns BFMG_OK if there are no errors and BFMG_ERR if there is an error.
  * on error, errno is also set
  */
 int newPage(Buffer *buf, fileDescriptor FD, DiskAddress *diskPage) {
+    Block *pageBlock = calloc(1, sizeof(Block));
+    
+    diskPage->FD = FD;
+    diskPage->pageId = tfs_numPages(FD) + 1;
+    
+    tfs_writePage(FD, diskPage->pageId, pageBlock->block);
+    
+    //do eviction
+    
+    
     return 0;
 }
+
+/**
+ * This function prints the current state of the buffer.
+ * \param buf       the buffer structure
+ *
+ * Prints general information about the buffer is printed:
+ *    what disk it is associated with
+ *    slot ussage counts
+ *
+ * For each disk slot the following is printed:
+ *    tinyFS blockID (indicates if empty)
+ *    timestamps for the block
+ *    pin flag
+ *    dirty flag
+ *    any other attributes about the slot
+ */
+void checkpoint(Buffer * buf) {
+    int i;
+    
+    printf("Disk: %s\n", buf->database);
+    printf("Slots Occupied: %d\n", buf->numOccupied);
+    
+    
+    for(i=0; i < buf->nBlocks; i++) {
+        if(i > buf->numOccupied) {
+            printf("Slot %d is empty\n", i);
+        }
+        else {
+            printf("Slot %d:\n", i);
+            printf("\ttinyFS blockID: %d\n", buf->pages[i]->diskAddress.pageId);
+            printf("\ttimestamps for the block: %ld\n", buf->timestamp[i]);
+            printf("\tpin flag: %d\n", buf->pin[i]);
+            printf("\tdirty flag: %d\n", buf->dirty[i]);
+        }
+    }
+}
+
+/**
+ * This function prints the of contents of a page at the specified buffer slot.
+ * \param buf       the buffer structure
+ * \param diskPage  the index of a buffer slot
+ *
+ * returns BFMG_OK if the slot exists and BFMG_ERR if it does not.
+ */
+int pageDump(Buffer *buf, int index) {
+    if (index >= 0 && index < buf->nBlocks) {
+        fwrite(&(buf->pages[index]), BLOCKSIZE, 1, stdout);
+        return BFMG_OK;
+    }
+    
+    return BFMG_ERR;
+}
+
+/**
+ * This function prints the of contents of the specified diskPage.
+ * \param buf       the buffer structure
+ * \param index     tinyFS id of the disk page to print
+ *
+ * if page is in buffer it is printed
+ * if page does not exist an error is printed
+ * if page exits but it's not in the buffer an error is printed
+ *
+ * returns BFMG_OK if there are no errors and BFMG_ERR if there is an error.
+ */
+int printPage(Buffer *buf, DiskAddress diskPage) {
+    int index = getIndex(diskPage);
+    int numpages = tfs_numPages(diskPage.FD);
+    
+    if(diskPage.pageId > numpages) {
+        printf("Page does not exist on disk");
+        return BFMG_ERR;
+    }
+       
+    if(index == -1) {
+        printf("Page not found in buffer");
+        return BFMG_ERR;
+    }
+    
+    Block *pageBlock = findPageInBuffer(buf, index);
+    fwrite(pageBlock, BLOCKSIZE, 1, stdout);
+    
+    return BFMG_OK;
+}
+
+/**
+ * This function prints the of contents of the specified diskPage directly from the tinyFS disk.
+ * \param buf       the buffer structure
+ * \param index     tinyFS id of the disk page to print
+ *
+ * returns BFMG_OK if there are no errors and BFMG_ERR if there is an error.
+ */
+int printBlock(Buffer *buf, DiskAddress diskPage) {
+    unsigned char block[BLOCKSIZE];
+    
+    tfs_readPage(diskPage.FD, diskPage.pageId, block);
+    
+    fwrite(block, BLOCKSIZE, 1, stdout);
+    
+    return BFMG_OK;
+}
+
+

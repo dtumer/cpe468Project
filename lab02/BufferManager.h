@@ -16,7 +16,7 @@ typedef struct DiskAddress {
 
 //structure defining a block in the buffer
 typedef struct Block {
-   char block[BLOCKSIZE];
+   unsigned char block[BLOCKSIZE];
    DiskAddress diskAddress;
 } Block;
 
@@ -24,7 +24,7 @@ typedef struct Block {
 typedef struct Buffer {
    char *database;
    int nBlocks;
-   Block *pages;
+   Block **pages;
    long *timestamp;
    char *pin;
    char *dirty;
@@ -39,3 +39,9 @@ int flushPage(Buffer *buf, DiskAddress diskPage);
 int pinPage(Buffer *buf, DiskAddress diskPage);
 int unPinPage(Buffer *buf, DiskAddress diskPage);
 int newPage(Buffer *buf, fileDescriptor FD, DiskAddress *diskPage);
+
+//test functions
+void checkpoint(Buffer * buf);
+int pageDump(Buffer *buf, int index);
+int printPage(Buffer *buf, DiskAddress diskPage);
+int printBlock(Buffer *buf, DiskAddress diskPage);
