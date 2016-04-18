@@ -17,6 +17,8 @@ static unsigned long ops = 0;
 
 //global map variable for holding references to disk addresses and their location in the buffer
 map_t diskMap;
+/* used for looking up the (fd, page) pair for a page in the index */
+map_t reverseMap;
 
 //returns the number of digits in a number
 int numDigits(int n) {
@@ -59,7 +61,16 @@ char* diskAddressToString(DiskAddress diskAdd) {
     return str;
 }
 
-//This function wraps the hashmap get function for ease of use in this file
+/* return a string representation of the given int, so that it can be 
+ used as a key in reverseMap */
+char *indexToString(int index) {
+   char *str = calloc(numDigits(index) + 1, sizeof(char));
+   sprintf(str, "%d", index);
+   return str;
+}
+
+/* This function wraps the hashmap get function for ease of use in this file
+   Used for looking up the index in buffer of a given page */
 int getIndex(DiskAddress diskAdd) {
      char *diskStr;
      int *retValue, error;
@@ -98,6 +109,77 @@ int putIndex(DiskAddress diskAdd, int index) {
     }
 }
 
+/* put an (index, {page, fd} ) pair in the reverse map */
+int putReverse(int index, DiskAddress diskAdd) {
+   char *key = indexToString(index);
+   DiskAddress *copyPtr = malloc(sizeof(DiskAddress));
+   copyPtr->FD = diskAdd.FD;
+   copyPtr->pageId = diskAdd.pageId;
+   int error;
+   
+   error = hashmap_put(reverseMap, key, copyPtr);
+   free(key);
+   
+   if (error == MAP_OK) {
+      return BFMG_OK;
+   } else {
+      printHashmapError(error);
+      return BFMG_ERR;
+   }
+}
+
+/* find the DiskAddress associated with an index in the reverse lookup map*/
+int getReverse(int index, DiskAddress **ptr) {
+   char *key = indexToString(index);
+   int error;
+   
+   error = hashmap_get(reverseMap, key, ptr);
+   free(key);
+   if (error != MAP_OK) {
+      printHashmapError(error);
+      return BFMG_ERR;
+   }
+   
+   return BFMG_OK;
+}
+
+/* remove an (index, {fd, page} ) pair from the reverse map */
+int removeReverse(int index) {
+   char *key = indexToString(index);
+   int error;
+
+   error = hashmap_remove(reverseMap, key);
+   free(key);
+   /* addr was allocated by putReverse */
+   free(addr);
+   
+   if (error != MAP_OK) {
+      printHashmapError(error);
+      
+      return BFMG_ERR;
+   }
+   
+   return BFMG_OK;
+}
+
+/* remove a key from the hashmap */
+int removeIndex(DiskAddress diskAdd) {
+   char *diskStr;
+   int error;
+   
+   diskStr = diskAddressToString(diskAdd);
+   error = hashmap_remove(diskMap, diskStr);
+   free(diskStr);
+   
+   /* print error if there is one */
+   if (error != MAP_OK) {
+      printHashmapError(error);
+      return BFMG_ERR;
+   } else {
+      return BFMG_OK;
+   }
+}
+
 //finds whether or not there is a Block in the page location specified in the buffer
 Block* findPageInBuffer(Buffer *buf, int index) {
     if (index >= 0 && index < buf->nBlocks) {
@@ -125,6 +207,10 @@ void initBuffer(Buffer *buf, char *database, int nBlocks) {
     buf->dirty = calloc(nBlocks, sizeof(char));
    /* a new buffer has no pages occupied */
     buf->numOccupied = 0;
+   
+   /* initialize the hashmap */
+   diskMap = hashmap_new();
+   reverseMap = hashmap_new();
 }
 
 //frees everything associated with the buffer
@@ -242,42 +328,59 @@ int squash(Buffer *buf) {
  * on error, errno is also set
  */
 int readPage(Buffer *buf, DiskAddress diskPage) {
+   int result;
+   int evictSlot, test;
+   DiskAddress *occupant;
    /* index is now the index in buffer of that page if it exists,
-    retrieved from the hashmap,
-    and -1 otherwise */
-    int index = getIndex(diskPage), retValue;
+   retrieved from the hashmap,
+   and -1 otherwise */
+   int index = getIndex(diskPage), retValue, slotToFill;
    
    /* not in the hashmap, need to retrieve it from disk */
    if (index == -1) {
-      
-   }
-   
-    int evictSlot;
-   /* after findPageInBuffer call, pageblock is a ptr to the block or null*/
-    Block *pageBlock = findPageInBuffer(buf, index);
-    
-    //check if theres a page block in the specified location
-    if (pageBlock) {
-       retValue = BFMG_OK;
-       
-    }
-    else {
-        retValue = BFMG_ERR;
-       errno =
-    }
-   /* if there are empty slots in the buffer, put the new page into the 
+      /* if there are empty slots in the buffer, put the new page into the
       first empty one */
-   if (buf->numOccupied < buf->nBlocks) {
-      /* numOccupied is the first open index */
-      tfs_readPage()
+      if (buf->numOccupied < buf->nBlocks) {
+         /* numOccupied is the first open index */
+         slotToFill = numOccupied;
+      } else {
+         /* something needs to be evicted */
+         evictSlot = evictionPolicy(buf);
+         /* flush the page, and update the maps */
+         result = getReverse(evictSlot, &occupant);
+         if (result != BFMG_OK) {
+            fprintf(stderr, "reverse map lookup failed\n");
+         }
+         /* test to make sure the maps are the same */
+         result = getIndex(*occupant);
+         if (result != evictSlot) {
+            fprintf(stderr, "reverse map and index map are inconsistent\n");
+         }
+         
+         flushPage(buf, *occupant);
+         removeIndex(*occupant);
+         removeReverse(evictSlot);
+         /* and update the slot */
+         slotToFill = evictSlot;
+      }
+      
+      result = tfs_readPage(diskPage.FD, diskPage.pageId,
+                             buffer->pages[slotToFill]);
+      if (result != 0) {
+         putIndex(diskPage, slotToFill);
+         printf("putting ( {%d, %d} -> %d) in map\n", diskPage.FD, diskPage.pageId,
+                slotToFill);
+         putReverse(slotToFill, diskPage);
+         printf("put (%d -> {%d, %d}) in reverse map\n", slotToFill, diskPage.FD, diskPage.pageId);
+      }
+      retValue = slotToFill;
+      buf->timestamp[slotToFill] = ops++;
    } else {
-      /* something needs to be evicted */
-      evictSlot = evictionPolicy(buf);
+      /* page already in buffer */
+      retValue = index;
+      buf->timestamp[index] = ops++;
    }
-   
-   
-   
-    buf->timestamp[index] = ops++;
+
     return retValue;
 }
 
