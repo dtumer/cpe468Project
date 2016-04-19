@@ -29,6 +29,9 @@ testHashmap: testHashmap.c
 	$(CC) $(CFLAGS) -o testHashmap hashmap.c testHashmap.c smartalloc.c
 
 cleanTestHarness:
-	rm TestHarness 
+	rm TestHarness
+
+handin:
+	handin dekhtyar 468-lab2 *.c *.h Makefile README
 
 clean: cleanTestHarness
