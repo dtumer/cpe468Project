@@ -267,9 +267,50 @@ int squash(Buffer *buf) {
 /* evictPage takes a page to load into the buffer, uses the 
    eviction algorithm to find and remove a page (flushing it if necessary),
    and places the input page at the correct spot. */
-int evictPage(Buffer *buf, Block *newBlock) {
+int placePageInBuffer(Buffer *buf, Block *newBlock) {
+   int index, toEvict, insertNdx, result, retval;
+   /* if there are empty buffer slots, put the page in the first empty one.
+      if not, ask the eviction policy.
+    Priority for eviction:
+    1. Unpinned dirty pages (flush and replace)
+    2. If none of those, pick from the unpinned, un-dirty pages and ask the eviction policy (for now, LRU)  */
+   index = getIndex(newBlock->diskAddress);
+   if (index == -1) {
+      /* need to fetch it */
+      if (buf->numOccupied < buf->nBlocks) {
+         /* numOccupied is the first open index */
+         insertNdx = buf->numOccupied;
+         buf->numOccupied++;
+      } else {
+         /* these calls will be replaced by evictPage */
+         toEvict = evictionPolicy(buf);
+         /* flush the page, and update the map */
+         if (buf->dirty[evictSlot] == 'T') {
+            if (flushPage(buf, buf->pages[toEvict]->diskAddress) == BFMG_ERR) {
+               fprintf(stderr, "placePageInBuffer: failed to flush dirty page\n");
+               return BFMG_ERR;
+            }
+         }
+         removeIndex(buf->pages[toEvict]->diskAddress);
+         fprintf(stderr, "info: freeing the page at %d\n", toEvict);
+         free(buf->pages[toEvict]);
+         
+         insertNdx = evictSlot;
+      }
+      buf->pages[insertNdx] = newBlock;
+      buf->pin[insertNdx] = 'F';
+      buf->dirty[insertNdx] = 'F';
+      buf->timestamp[insertNdx] = ops++;
+      putIndex(buf->pages[insertNdx]->diskAddress);
+      
+      retval = insertNdx;
+   } else {
+      buf->timestamp[index] = ops++;
+      
+      retval = index;
+   }
    
-   return BFMG_OK;
+   return retval;
 }
 
 /**
@@ -286,43 +327,25 @@ int evictPage(Buffer *buf, Block *newBlock) {
 int readPage(Buffer *buf, DiskAddress diskPage) {
    int result;
    int evictSlot, test;
-   DiskAddress *occupant;
-   /* index is now the index in buffer of that page if it exists,
-   retrieved from the hashmap,
-   and -1 otherwise */
-   int index = getIndex(diskPage), retValue, slotToFill;
+   int existingIndex;
+   Block *newBlock;
    
-   /* not in the hashmap, need to retrieve it from disk */
+   existingIndex = getIndex(diskPage);
    if (index == -1) {
-      /* if there are empty slots in the buffer, put the new page into the
-      first empty one */
-      if (buf->numOccupied < buf->nBlocks) {
-         /* numOccupied is the first open index */
-         slotToFill = buf->numOccupied;
-      } else {
-         /* something needs to be evicted */
-         evictSlot = evictionPolicy(buf);
-         /* flush the page, and update the map */
-         flushPage(buf, buf->pages[evictSlot]->diskAddress);
-         removeIndex(buf->pages[evictSlot]->diskAddress);
-         /* and update the slot */
-         slotToFill = evictSlot;
+      newBlock = malloc(sizeof(Block));
+      newBlock->diskAddress = diskPage;
+      
+      result = tfs_readPage(diskPage.FD, diskPage.pageId,
+                            newBlock->block);
+      if (result != 0) {
+         fprintf(stderr, "tfs_readPage returned %d\n", result);
       }
       
-      result = tfs_readPage(diskPage.FD, diskPage.pageId, buf->pages[slotToFill]->block);
-      if (result != 0) {
-         putIndex(diskPage, slotToFill);
-         printf("putting ( {%d, %d} -> %d) in map\n", diskPage.FD, diskPage.pageId, slotToFill);
-      }
-      retValue = slotToFill;
-      buf->timestamp[slotToFill] = ops++;
-   } else {
-      /* page already in buffer */
-      retValue = index;
-      buf->timestamp[index] = ops++;
+      result = placePageInBuffer(buf, newBlock);
    }
 
-    return retValue;
+
+   return result;
 }
 
 /**
@@ -569,27 +592,47 @@ int printBlock(Buffer *buf, DiskAddress diskPage) {
  * timestamp (i.e. the block which has been inactive
  * for longest) and returns that index.
  *
+ * Priority:
+ * 1. Unpinned dirty pages (flush and replace)
+ * 2. If none of those, pick from the unpinned, un-dirty pages.  */
  **/
 int lru_evict(Buffer *buf) {
    int i, oldestIndex;
-   unsigned long oldest = 0;
-   
+   /* oldest clean/dirty pages- start from current operation count */
+   unsigned long oldestDirtyPage = ops + 1, oldestCleanPage = ops + 1;
+   int oldestDirtyIndex = -1, oldestCleanIndex = -1;
    if (buf == NULL) {
        fprintf(stderr, "Null buffer ptr passed to eviction fn\n");
    }
-   /* find the oldest page by iterating through 
+   /* find the oldest pages by iterating through
       timestamps*/
    for (i = 0; i < buf->nBlocks; i++) {
-      if (buf->timestamp[i] <= oldest && buf->pin[i] != 'T') {
-         oldestIndex = i;
-         oldest = buf->timestamp[i];
+      if (buf->pin[i] == 'F') {
+         if (buf->dirty[i] == 'T' && buf->timestamp[i] < oldestDirtyPage) {
+            oldestDirtyPage = buf->timestamp[i];
+            oldestDirtyIndex = i;
+         }
+         if (buf->dirty[i] == 'F' && buf->timestamp[i] < oldestCleanPage) {
+            oldestCleanPage = buf->timestamp[i];
+            oldestCleanIndex = i;
+         }
       }
       
    }
    
-   printf("oldest slot: %d, with timestamp: %lu\n", oldestIndex, oldest);
-   
-   return oldestIndex;
+   if (buf->numOccupied < buf->nBlocks) {
+      fprintf(stderr, "WARNING: lru_evict called on a non-full buffer\n");
+   }
+   /* if there is an unpinned dirty page */
+   if (oldestDirtyPage != ops + 1) {
+      printf("oldest slot: %d (dirty), with timestamp: %lu\n",
+             oldestDirtyIndex, oldestDirtyPage);
+      return oldestDirtyIndex;
+   } else {
+      printf("oldest slot: %d (clean), with timestamp: %lu\n",
+             oldestCleanIndex, oldestCleanPage);
+      return oldestCleanIndex;
+   }
 }
 
 
