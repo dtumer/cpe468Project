@@ -285,7 +285,7 @@ int placePageInBuffer(Buffer *buf, Block *newBlock) {
          /* these calls will be replaced by evictPage */
          toEvict = evictionPolicy(buf);
          /* flush the page, and update the map */
-         if (buf->dirty[evictSlot] == 'T') {
+         if (buf->dirty[toEvict] == 'T') {
             if (flushPage(buf, buf->pages[toEvict]->diskAddress) == BFMG_ERR) {
                fprintf(stderr, "placePageInBuffer: failed to flush dirty page\n");
                return BFMG_ERR;
@@ -295,18 +295,20 @@ int placePageInBuffer(Buffer *buf, Block *newBlock) {
          fprintf(stderr, "info: freeing the page at %d\n", toEvict);
          free(buf->pages[toEvict]);
          
-         insertNdx = evictSlot;
+         insertNdx = toEvict;
       }
       buf->pages[insertNdx] = newBlock;
       buf->pin[insertNdx] = 'F';
       buf->dirty[insertNdx] = 'F';
       buf->timestamp[insertNdx] = ops++;
-      putIndex(buf->pages[insertNdx]->diskAddress);
+      putIndex(buf->pages[insertNdx]->diskAddress, insertNdx);
       
       retval = insertNdx;
    } else {
       buf->timestamp[index] = ops++;
-      
+      if (newBlock != NULL) {
+         fprintf(stderr, "warn: allocated block passed to placePageInBuffer for an existing page\n");
+      }
       retval = index;
    }
    
@@ -326,12 +328,11 @@ int placePageInBuffer(Buffer *buf, Block *newBlock) {
  */
 int readPage(Buffer *buf, DiskAddress diskPage) {
    int result;
-   int evictSlot, test;
    int existingIndex;
    Block *newBlock;
    
    existingIndex = getIndex(diskPage);
-   if (index == -1) {
+   if (existingIndex == -1) {
       newBlock = malloc(sizeof(Block));
       newBlock->diskAddress = diskPage;
       
@@ -340,9 +341,9 @@ int readPage(Buffer *buf, DiskAddress diskPage) {
       if (result != 0) {
          fprintf(stderr, "tfs_readPage returned %d\n", result);
       }
-      
-      result = placePageInBuffer(buf, newBlock);
    }
+   
+   result = placePageInBuffer(buf, newBlock);
 
 
    return result;
@@ -595,7 +596,6 @@ int printBlock(Buffer *buf, DiskAddress diskPage) {
  * Priority:
  * 1. Unpinned dirty pages (flush and replace)
  * 2. If none of those, pick from the unpinned, un-dirty pages.  */
- **/
 int lru_evict(Buffer *buf) {
    int i, oldestIndex;
    /* oldest clean/dirty pages- start from current operation count */
