@@ -2,6 +2,8 @@
 #include "libTinyFS.h"
 #include "libDisk.h"
 
+
+
 #define MAX_BUFFER_SIZE 1024
 
 /* Error code definitions */
@@ -25,11 +27,14 @@ typedef struct Buffer {
    char *database;
    int nBlocks;
    Block **pages;
-   long *timestamp;
+   unsigned long *timestamp;
    char *pin;
    char *dirty;
    int numOccupied;
 } Buffer;
+
+/* function type for eviction policy */
+typedef int (*evictFn)(Buffer *);
 
 int commence(char *database, Buffer *buf, int nBlocks);
 int squash(Buffer *buf);
