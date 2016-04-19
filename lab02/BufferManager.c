@@ -268,7 +268,7 @@ int squash(Buffer *buf) {
    eviction algorithm to find and remove a page (flushing it if necessary),
    and places the input page at the correct spot. */
 int placePageInBuffer(Buffer *buf, Block *newBlock) {
-   int index, toEvict, insertNdx, result, retval;
+   int index, toEvict, insertNdx, retval;
    /* if there are empty buffer slots, put the page in the first empty one.
       if not, ask the eviction policy.
     Priority for eviction:
@@ -597,7 +597,7 @@ int printBlock(Buffer *buf, DiskAddress diskPage) {
  * 1. Unpinned dirty pages (flush and replace)
  * 2. If none of those, pick from the unpinned, un-dirty pages.  */
 int lru_evict(Buffer *buf) {
-   int i, oldestIndex;
+   int i;
    /* oldest clean/dirty pages- start from current operation count */
    unsigned long oldestDirtyPage = ops + 1, oldestCleanPage = ops + 1;
    int oldestDirtyIndex = -1, oldestCleanIndex = -1;
