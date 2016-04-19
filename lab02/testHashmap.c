@@ -41,12 +41,13 @@ int main(int argv, char *argc[]) {
    map_t diskMap;
    DiskAddress *value;
    char *diskAdd;
-   int error, index, *retValue;
+   int error, *index, *retValue;
 
    value = calloc(1, sizeof(DiskAddress));
    value->FD = 1;
    value->pageId = 3;
-   index = 23;
+   index = malloc(sizeof(int));
+   *index = 23;
 
    //create hashmap
    diskMap = hashmap_new();
@@ -54,7 +55,7 @@ int main(int argv, char *argc[]) {
    //create string key from the diskaddress
    diskAdd = diskAddressToString(*value);
    //store index value into hashmap
-   error = hashmap_put(diskMap, diskAdd, &index);
+   error = hashmap_put(diskMap, diskAdd, index);
    
    //get the value from the hashmap
    error = hashmap_get(diskMap, diskAdd, (void**)&retValue);
@@ -62,7 +63,19 @@ int main(int argv, char *argc[]) {
    free(diskAdd);
 
    printf("INDEX: %d\n", *retValue);
-
+   
+   
+   diskAdd = diskAddressToString(*value);
+   printf("hashmap size before remove: %d\n", hashmap_length(diskMap));
+  
+   
+   
+   error = hashmap_get(diskMap, diskAdd, (void **)&retValue);
+   printf("error should be 0: %d\n", error);
+   error = hashmap_remove(diskMap, diskAdd);
+   free(diskAdd);
+   printf("hashmap size after remove: %d\n", hashmap_length(diskMap));
+   free(index);
    hashmap_free(diskMap);
    free(value);
    
