@@ -6,7 +6,7 @@
 #include "BufferManager.h"
 #include "hashmap.h"
 #include "smartalloc.h"
-#include "BasicList.h"
+
 
 int lru_evict(Buffer *buf);
 /* type for a replacement policy function 
@@ -172,7 +172,7 @@ int cleanupBuffer(Buffer *buf) {
     for (i = 0; i < buf->nBlocks; i++) {
     	pageBlock = buf->pages[i];
     	
-    	if (page != NULL) {
+    	if (pageBlock != NULL) {
     		//unpin page
             if (buf->pin[i] == 'T') {
         		buf->pin[i] = 'F';
@@ -298,23 +298,21 @@ int readPage(Buffer *buf, DiskAddress diskPage) {
       first empty one */
       if (buf->numOccupied < buf->nBlocks) {
          /* numOccupied is the first open index */
-         slotToFill = numOccupied;
+         slotToFill = buf->numOccupied;
       } else {
          /* something needs to be evicted */
          evictSlot = evictionPolicy(buf);
          /* flush the page, and update the map */
-         flushPage(buf, buf->pages[evictSlot].diskAddress);
-         removeIndex(buf->pages[evictSlot].diskAddress);
+         flushPage(buf, buf->pages[evictSlot]->diskAddress);
+         removeIndex(buf->pages[evictSlot]->diskAddress);
          /* and update the slot */
          slotToFill = evictSlot;
       }
       
-      result = tfs_readPage(diskPage.FD, diskPage.pageId,
-                             buffer->pages[slotToFill]);
+      result = tfs_readPage(diskPage.FD, diskPage.pageId, buf->pages[slotToFill]->block);
       if (result != 0) {
          putIndex(diskPage, slotToFill);
-         printf("putting ( {%d, %d} -> %d) in map\n", diskPage.FD, diskPage.pageId,
-                slotToFill);
+         printf("putting ( {%d, %d} -> %d) in map\n", diskPage.FD, diskPage.pageId, slotToFill);
       }
       retValue = slotToFill;
       buf->timestamp[slotToFill] = ops++;
@@ -577,7 +575,7 @@ int lru_evict(Buffer *buf) {
    unsigned long oldest = 0;
    
    if (buf == NULL) {
-      fprintf(stderr, "Null buffer ptr passed to eviction fn\n")
+       fprintf(stderr, "Null buffer ptr passed to eviction fn\n");
    }
    /* find the oldest page by iterating through 
       timestamps*/
@@ -589,7 +587,7 @@ int lru_evict(Buffer *buf) {
       
    }
    
-   printf("oldest slot: %d, with timestamp: %ul\n", oldestIndex, oldest);
+   printf("oldest slot: %d, with timestamp: %lu\n", oldestIndex, oldest);
    
    return oldestIndex;
 }

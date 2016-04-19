@@ -34,7 +34,7 @@ typedef struct Buffer {
 } Buffer;
 
 /* function type for eviction policy */
-typedef int (*findEvict)(Buffer *) evictFn;
+typedef int (*evictFn)(Buffer *);
 
 int commence(char *database, Buffer *buf, int nBlocks);
 int squash(Buffer *buf);
