@@ -266,7 +266,8 @@ int squash(Buffer *buf) {
 
 /* evictPage takes a page to load into the buffer, uses the 
    eviction algorithm to find and remove a page (flushing it if necessary),
-   and places the input page at the correct spot. */
+   and places the input page at the correct spot. 
+   It also free()s the page if one is evicted. */
 int placePageInBuffer(Buffer *buf, Block *newBlock) {
    int index, toEvict, insertNdx, retval;
    /* if there are empty buffer slots, put the page in the first empty one.
@@ -471,6 +472,7 @@ int unPinPage(Buffer *buf, DiskAddress diskPage) {
  * on error, errno is also set
  */
 int newPage(Buffer *buf, fileDescriptor FD, DiskAddress *diskPage) {
+    int result;
     Block *pageBlock = calloc(1, sizeof(Block));
     
     diskPage->FD = FD;
@@ -479,8 +481,8 @@ int newPage(Buffer *buf, fileDescriptor FD, DiskAddress *diskPage) {
     tfs_writePage(FD, diskPage->pageId, pageBlock->block);
     
     //do eviction
-    
-    
+    result = placePageInBuffer(buf, pageBlock);
+   
     return 0;
 }
 
