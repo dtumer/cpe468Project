@@ -6,13 +6,14 @@
 #include "BufferManager.h"
 #include "hashmap.h"
 #include "smartalloc.h"
+#include "BasicList.h"
 
 int lru_evict(Buffer *buf);
 /* type for a replacement policy function 
    It returns the buffer index of the page that should be evicted */
 static evictFn evictionPolicy = lru_evict;
 /* using an operation counter rather than a timestamp because it's simpler*/
-/* change to timevals, and alter the buffer struct accordingly?*/
+/* TODO? change to timevals, and alter the buffer struct accordingly?*/
 static unsigned long ops = 0;
 
 //global map variable for holding references to disk addresses and their location in the buffer
@@ -107,59 +108,6 @@ int putIndex(DiskAddress diskAdd, int index) {
     else {
         return 0;
     }
-}
-
-/* put an (index, {page, fd} ) pair in the reverse map */
-int putReverse(int index, DiskAddress diskAdd) {
-   char *key = indexToString(index);
-   DiskAddress *copyPtr = malloc(sizeof(DiskAddress));
-   copyPtr->FD = diskAdd.FD;
-   copyPtr->pageId = diskAdd.pageId;
-   int error;
-   
-   error = hashmap_put(reverseMap, key, copyPtr);
-   free(key);
-   
-   if (error == MAP_OK) {
-      return BFMG_OK;
-   } else {
-      printHashmapError(error);
-      return BFMG_ERR;
-   }
-}
-
-/* find the DiskAddress associated with an index in the reverse lookup map*/
-int getReverse(int index, DiskAddress **ptr) {
-   char *key = indexToString(index);
-   int error;
-   
-   error = hashmap_get(reverseMap, key, ptr);
-   free(key);
-   if (error != MAP_OK) {
-      printHashmapError(error);
-      return BFMG_ERR;
-   }
-   
-   return BFMG_OK;
-}
-
-/* remove an (index, {fd, page} ) pair from the reverse map */
-int removeReverse(int index) {
-   char *key = indexToString(index);
-   int error;
-
-   error = hashmap_remove(reverseMap, key);
-   free(key);
-   /* addr was allocated by putReverse */
-   free(addr);
-   
-   if (error != MAP_OK) {
-      printHashmapError(error);
-      
-      return BFMG_ERR;
-   }
-   
-   return BFMG_OK;
 }
 
 /* remove a key from the hashmap */
@@ -346,20 +294,9 @@ int readPage(Buffer *buf, DiskAddress diskPage) {
       } else {
          /* something needs to be evicted */
          evictSlot = evictionPolicy(buf);
-         /* flush the page, and update the maps */
-         result = getReverse(evictSlot, &occupant);
-         if (result != BFMG_OK) {
-            fprintf(stderr, "reverse map lookup failed\n");
-         }
-         /* test to make sure the maps are the same */
-         result = getIndex(*occupant);
-         if (result != evictSlot) {
-            fprintf(stderr, "reverse map and index map are inconsistent\n");
-         }
-         
-         flushPage(buf, *occupant);
-         removeIndex(*occupant);
-         removeReverse(evictSlot);
+         /* flush the page, and update the map */
+         flushPage(buf, buf->pages[evictSlot].diskAddress);
+         removeIndex(buf->pages[evictSlot].diskAddress);
          /* and update the slot */
          slotToFill = evictSlot;
       }
@@ -370,8 +307,6 @@ int readPage(Buffer *buf, DiskAddress diskPage) {
          putIndex(diskPage, slotToFill);
          printf("putting ( {%d, %d} -> %d) in map\n", diskPage.FD, diskPage.pageId,
                 slotToFill);
-         putReverse(slotToFill, diskPage);
-         printf("put (%d -> {%d, %d}) in reverse map\n", slotToFill, diskPage.FD, diskPage.pageId);
       }
       retValue = slotToFill;
       buf->timestamp[slotToFill] = ops++;
@@ -629,7 +564,7 @@ int lru_evict(Buffer *buf) {
    /* find the oldest page by iterating through 
       timestamps*/
    for (i = 0; i < buf->nBlocks; i++) {
-      if (buf->timestamp[i] <= oldest) {
+      if (buf->timestamp[i] <= oldest && buf->pin[i] != 'T') {
          oldestIndex = i;
          oldest = buf->timestamp[i];
       }
