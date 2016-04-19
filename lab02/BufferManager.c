@@ -264,6 +264,14 @@ int squash(Buffer *buf) {
     return retVal;
 }
 
+/* evictPage takes a page to load into the buffer, uses the 
+   eviction algorithm to find and remove a page (flushing it if necessary),
+   and places the input page at the correct spot. */
+int evictPage(Buffer *buf, Block *newBlock) {
+   
+   return BFMG_OK;
+}
+
 /**
  * This function provides read access to the specified block of the disk.
  * \param buf       the currently used buffer struct
