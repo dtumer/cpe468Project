@@ -351,19 +351,17 @@ int readPage(Buffer *buf, DiskAddress diskPage) {
  * on error, errno is also set
  */
 int writePage(Buffer *buf, DiskAddress diskPage) {
-    int index = getIndex(diskPage), retValue;
+    int index = getIndex(diskPage);
     Block *pageBlock = findPageInBuffer(buf, index);
     
     if (pageBlock) {
         buf->dirty[index] = 'T';
         buf->timestamp[index] = ops++;
-        retValue = BFMG_OK;
+        return BFMG_OK;
     }
     else {
-        retValue = BFMG_ERR;
+        return BFMG_ERR;
     }
-    
-    return retValue;
 }
 
 /**
@@ -407,18 +405,16 @@ int flushPage(Buffer *buf, DiskAddress diskPage) {
  * on error, errno is also set
  */
 int pinPage(Buffer *buf, DiskAddress diskPage) {
-    int index = getIndex(diskPage), retValue;
+    int index = getIndex(diskPage);
     Block *pageBlock = findPageInBuffer(buf, index);
     
     if (pageBlock) {
         buf->pin[index] = 'T';
-        retValue = BFMG_OK;
+        return BFMG_OK;
     }
     else {
-        retValue = BFMG_ERR;
+        return BFMG_ERR;
     }
-    
-    return retValue;
 }
 
 /**
@@ -433,18 +429,16 @@ int pinPage(Buffer *buf, DiskAddress diskPage) {
  * on error, errno is also set
  */
 int unPinPage(Buffer *buf, DiskAddress diskPage) {
-    int index = getIndex(diskPage), retValue;
+    int index = getIndex(diskPage);
     Block *pageBlock = findPageInBuffer(buf, index);
    
     if (pageBlock) {
         buf->pin[index] = 'F';
-        retValue = BFMG_OK;
+        return BFMG_OK;
     }
     else {
-        retValue = BFMG_ERR;
+        return BFMG_ERR;
     }
-    
-    return retValue;
 }
 
 /**
