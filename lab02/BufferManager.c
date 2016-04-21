@@ -18,8 +18,6 @@ static unsigned long ops = 0;
 
 //global map variable for holding references to disk addresses and their location in the buffer
 map_t diskMap;
-/* used for looking up the (fd, page) pair for a page in the index */
-map_t reverseMap;
 
 //returns the number of digits in a number
 int numDigits(int n) {
@@ -60,14 +58,6 @@ char* diskAddressToString(DiskAddress diskAdd) {
 
    
     return str;
-}
-
-/* return a string representation of the given int, so that it can be 
- used as a key in reverseMap */
-char *indexToString(int index) {
-   char *str = calloc(numDigits(index) + 1, sizeof(char));
-   sprintf(str, "%d", index);
-   return str;
 }
 
 /* This function wraps the hashmap get function for ease of use in this file
@@ -158,7 +148,6 @@ void initBuffer(Buffer *buf, char *database, int nBlocks) {
    
    /* initialize the hashmap */
    diskMap = hashmap_new();
-   reverseMap = hashmap_new();
 }
 
 
@@ -345,7 +334,6 @@ int readPage(Buffer *buf, DiskAddress diskPage) {
    }
    
    result = placePageInBuffer(buf, newBlock);
-
 
    return result;
 }
