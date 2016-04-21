@@ -1,0 +1,29 @@
+start Foo.disk 5
+new file1 1 5
+new file2 1 5
+new file3 1 5
+new file4 1 5
+read file1 1
+read file1 2
+read file2 1
+read file2 2
+read file1 3
+pin file1 1
+check
+read file2 2
+read file1 1
+write file1 1
+write file2 1
+read file3 1
+read file3 2
+unpin file1 1
+check
+read file2 1
+read file4 1
+read file4 2
+read file4 3
+read file4 4
+read file 4 5
+check
+end
+
