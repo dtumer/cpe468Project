@@ -18,8 +18,6 @@ static unsigned long ops = 0;
 
 //global map variable for holding references to disk addresses and their location in the buffer
 map_t diskMap;
-/* used for looking up the (fd, page) pair for a page in the index */
-map_t reverseMap;
 
 //returns the number of digits in a number
 int numDigits(int n) {
@@ -60,14 +58,6 @@ char* diskAddressToString(DiskAddress diskAdd) {
 
    
     return str;
-}
-
-/* return a string representation of the given int, so that it can be 
- used as a key in reverseMap */
-char *indexToString(int index) {
-   char *str = calloc(numDigits(index) + 1, sizeof(char));
-   sprintf(str, "%d", index);
-   return str;
 }
 
 /* This function wraps the hashmap get function for ease of use in this file
@@ -158,7 +148,6 @@ void initBuffer(Buffer *buf, char *database, int nBlocks) {
    
    /* initialize the hashmap */
    diskMap = hashmap_new();
-   reverseMap = hashmap_new();
 }
 
 
@@ -346,7 +335,6 @@ int readPage(Buffer *buf, DiskAddress diskPage) {
    
    result = placePageInBuffer(buf, newBlock);
 
-
    return result;
 }
 
@@ -363,19 +351,17 @@ int readPage(Buffer *buf, DiskAddress diskPage) {
  * on error, errno is also set
  */
 int writePage(Buffer *buf, DiskAddress diskPage) {
-    int index = getIndex(diskPage), retValue;
+    int index = getIndex(diskPage);
     Block *pageBlock = findPageInBuffer(buf, index);
     
     if (pageBlock) {
         buf->dirty[index] = 'T';
         buf->timestamp[index] = ops++;
-        retValue = BFMG_OK;
+        return BFMG_OK;
     }
     else {
-        retValue = BFMG_ERR;
+        return BFMG_ERR;
     }
-    
-    return retValue;
 }
 
 /**
@@ -419,18 +405,16 @@ int flushPage(Buffer *buf, DiskAddress diskPage) {
  * on error, errno is also set
  */
 int pinPage(Buffer *buf, DiskAddress diskPage) {
-    int index = getIndex(diskPage), retValue;
+    int index = getIndex(diskPage);
     Block *pageBlock = findPageInBuffer(buf, index);
     
     if (pageBlock) {
         buf->pin[index] = 'T';
-        retValue = BFMG_OK;
+        return BFMG_OK;
     }
     else {
-        retValue = BFMG_ERR;
+        return BFMG_ERR;
     }
-    
-    return retValue;
 }
 
 /**
@@ -445,18 +429,16 @@ int pinPage(Buffer *buf, DiskAddress diskPage) {
  * on error, errno is also set
  */
 int unPinPage(Buffer *buf, DiskAddress diskPage) {
-    int index = getIndex(diskPage), retValue;
+    int index = getIndex(diskPage);
     Block *pageBlock = findPageInBuffer(buf, index);
    
     if (pageBlock) {
         buf->pin[index] = 'F';
-        retValue = BFMG_OK;
+        return BFMG_OK;
     }
     else {
-        retValue = BFMG_ERR;
+        return BFMG_ERR;
     }
-    
-    return retValue;
 }
 
 /**
@@ -471,14 +453,13 @@ int unPinPage(Buffer *buf, DiskAddress diskPage) {
  * returns BFMG_OK if there are no errors and BFMG_ERR if there is an error.
  * on error, errno is also set
  */
-int newPage(Buffer *buf, fileDescriptor FD, DiskAddress *diskPage) {
+int newPage(Buffer *buf, DiskAddress diskPage) {
     int result;
     Block *pageBlock = calloc(1, sizeof(Block));
     
-    diskPage->FD = FD;
-    diskPage->pageId = tfs_numPages(FD) + 1;
+    pageBlock->diskAddress = diskPage;
     
-    tfs_writePage(FD, diskPage->pageId, pageBlock->block);
+    tfs_writePage(diskPage.FD, diskPage.pageId, pageBlock->block);
     
     //do eviction
     result = placePageInBuffer(buf, pageBlock);
