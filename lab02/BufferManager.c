@@ -120,7 +120,7 @@ int removeIndex(DiskAddress diskAdd) {
 
 //finds whether or not there is a Block in the page location specified in the buffer
 Block* findPageInBuffer(Buffer *buf, int index) {
-    if (index >= 0 && index < buf->nBlocks) {
+    if (index >= 0 && index < buf->nBufferBlocks) {
         return buf->pages[index];
     }
     else {
@@ -131,23 +131,23 @@ Block* findPageInBuffer(Buffer *buf, int index) {
 /*initializes the buffer
  
  */
-void initBuffer(Buffer *buf, char *database, int nBlocks) {
+void initBuffer(Buffer *buf, char *database, int nBufferBlocks) {
     
     //copy database name over
     buf->database = calloc(strlen(database) + 1, sizeof(char));
     strcpy(buf->database, database);
     
-    buf->nBlocks = nBlocks;
-   /* allocate the page arrays for nBlocks pages */
-    buf->pages = calloc(nBlocks, sizeof(Block*));
-    buf->timestamp = calloc(nBlocks, sizeof(unsigned long));
-    buf->pin = calloc(nBlocks, sizeof(char));
-    buf->dirty = calloc(nBlocks, sizeof(char));
-   /* a new buffer has no pages occupied */
-    buf->numOccupied = 0;
-   
-   /* initialize the hashmap */
-   diskMap = hashmap_new();
+    buf->nBufferBlocks = nBufferBlocks;
+    /* allocate the page arrays for nBufferBlocks pages */
+    buf->pages = calloc(nBufferBlocks, sizeof(Block*));
+    buf->timestamp = calloc(nBufferBlocks, sizeof(unsigned long));
+    buf->pin = calloc(nBufferBlocks, sizeof(char));
+    buf->dirty = calloc(nBufferBlocks, sizeof(char));
+    /* a new buffer has no pages occupied */
+    buf->numBufferOccupied = 0;
+    
+    /* initialize the hashmap */
+    diskMap = hashmap_new();
 }
 
 
@@ -158,7 +158,7 @@ int cleanupBuffer(Buffer *buf) {
     int i;
     Block *pageBlock;
         
-    for (i = 0; i < buf->nBlocks; i++) {
+    for (i = 0; i < buf->nBufferBlocks; i++) {
     	pageBlock = buf->pages[i];
     	
     	if (pageBlock != NULL) {
@@ -194,10 +194,10 @@ int cleanupBuffer(Buffer *buf) {
  * commence is called once at the beginning of a program that uses the buffer.
  * \param Database  name of the tinyFS disk file
  * \param buf       The buffer to create/initialize
- * \param nBlocks   how many buffer slots to create in the buffer
+ * \param nBufferBlocks   how many buffer slots to create in the buffer
  *
  * Open or create a TinyFS filesystem using tfs_mount/tfs_mkfs,
- * then initialize the buffer with nBlocks buffer slots.
+ * then initialize the buffer with nBufferBlocks buffer slots.
  * Load any pages that might be needed into the buffer. 
  * In our case, pages needed are:
  *
@@ -207,7 +207,7 @@ int cleanupBuffer(Buffer *buf) {
  * Commence returns BFMG_OK upon success, BFMG_ERR upon other failure
  * If more error codes are needed, feel free to #define them
  */
-int commence(char *Database, Buffer *buf, int nBlocks) {
+int commence(char *Database, Buffer *buf, int nBufferBlocks) {
     int tfsErr, retVal;
 
     tfsErr = tfs_mount(Database);
@@ -217,7 +217,7 @@ int commence(char *Database, Buffer *buf, int nBlocks) {
         //do we need to mount it here?
     }
     
-    initBuffer(buf, Database, nBlocks);
+    initBuffer(buf, Database, nBufferBlocks);
     retVal = BFMG_OK;
 	
     return retVal;
@@ -267,10 +267,10 @@ int placePageInBuffer(Buffer *buf, Block *newBlock) {
    index = getIndex(newBlock->diskAddress);
    if (index == -1) {
       /* need to fetch it */
-      if (buf->numOccupied < buf->nBlocks) {
-         /* numOccupied is the first open index */
-         insertNdx = buf->numOccupied;
-         buf->numOccupied++;
+      if (buf->numBufferOccupied < buf->nBufferBlocks) {
+         /* numBufferOccupied is the first open index */
+         insertNdx = buf->numBufferOccupied;
+         buf->numBufferOccupied++;
       } else {
          /* these calls will be replaced by evictPage */
          toEvict = evictionPolicy(buf);
@@ -486,11 +486,11 @@ void checkpoint(Buffer * buf) {
     int i;
     
     printf("Disk: %s\n", buf->database);
-    printf("Slots Occupied: %d\n", buf->numOccupied);
+    printf("Slots Occupied: %d\n", buf->numBufferOccupied);
     
     
-    for(i=0; i < buf->nBlocks; i++) {
-        if(i > buf->numOccupied) {
+    for(i=0; i < buf->nBufferBlocks; i++) {
+        if(i > buf->numBufferOccupied) {
             printf("Slot %d is empty\n", i);
         }
         else {
@@ -511,7 +511,7 @@ void checkpoint(Buffer * buf) {
  * returns BFMG_OK if the slot exists and BFMG_ERR if it does not.
  */
 int pageDump(Buffer *buf, int index) {
-    if (index >= 0 && index < buf->nBlocks) {
+    if (index >= 0 && index < buf->nBufferBlocks) {
         fwrite(&(buf->pages[index]), BLOCKSIZE, 1, stdout);
         return BFMG_OK;
     }
@@ -589,7 +589,7 @@ int lru_evict(Buffer *buf) {
    }
    /* find the oldest pages by iterating through
       timestamps*/
-   for (i = 0; i < buf->nBlocks; i++) {
+   for (i = 0; i < buf->nBufferBlocks; i++) {
       if (buf->pin[i] == 'F') {
          if (buf->dirty[i] == 'T' && buf->timestamp[i] < oldestDirtyPage) {
             oldestDirtyPage = buf->timestamp[i];
@@ -603,7 +603,7 @@ int lru_evict(Buffer *buf) {
       
    }
    
-   if (buf->numOccupied < buf->nBlocks) {
+   if (buf->numBufferOccupied < buf->nBufferBlocks) {
       fprintf(stderr, "WARNING: lru_evict called on a non-full buffer\n");
    }
    /* if there is an unpinned dirty page */
