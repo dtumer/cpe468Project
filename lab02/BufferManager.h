@@ -43,7 +43,7 @@ int writePage(Buffer *buf, DiskAddress diskPage);
 int flushPage(Buffer *buf, DiskAddress diskPage);
 int pinPage(Buffer *buf, DiskAddress diskPage);
 int unPinPage(Buffer *buf, DiskAddress diskPage);
-int newPage(Buffer *buf, fileDescriptor FD, DiskAddress *diskPage);
+int newPage(Buffer *buf, DiskAddress diskPage);
 
 //test functions
 void checkpoint(Buffer * buf);

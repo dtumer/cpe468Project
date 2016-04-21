@@ -453,14 +453,13 @@ int unPinPage(Buffer *buf, DiskAddress diskPage) {
  * returns BFMG_OK if there are no errors and BFMG_ERR if there is an error.
  * on error, errno is also set
  */
-int newPage(Buffer *buf, fileDescriptor FD, DiskAddress *diskPage) {
+int newPage(Buffer *buf, DiskAddress diskPage) {
     int result;
     Block *pageBlock = calloc(1, sizeof(Block));
     
-    diskPage->FD = FD;
-    diskPage->pageId = tfs_numPages(FD) + 1;
+    pageBlock->diskAddress = diskPage;
     
-    tfs_writePage(FD, diskPage->pageId, pageBlock->block);
+    tfs_writePage(diskPage.FD, diskPage.pageId, pageBlock->block);
     
     //do eviction
     result = placePageInBuffer(buf, pageBlock);
