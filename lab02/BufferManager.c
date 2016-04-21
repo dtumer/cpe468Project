@@ -17,7 +17,8 @@ static evictFn evictionPolicy = lru_evict;
 static unsigned long ops = 0;
 
 //global map variable for holding references to disk addresses and their location in the buffer
-map_t diskMap;
+map_t bufMap;
+map_t cacheMap;
 
 //returns the number of digits in a number
 int numDigits(int n) {
@@ -62,12 +63,12 @@ char* diskAddressToString(DiskAddress diskAdd) {
 
 /* This function wraps the hashmap get function for ease of use in this file
    Used for looking up the index in buffer of a given page */
-int getIndex(DiskAddress diskAdd) {
+int getIndex(map_t map, DiskAddress diskAdd) {
      char *diskStr;
      int *retValue, error;
     
      diskStr = diskAddressToString(diskAdd);
-     error = hashmap_put(diskMap, diskStr, (void**)&retValue);
+     error = hashmap_put(map, diskStr, (void**)&retValue);
      free(diskStr);
     
      //print error if the map returned an error
@@ -82,12 +83,12 @@ int getIndex(DiskAddress diskAdd) {
 }
 
 //This function wraps the hashmap put function for ease of use in this file
-int putIndex(DiskAddress diskAdd, int index) {
+int putIndex(map_t map, DiskAddress diskAdd, int index) {
     char *diskStr;
     int error;
     
     diskStr = diskAddressToString(diskAdd);
-    error = hashmap_put(diskMap, diskStr, &index);
+    error = hashmap_put(map, diskStr, &index);
     free(diskStr);
     
     //print error if there is one, return 0 is no error
@@ -101,12 +102,12 @@ int putIndex(DiskAddress diskAdd, int index) {
 }
 
 /* remove a key from the hashmap */
-int removeIndex(DiskAddress diskAdd) {
+int removeIndex(map_t map, DiskAddress diskAdd) {
    char *diskStr;
    int error;
    
    diskStr = diskAddressToString(diskAdd);
-   error = hashmap_remove(diskMap, diskStr);
+   error = hashmap_remove(map, diskStr);
    free(diskStr);
    
    /* print error if there is one */
@@ -131,12 +132,13 @@ Block* findPageInBuffer(Buffer *buf, int index) {
 /*initializes the buffer
  
  */
-void initBuffer(Buffer *buf, char *database, int nBufferBlocks) {
+void initBuffer(Buffer *buf, char *database, int nBufferBlocks, int nCacheBlocks) {
     
     //copy database name over
     buf->database = calloc(strlen(database) + 1, sizeof(char));
     strcpy(buf->database, database);
     
+    //buffer
     buf->nBufferBlocks = nBufferBlocks;
     /* allocate the page arrays for nBufferBlocks pages */
     buf->pages = calloc(nBufferBlocks, sizeof(Block*));
@@ -146,8 +148,14 @@ void initBuffer(Buffer *buf, char *database, int nBufferBlocks) {
     /* a new buffer has no pages occupied */
     buf->numBufferOccupied = 0;
     
-    /* initialize the hashmap */
-    diskMap = hashmap_new();
+    //cache
+    buf->cache = calloc(nCacheBlocks, sizeof(Block*));
+    buf->nCacheBlocks = nCacheBlocks;
+    buf->numCacheOccupied = 0;
+    
+    /* initialize the hashmaps */
+    bufMap = hashmap_new();
+    cacheMap = hashmap_new();
 }
 
 
@@ -207,7 +215,7 @@ int cleanupBuffer(Buffer *buf) {
  * Commence returns BFMG_OK upon success, BFMG_ERR upon other failure
  * If more error codes are needed, feel free to #define them
  */
-int commence(char *Database, Buffer *buf, int nBufferBlocks) {
+int commence(char *Database, Buffer *buf, int nBufferBlocks, int nCacheBlocks) {
     int tfsErr, retVal;
 
     tfsErr = tfs_mount(Database);
@@ -217,7 +225,7 @@ int commence(char *Database, Buffer *buf, int nBufferBlocks) {
         //do we need to mount it here?
     }
     
-    initBuffer(buf, Database, nBufferBlocks);
+    initBuffer(buf, Database, nBufferBlocks, nCacheBlocks);
     retVal = BFMG_OK;
 	
     return retVal;
@@ -264,7 +272,7 @@ int placePageInBuffer(Buffer *buf, Block *newBlock) {
     Priority for eviction:
     1. Unpinned dirty pages (flush and replace)
     2. If none of those, pick from the unpinned, un-dirty pages and ask the eviction policy (for now, LRU)  */
-   index = getIndex(newBlock->diskAddress);
+   index = getIndex(bufMap, newBlock->diskAddress);
    if (index == -1) {
       /* need to fetch it */
       if (buf->numBufferOccupied < buf->nBufferBlocks) {
@@ -281,7 +289,7 @@ int placePageInBuffer(Buffer *buf, Block *newBlock) {
                return BFMG_ERR;
             }
          }
-         removeIndex(buf->pages[toEvict]->diskAddress);
+         removeIndex(bufMap, buf->pages[toEvict]->diskAddress);
          fprintf(stderr, "info: freeing the page at %d\n", toEvict);
          free(buf->pages[toEvict]);
          
@@ -291,7 +299,7 @@ int placePageInBuffer(Buffer *buf, Block *newBlock) {
       buf->pin[insertNdx] = 'F';
       buf->dirty[insertNdx] = 'F';
       buf->timestamp[insertNdx] = ops++;
-      putIndex(buf->pages[insertNdx]->diskAddress, insertNdx);
+      putIndex(bufMap, buf->pages[insertNdx]->diskAddress, insertNdx);
       
       retval = insertNdx;
    } else {
@@ -321,7 +329,7 @@ int readPage(Buffer *buf, DiskAddress diskPage) {
    int existingIndex;
    Block *newBlock;
    
-   existingIndex = getIndex(diskPage);
+   existingIndex = getIndex(bufMap, diskPage);
    if (existingIndex == -1) {
       newBlock = malloc(sizeof(Block));
       newBlock->diskAddress = diskPage;
@@ -351,7 +359,7 @@ int readPage(Buffer *buf, DiskAddress diskPage) {
  * on error, errno is also set
  */
 int writePage(Buffer *buf, DiskAddress diskPage) {
-    int index = getIndex(diskPage);
+    int index = getIndex(bufMap, diskPage);
     Block *pageBlock = findPageInBuffer(buf, index);
     
     if (pageBlock) {
@@ -376,7 +384,7 @@ int writePage(Buffer *buf, DiskAddress diskPage) {
  * on error, errno is also set
  */
 int flushPage(Buffer *buf, DiskAddress diskPage) {
-    int index = getIndex(diskPage);
+    int index = getIndex(bufMap, diskPage);
     Block *pageBlock = findPageInBuffer(buf, index);
 
     //Exits if page is not in the buffer
@@ -405,7 +413,7 @@ int flushPage(Buffer *buf, DiskAddress diskPage) {
  * on error, errno is also set
  */
 int pinPage(Buffer *buf, DiskAddress diskPage) {
-    int index = getIndex(diskPage);
+    int index = getIndex(bufMap, diskPage);
     Block *pageBlock = findPageInBuffer(buf, index);
     
     if (pageBlock) {
@@ -429,7 +437,7 @@ int pinPage(Buffer *buf, DiskAddress diskPage) {
  * on error, errno is also set
  */
 int unPinPage(Buffer *buf, DiskAddress diskPage) {
-    int index = getIndex(diskPage);
+    int index = getIndex(bufMap, diskPage);
     Block *pageBlock = findPageInBuffer(buf, index);
    
     if (pageBlock) {
@@ -465,6 +473,16 @@ int newPage(Buffer *buf, DiskAddress diskPage) {
     result = placePageInBuffer(buf, pageBlock);
    
     return 0;
+}
+
+
+int allocateCachePage(Buffer *buf, DiskAddress diskPage) {
+    return BFMG_ERR;
+}
+
+
+int removeCachePage(Buffer *buf, DiskAddress diskPage) {
+    return BFMG_ERR;
 }
 
 /**
@@ -531,7 +549,7 @@ int pageDump(Buffer *buf, int index) {
  * returns BFMG_OK if there are no errors and BFMG_ERR if there is an error.
  */
 int printPage(Buffer *buf, DiskAddress diskPage) {
-    int index = getIndex(diskPage);
+    int index = getIndex(bufMap, diskPage);
     int numpages = tfs_numPages(diskPage.FD);
     
     if(diskPage.pageId > numpages) {

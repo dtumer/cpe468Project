@@ -16,7 +16,7 @@ void runBuffer(FILE *fp) {
 		if (!strcmp(command, "start")) {
 			if (fscanf(fp, "%s", diskName) == 1 && fscanf(fp, "%d", &num1) == 1) {
 				printf("START: %s, %d\n", diskName, num1);
-				commence(diskName, buf, num1);
+				commence(diskName, buf, num1, 0);
 			}
 		}
 		//end command
