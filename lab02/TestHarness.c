@@ -96,7 +96,7 @@ void runBuffer(FILE *fp) {
 			printf("END\n");
 			squash(buf);
 			
-			//printOpenFilesNow(first);
+			printOpenFilesNow(first);
 			closeFiles(first);
 		}
 		//read command
@@ -107,7 +107,7 @@ void runBuffer(FILE *fp) {
 				FD = getFileDescriptor(&first, fileName);
 				dAdd.FD = FD;
 				dAdd.pageId = num1;
-// 				readPage(buf, dAdd);
+ 				readPage(buf, dAdd);
 			}
 		}
 		//write command
@@ -119,7 +119,7 @@ void runBuffer(FILE *fp) {
 				dAdd.FD = FD;
 				dAdd.pageId = num1;
 				
-// 				writePage(buf, dAdd);
+ 				writePage(buf, dAdd);
 			}
 		}
 		//flush command
@@ -131,7 +131,7 @@ void runBuffer(FILE *fp) {
 				dAdd.FD = FD;
 				dAdd.pageId = num1;
 				
-// 				flushPage(buf, dAdd);
+ 				flushPage(buf, dAdd);
 			}
 		}
 		//pin command
@@ -143,7 +143,7 @@ void runBuffer(FILE *fp) {
 				dAdd.FD = FD;
 				dAdd.pageId = num1;
 				
-// 				pinPage(buf, dAdd);
+ 				pinPage(buf, dAdd);
 			}
 		}
 		//unpin command
@@ -155,7 +155,7 @@ void runBuffer(FILE *fp) {
 				dAdd.FD = FD;
 				dAdd.pageId = num1;
 				
-// 				unPinPage(buf, dAdd);
+ 				unPinPage(buf, dAdd);
 			}
 		}
 		//new command
@@ -171,7 +171,7 @@ void runBuffer(FILE *fp) {
 				for (i = num1; i <= num2; i++) {
 					dAdd.pageId = i;
 					
-// 					newPage(buf, dAdd);	
+					newPage(buf, dAdd);	
 				}
 			}
 		}
