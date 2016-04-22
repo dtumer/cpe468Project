@@ -463,8 +463,8 @@ int newPage(Buffer *buf, DiskAddress diskPage) {
     
     //do eviction
     result = placePageInBuffer(buf, pageBlock);
-   
-    return 0;
+    
+    return BFMG_OK;
 }
 
 /**
