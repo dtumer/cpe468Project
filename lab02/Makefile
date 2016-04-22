@@ -28,6 +28,10 @@ testBM: testBufferManager.c BufferManager.c
 testHashmap: testHashmap.c
 	$(CC) $(CFLAGS) -o testHashmap hashmap.c testHashmap.c smartalloc.c
 
+runTestHarness: TestHarness
+	-@rm *.disk
+	./TestHarness testCommands/commands1.txt
+
 cleanTestHarness:
 	rm TestHarness
 

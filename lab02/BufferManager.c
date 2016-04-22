@@ -44,7 +44,7 @@ void printHashmapError(int errorCode) {
         printf("ERROR: Map is full!\n");
     }
     else if (errorCode == MAP_MISSING) {
-        printf("ERROR: There is no such element in the Map!");
+        //printf("ERROR: There is no such element in the Map!\n");
     }
 }
 
@@ -68,7 +68,7 @@ int getIndex(map_t map, DiskAddress diskAdd) {
      int *retValue, error;
     
      diskStr = diskAddressToString(diskAdd);
-     error = hashmap_put(map, diskStr, (void**)&retValue);
+     error = hashmap_get(diskMap, diskStr, (void**)&retValue);
      free(diskStr);
     
      //print error if the map returned an error
@@ -222,7 +222,7 @@ int commence(char *Database, Buffer *buf, int nBufferBlocks, int nCacheBlocks) {
 
     if (tfsErr != 0) {
         tfs_mkfs(Database, DEFAULT_DISK_SIZE);
-        //do we need to mount it here?
+        tfs_mount(Database);
     }
     
     initBuffer(buf, Database, nBufferBlocks, nCacheBlocks);
@@ -471,8 +471,8 @@ int newPage(Buffer *buf, DiskAddress diskPage) {
     
     //do eviction
     result = placePageInBuffer(buf, pageBlock);
-   
-    return 0;
+    
+    return BFMG_OK;
 }
 
 
@@ -505,7 +505,6 @@ void checkpoint(Buffer * buf) {
     
     printf("Disk: %s\n", buf->database);
     printf("Slots Occupied: %d\n", buf->numBufferOccupied);
-    
     
     for(i=0; i < buf->nBufferBlocks; i++) {
         if(i > buf->numBufferOccupied) {
