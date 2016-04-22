@@ -320,7 +320,7 @@ int readPage(Buffer *buf, DiskAddress diskPage) {
    int result;
    int existingIndex;
    Block *newBlock;
-   
+    
    existingIndex = getIndex(diskPage);
    if (existingIndex == -1) {
       newBlock = malloc(sizeof(Block));
@@ -488,9 +488,8 @@ void checkpoint(Buffer * buf) {
     printf("Disk: %s\n", buf->database);
     printf("Slots Occupied: %d\n", buf->numOccupied);
     
-    
     for(i=0; i < buf->nBlocks; i++) {
-        if(i > buf->numOccupied) {
+        if(i >= buf->numOccupied) {
             printf("Slot %d is empty\n", i);
         }
         else {
