@@ -183,6 +183,7 @@ void runBuffer(FILE *fp) {
 		//check command
 		else if (!strcmp(command, "check")) {
 			printf("CHECK\n");
+            checkpoint(buf);
 		}
 		else {
 			printf("No command by the name: %s\n", command);
