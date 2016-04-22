@@ -214,7 +214,7 @@ int commence(char *Database, Buffer *buf, int nBlocks) {
 
     if (tfsErr != 0) {
         tfs_mkfs(Database, DEFAULT_DISK_SIZE);
-        //do we need to mount it here?
+        tfs_mount(Database);
     }
     
     initBuffer(buf, Database, nBlocks);
