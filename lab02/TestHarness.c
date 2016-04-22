@@ -53,27 +53,31 @@ void addFileNode(FileNode **list, FileNode *add) {
 } 
 
 //gets FD of open file
-fileDescriptor getFileDescriptor(FileNode *first, char *fileName) {
-	fileDescriptor FD = tfs_openFile(fileName);
-	FileNode *temp = first;
-	
-	if (FD == -1) {
-		while (temp != NULL) {
-			if (strcmp(fileName, temp->fileName) == 0) {
-				return temp->FD;
-			}
-			
-			temp = temp->next;
-		}	
-	}
-	
-	return FD;
+fileDescriptor getFileDescriptor(FileNode **node, char *fileName) {
+    FileNode *newNode, *tempNode = *node;
+    
+    while (tempNode != NULL) {
+        if (strcmp(fileName, tempNode->fileName) == 0) {
+            return tempNode->FD;
+        }
+        tempNode = tempNode->next;
+    }
+    
+    newNode = calloc(1, sizeof(FileNode));
+    newNode->fileName = calloc(strlen(fileName) + 1, sizeof(char));
+    newNode->FD = tfs_openFile(fileName);
+    strcpy(newNode->fileName, fileName);
+    newNode->next = *node;
+    
+    *node = newNode;
+    
+	return newNode->FD;
 }
 
 //function for running the buffer
 void runBuffer(FILE *fp) {
 	Buffer *buf = calloc(1, sizeof(Buffer));
-	FileNode *first = NULL, *fNode = NULL;
+	FileNode *first = NULL;
 	char command[10], diskName[1024], fileName[1024];
 	int num1, num2, i;
 	fileDescriptor FD;
@@ -100,7 +104,7 @@ void runBuffer(FILE *fp) {
 			if (fscanf(fp, "%s %d", fileName, &num1) == 2) {
 				printf("READ: %s %d\n", fileName, num1);
 				
-				FD = getFileDescriptor(first, fileName);
+				FD = getFileDescriptor(&first, fileName);
 				dAdd.FD = FD;
 				dAdd.pageId = num1;
 // 				readPage(buf, dAdd);
@@ -111,7 +115,7 @@ void runBuffer(FILE *fp) {
 			if (fscanf(fp, "%s %d", fileName, &num1) == 2) {
 				printf("WRITE: %s %d\n", fileName, num1);
 				
-				FD = getFileDescriptor(first, fileName);
+				FD = getFileDescriptor(&first, fileName);
 				dAdd.FD = FD;
 				dAdd.pageId = num1;
 				
@@ -123,7 +127,7 @@ void runBuffer(FILE *fp) {
 			if (fscanf(fp, "%s %d", fileName, &num1) == 2) {
 				printf("FLUSH: %s %d\n", fileName, num1);
 				
-				FD = getFileDescriptor(first, fileName);
+				FD = getFileDescriptor(&first, fileName);
 				dAdd.FD = FD;
 				dAdd.pageId = num1;
 				
@@ -135,7 +139,7 @@ void runBuffer(FILE *fp) {
 			if (fscanf(fp, "%s %d", fileName, &num1) == 2) {
 				printf("PIN: %s %d\n", fileName, num1);
 				
-				FD = getFileDescriptor(first, fileName);
+				FD = getFileDescriptor(&first, fileName);
 				dAdd.FD = FD;
 				dAdd.pageId = num1;
 				
@@ -147,7 +151,7 @@ void runBuffer(FILE *fp) {
 			if (fscanf(fp, "%s %d", fileName, &num1) == 2) {
 				printf("UNPIN: %s %d\n", fileName, num1);
 				
-				FD = getFileDescriptor(first, fileName);
+				FD = getFileDescriptor(&first, fileName);
 				dAdd.FD = FD;
 				dAdd.pageId = num1;
 				
@@ -160,18 +164,9 @@ void runBuffer(FILE *fp) {
 				printf("NEW: %s %d %d\n", fileName, num1, num2);
 				
 				//get file
-				FD = getFileDescriptor(first, fileName);
+				FD = getFileDescriptor(&first, fileName);
 				dAdd.FD = FD;
 				
-				// create node and add to linked list
-				fNode = calloc(1, sizeof(FileNode));
-				fNode->fileName = calloc(strlen(fileName) + 1, sizeof(char));
-				strcpy(fNode->fileName, fileName);
-				fNode->FD = FD; 
-				fNode->next = NULL;
-				
-				addFileNode(&first, fNode);
-			
 				//for each disk page create it in the buffer
 				for (i = num1; i <= num2; i++) {
 					dAdd.pageId = i;
