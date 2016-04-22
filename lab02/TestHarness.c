@@ -19,18 +19,16 @@ void printOpenFilesNow(FileNode *first) {
 	}
 }
 
+
 //Closes open files
-void closeFiles(FileNode *first) {
-	FileNode *next = first, *temp;
-	
-	while (next != NULL) {
-		temp = next;
-		tfs_closeFile(temp->FD);
-		next = next->next;
-		
-		free(temp->fileName);
-		free(temp);
-	}
+void closeFiles(FileNode *node) {
+    if(node != NULL) {
+        closeFiles(node->next);
+        
+        tfs_closeFile(node->FD);
+        free(node->fileName);
+        free(node);
+    }
 }
 
 //adds file node to end of file list
