@@ -67,7 +67,7 @@ int getIndex(DiskAddress diskAdd) {
      int *retValue, error;
     
      diskStr = diskAddressToString(diskAdd);
-     error = hashmap_put(diskMap, diskStr, (void**)&retValue);
+     error = hashmap_get(diskMap, diskStr, (void**)&retValue);
      free(diskStr);
     
      //print error if the map returned an error
