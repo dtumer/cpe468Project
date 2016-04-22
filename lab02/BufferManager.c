@@ -43,7 +43,7 @@ void printHashmapError(int errorCode) {
         printf("ERROR: Map is full!\n");
     }
     else if (errorCode == MAP_MISSING) {
-        printf("ERROR: There is no such element in the Map!");
+        //printf("ERROR: There is no such element in the Map!\n");
     }
 }
 
