@@ -512,6 +512,7 @@ void checkpoint(Buffer * buf) {
         }
         else {
             printf("Slot %d:\n", i);
+            printf("\ttinyFS FD: %d\n", buf->pages[i]->diskAddress.FD);
             printf("\ttinyFS blockID: %d\n", buf->pages[i]->diskAddress.pageId);
             printf("\ttimestamps for the block: %ld\n", buf->timestamp[i]);
             printf("\tpin flag: %d\n", buf->pin[i]);
