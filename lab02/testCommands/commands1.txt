@@ -23,7 +23,7 @@ read file4 1
 read file4 2
 read file4 3
 read file4 4
-read file 4 5
+read file4 5
 check
 end
 
