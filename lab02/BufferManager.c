@@ -516,19 +516,32 @@ void checkpoint(Buffer * buf) {
     int i;
     
     printf("Disk: %s\n", buf->database);
-    printf("Slots Occupied: %d\n", buf->numBufferOccupied);
+    printf("Buffer Slots Occupied: %d\n", buf->numBufferOccupied);
     
     for(i=0; i < buf->nBufferBlocks; i++) {
         if(i > buf->numBufferOccupied) {
-            printf("Slot %d is empty\n", i);
+            printf("Buffer Slot %d is empty\n", i);
         }
         else {
-            printf("Slot %d:\n", i);
+            printf("Buffer Slot %d:\n", i);
             printf("\ttinyFS FD: %d\n", buf->pages[i]->diskAddress.FD);
             printf("\ttinyFS blockID: %d\n", buf->pages[i]->diskAddress.pageId);
             printf("\ttimestamps for the block: %ld\n", buf->timestamp[i]);
             printf("\tpin flag: %d\n", buf->pin[i]);
             printf("\tdirty flag: %d\n", buf->dirty[i]);
+        }
+    }
+    
+    printf("Cache Slots Occupied: %d\n", buf->numCacheOccupied);
+    
+    for(i=0; i < buf->nCacheBlocks; i++) {
+        if(i > buf->numCacheOccupied) {
+            printf("Cache Slot %d is empty\n", i);
+        }
+        else {
+            printf("Cache Slot %d:\n", i);
+            printf("\ttinyFS FD: %d\n", buf->pages[i]->diskAddress.FD);
+            printf("\ttinyFS blockID: %d\n", buf->pages[i]->diskAddress.pageId);
         }
     }
 }
