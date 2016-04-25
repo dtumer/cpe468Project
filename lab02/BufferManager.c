@@ -228,7 +228,7 @@ int cleanupBuffer(Buffer *buf) {
  * If more error codes are needed, feel free to #define them
  */
 int commence(char *Database, Buffer *buf, int nBufferBlocks, int nCacheBlocks) {
-    int tfsErr, retVal;
+    int tfsErr;
 
     tfsErr = tfs_mount(Database);
 
@@ -238,9 +238,8 @@ int commence(char *Database, Buffer *buf, int nBufferBlocks, int nCacheBlocks) {
     }
     
     initBuffer(buf, Database, nBufferBlocks, nCacheBlocks);
-    retVal = BFMG_OK;
-	
-    return retVal;
+    
+    return BFMG_OK;
 }
 
 /**
