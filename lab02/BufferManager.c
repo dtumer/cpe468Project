@@ -187,9 +187,21 @@ int cleanupBuffer(Buffer *buf) {
     	}
     }
     
+    for (i = 0; i < buf->nCacheBlocks; i++) {
+        pageBlock = buf->cache[i];
+        
+        if (pageBlock != NULL) {
+            //free the page
+            free(pageBlock);
+            buf->cache[i] = NULL;
+        }
+    }
+    
+    
     //clear buffer 
     free(buf->database);
     free(buf->pages);
+    free(buf->cache);
     free(buf->timestamp);
     free(buf->pin);
     free(buf->dirty);
