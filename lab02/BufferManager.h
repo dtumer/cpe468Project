@@ -30,6 +30,7 @@ typedef struct Buffer {
 	Block **pages;
     Block **cache;
 	unsigned long *timestamp;
+    unsigned long *cacheTimestamp;
 	char *pin;
 	char *dirty;
 	int numBufferOccupied;

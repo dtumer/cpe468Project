@@ -150,6 +150,7 @@ void initBuffer(Buffer *buf, char *database, int nBufferBlocks, int nCacheBlocks
     
     //cache
     buf->cache = calloc(nCacheBlocks, sizeof(Block*));
+    buf->cacheTimestamp = calloc(nCacheBlocks, sizeof(unsigned long));
     buf->nCacheBlocks = nCacheBlocks;
     buf->numCacheOccupied = 0;
     
@@ -203,6 +204,7 @@ int cleanupBuffer(Buffer *buf) {
     free(buf->pages);
     free(buf->cache);
     free(buf->timestamp);
+    free(buf->cacheTimestamp);
     free(buf->pin);
     free(buf->dirty);
     free(buf);
