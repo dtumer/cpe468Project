@@ -16,5 +16,5 @@ Run Instructions:
 To run the test harness please use the following command:
 	make runTestHarness
 
-This runs the test harness with the testCommands/commands1.txt file. To run the test harness with subsequent test command files please then run the following command after running the above make command:
+This runs the test harness with the commands1.txt file. To run the test harness with subsequent test command files please then run the following command after running the above make command:
 	./TestHarness <path-to-commands-file>

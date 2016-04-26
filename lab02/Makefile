@@ -30,12 +30,12 @@ testHashmap: testHashmap.c
 
 runTestHarness: TestHarness
 	-@rm *.disk
-	./TestHarness testCommands/commands1.txt
+	./TestHarness commands1.txt
 
 cleanTestHarness:
 	rm TestHarness
 
 handin:
-	handin dekhtyar 468-lab2 *.c *.h Makefile README
+	handin dekhtyar 468-lab3 *.c *.h Makefile README
 
 clean: cleanTestHarness

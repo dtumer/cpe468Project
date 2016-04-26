@@ -412,7 +412,7 @@ int flushPage(Buffer *buf, DiskAddress diskPage) {
     }
     
     //handle if it is volatile
-    if(buf->isVolatile[index] = 'T')
+    if(buf->isVolatile[index] == 'T')
     {
         //need to create file?
     }
@@ -508,7 +508,7 @@ int allocateCachePage(Buffer *buf, DiskAddress diskPage) {
     //check not already in cache
     index = getIndex(cacheMap, diskPage);
     if(index != -1){
-        fprintf(stderr, "INFO: page already in Cache\n");
+        fprintf(stderr, "INFO: page already in Cache: %d\n", index);
         return BFMG_ERR;
     }
     
@@ -546,6 +546,7 @@ int allocateCachePage(Buffer *buf, DiskAddress diskPage) {
     //write block to cache
     buf->cache[insertNdx] = newBlock;
     buf->cacheTimestamp[insertNdx] = ops++;
+    buf->numCacheOccupied += buf->numCacheOccupied < buf->nCacheBlocks ? 1 : 0;
     putIndex(cacheMap, newBlock->diskAddress, insertNdx);
    
     return BFMG_ERR;
@@ -564,7 +565,6 @@ int removeCachePage(Buffer *buf, DiskAddress diskPage) {
       removeIndex(cacheMap, diskPage);
       buf->numCacheOccupied--;
       buf->cache[result] = NULL;
-      
    } else {
       /* in buffer or on disk */
       result = getIndex(bufMap, diskPage);
@@ -629,13 +629,13 @@ void checkpoint(Buffer * buf) {
     printf("Cache Slots Occupied: %d\n", buf->numCacheOccupied);
     
     for(i=0; i < buf->nCacheBlocks; i++) {
-        if(i > buf->numCacheOccupied) {
+        if(i >= buf->numCacheOccupied) {
             printf("Cache Slot %d is empty\n", i);
         }
         else {
             printf("Cache Slot %d:\n", i);
-            printf("\ttinyFS FD: %d\n", buf->pages[i]->diskAddress.FD);
-            printf("\ttinyFS blockID: %d\n", buf->pages[i]->diskAddress.pageId);
+            printf("\ttinyFS FD: %d\n", buf->cache[i]->diskAddress.FD);
+            printf("\ttinyFS blockID: %d\n", buf->cache[i]->diskAddress.pageId);
         }
     }
 }

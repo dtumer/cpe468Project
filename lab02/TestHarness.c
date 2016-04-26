@@ -88,7 +88,7 @@ void runBuffer(FILE *fp) {
 		if (!strcmp(command, "start")) {
 			if (fscanf(fp, "%s", diskName) == 1 && fscanf(fp, "%d", &num1) == 1) {
 				printf("START: %s, %d\n", diskName, num1);
-				commence(diskName, buf, num1, 0);
+				commence(diskName, buf, num1, num1);
 			}
 		}
 		//end command
@@ -173,6 +173,32 @@ void runBuffer(FILE *fp) {
 					
 					newPage(buf, dAdd);	
 				}
+			}
+		}
+        //new cache page
+		else if (!strcmp(command, "newcache")) {
+			if (fscanf(fp, "%s %d", fileName, &num1) == 2) {
+				printf("NEW CACHE: %s %d\n", fileName, num1);
+				
+				//get file
+				FD = getFileDescriptor(&first, fileName);
+				dAdd.FD = FD;
+                dAdd.pageId = num1;
+				
+                allocateCachePage(buf, dAdd);
+			}
+		}
+        //remove cache page
+		else if (!strcmp(command, "removecache")) {
+			if (fscanf(fp, "%s %d", fileName, &num1) == 2) {
+				printf("REMOVE CACHE: %s %d\n", fileName, num1);
+				
+				//get file
+				FD = getFileDescriptor(&first, fileName);
+				dAdd.FD = FD;
+                dAdd.pageId = num1;
+				
+                removeCachePage(buf, dAdd);
 			}
 		}
 		//check command
