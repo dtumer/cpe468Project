@@ -258,7 +258,7 @@ int squash(Buffer *buf) {
    and places the input page at the correct spot. 
    It also free()s the page if one is evicted. */
 int placePageInBuffer(Buffer *buf, Block *newBlock) {
-   int index, toEvict, insertNdx, retval;
+   int index, toEvict, insertNdx, retval = -1;
    /* if there are empty buffer slots, put the page in the first empty one.
       if not, ask the eviction policy.
     Priority for eviction:
@@ -294,12 +294,6 @@ int placePageInBuffer(Buffer *buf, Block *newBlock) {
       putIndex(buf->pages[insertNdx]->diskAddress, insertNdx);
       
       retval = insertNdx;
-   } else {
-      buf->timestamp[index] = ops++;
-      if (newBlock != NULL) {
-         fprintf(stderr, "warn: allocated block passed to placePageInBuffer for an existing page\n");
-      }
-      retval = index;
    }
    
    return retval;
@@ -317,7 +311,7 @@ int placePageInBuffer(Buffer *buf, Block *newBlock) {
  * on error, errno is also set
  */
 int readPage(Buffer *buf, DiskAddress diskPage) {
-   int result;
+   int result = BFMG_OK;
    int existingIndex;
    Block *newBlock;
     
@@ -331,9 +325,14 @@ int readPage(Buffer *buf, DiskAddress diskPage) {
       if (result != 0) {
          fprintf(stderr, "tfs_readPage returned %d\n", result);
       }
+       
+      result = placePageInBuffer(buf, newBlock);
    }
-   
-   result = placePageInBuffer(buf, newBlock);
+   else
+   {
+       buf->timestamp[existingIndex] = ops++;
+       fprintf(stderr, "info: page passed to readPage already exists in buffer\n");
+   }
 
    return result;
 }
