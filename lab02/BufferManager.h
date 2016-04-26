@@ -33,6 +33,7 @@ typedef struct Buffer {
     unsigned long *cacheTimestamp;
 	char *pin;
 	char *dirty;
+    char *isVolatile;
 	int numBufferOccupied;
     int numCacheOccupied;
 } Buffer;

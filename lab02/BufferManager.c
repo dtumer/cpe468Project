@@ -148,6 +148,7 @@ void initBuffer(Buffer *buf, char *database, int nBufferBlocks, int nCacheBlocks
     buf->timestamp = calloc(nBufferBlocks, sizeof(unsigned long));
     buf->pin = calloc(nBufferBlocks, sizeof(char));
     buf->dirty = calloc(nBufferBlocks, sizeof(char));
+    buf->isVolatile = calloc(nBufferBlocks, sizeof(char));
     /* a new buffer has no pages occupied */
     buf->numBufferOccupied = 0;
     
@@ -311,9 +312,11 @@ int placePageInBuffer(Buffer *buf, Block *newBlock) {
          
          insertNdx = toEvict;
       }
+      
       buf->pages[insertNdx] = newBlock;
       buf->pin[insertNdx] = 'F';
       buf->dirty[insertNdx] = 'F';
+      buf->isVolatile[insertNdx] = 'F';
       buf->timestamp[insertNdx] = ops++;
       putIndex(bufMap, buf->pages[insertNdx]->diskAddress, insertNdx);
       
@@ -407,6 +410,12 @@ int flushPage(Buffer *buf, DiskAddress diskPage) {
         return BFMG_ERR;
     }
     
+    //handle if it is volatile
+    if(buf->isVolatile[index] = 'T')
+    {
+        //need to create file?
+    }
+    
     //Writes the selected page's data to disk
     tfs_writePage(pageBlock->diskAddress.FD, pageBlock->diskAddress.pageId, pageBlock->block);
     
@@ -492,7 +501,7 @@ int newPage(Buffer *buf, DiskAddress diskPage) {
 
 
 int allocateCachePage(Buffer *buf, DiskAddress diskPage) {
-    int i, retval, index, insertNdx = -1;
+    int i, bufNdx, index, insertNdx = -1;
     Block *newBlock, *tempBlock;
     
     //check not already in cache
@@ -516,12 +525,16 @@ int allocateCachePage(Buffer *buf, DiskAddress diskPage) {
     if(insertNdx == -1) {
         insertNdx = cacheEvictionPolicy(buf);
         tempBlock = buf->cache[insertNdx];
-        retval = placePageInBuffer(buf, tempBlock);
         
-        if(retval == BFMG_ERR)
+        bufNdx = placePageInBuffer(buf, tempBlock);
+        if(bufNdx == BFMG_ERR)
         {
             fprintf(stderr, "ERROR: failed to move page from Cache to Buffer\n");
             return BFMG_ERR;
+        }
+        else
+        {
+            buf->isVolatile[bufNdx] = 'T';
         }
     }
     
@@ -675,44 +688,55 @@ int printBlock(Buffer *buf, DiskAddress diskPage) {
  *
  * Priority:
  * 1. Unpinned dirty pages (flush and replace)
- * 2. If none of those, pick from the unpinned, un-dirty pages.  */
+ * 2. pick from the unpinned, un-dirty pages.
+ * 3. volatile pages
+ */
 int lru_evict(Buffer *buf) {
-   int i;
-   /* oldest clean/dirty pages- start from current operation count */
-   unsigned long oldestDirtyPage = ops + 1, oldestCleanPage = ops + 1;
-   int oldestDirtyIndex = -1, oldestCleanIndex = -1;
-   if (buf == NULL) {
-       fprintf(stderr, "Null buffer ptr passed to eviction fn\n");
-   }
-   /* find the oldest pages by iterating through
-      timestamps*/
-   for (i = 0; i < buf->nBufferBlocks; i++) {
-      if (buf->pin[i] == 'F') {
-         if (buf->dirty[i] == 'T' && buf->timestamp[i] < oldestDirtyPage) {
-            oldestDirtyPage = buf->timestamp[i];
-            oldestDirtyIndex = i;
-         }
-         if (buf->dirty[i] == 'F' && buf->timestamp[i] < oldestCleanPage) {
-            oldestCleanPage = buf->timestamp[i];
-            oldestCleanIndex = i;
-         }
-      }
-      
-   }
-   
-   if (buf->numBufferOccupied < buf->nBufferBlocks) {
-      fprintf(stderr, "WARNING: lru_evict called on a non-full buffer\n");
-   }
-   /* if there is an unpinned dirty page */
-   if (oldestDirtyPage != ops + 1) {
-      printf("oldest slot: %d (dirty), with timestamp: %lu\n",
-             oldestDirtyIndex, oldestDirtyPage);
-      return oldestDirtyIndex;
-   } else {
-      printf("oldest slot: %d (clean), with timestamp: %lu\n",
-             oldestCleanIndex, oldestCleanPage);
-      return oldestCleanIndex;
-   }
+    int i;
+    /* oldest clean/dirty pages- start from current operation count */
+    unsigned long oldestDirtyPage = ops + 1, oldestCleanPage = ops + 1, oldestVolPage = ops + 1;;
+    int oldestDirtyIndex = -1, oldestCleanIndex = -1, oldestVolIndex = -1;
+    
+    if (buf->numBufferOccupied < buf->nBufferBlocks) {
+        fprintf(stderr, "WARNING: lru_evict called on a non-full buffer\n");
+    }
+    
+    //find the oldest pages by iterating through timestamps
+    for (i = 0; i < buf->nBufferBlocks; i++) {
+        if (buf->pin[i] == 'F') {
+            if (buf->isVolatile[i] == 'T') {
+                if (buf->timestamp[i] < oldestVolPage) {
+                    oldestVolPage = buf->timestamp[i];
+                    oldestVolIndex = i;
+                }
+            } else if (buf->dirty[i] == 'T') {
+                if (buf->timestamp[i] < oldestDirtyPage) {
+                    oldestDirtyPage = buf->timestamp[i];
+                    oldestDirtyIndex = i;
+                }
+            } else {
+                if(buf->timestamp[i] < oldestCleanPage) {
+                    oldestCleanPage = buf->timestamp[i];
+                    oldestCleanIndex = i;
+                }
+            }
+        }
+    }
+    
+    /* if there is an unpinned dirty page */
+    if (oldestDirtyIndex != -1) {
+        printf("oldest slot: %d (dirty), with timestamp: %lu\n",
+               oldestDirtyIndex, oldestDirtyPage);
+        return oldestDirtyIndex;
+    } else if(oldestCleanIndex != -1) {
+        printf("oldest slot: %d (clean), with timestamp: %lu\n",
+               oldestCleanIndex, oldestCleanPage);
+        return oldestCleanIndex;
+    } else {
+        printf("oldest slot: %d (clean), with timestamp: %lu\n",
+               oldestVolIndex, oldestVolPage);
+        return oldestVolIndex;
+    }
 }
 
 /*
