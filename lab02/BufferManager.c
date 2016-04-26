@@ -546,7 +546,8 @@ int allocateCachePage(Buffer *buf, DiskAddress diskPage) {
     //write block to cache
     buf->cache[insertNdx] = newBlock;
     buf->cacheTimestamp[insertNdx] = ops++;
-    
+    putIndex(cacheMap, newBlock->diskAddress, insertNdx);
+   
     return BFMG_ERR;
 }
 
@@ -586,14 +587,8 @@ int removeCachePage(Buffer *buf, DiskAddress diskPage) {
          /* what do? */
       }
    }
-    
-    //check buffer
-    
-    
-    //check file
-    
-    
-    return BFMG_ERR;
+
+    return BFMG_OK;
 }
 
 /**
