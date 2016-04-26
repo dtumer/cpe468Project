@@ -208,6 +208,7 @@ int cleanupBuffer(Buffer *buf) {
     free(buf->pages);
     free(buf->cache);
     free(buf->timestamp);
+    free(buf->isVolatile);
     free(buf->cacheTimestamp);
     free(buf->pin);
     free(buf->dirty);
