@@ -576,7 +576,7 @@ int removeCachePage(Buffer *buf, DiskAddress diskPage) {
          /* move the last entry in the buffer to the vacated slot*/
          buf->pages[result] = buf->pages[buf->numBufferOccupied - 1];
          removeIndex(bufMap, buf->pages[buf->numBufferOccupied - 1]->diskAddress);
-         putIndex(bufMap, buf->pages[result]->diskAddress);
+         putIndex(bufMap, buf->pages[result]->diskAddress, result);
          buf->pages[buf->numBufferOccupied - 1] = NULL;
          buf->numBufferOccupied--;
          
