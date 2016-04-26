@@ -552,9 +552,36 @@ int allocateCachePage(Buffer *buf, DiskAddress diskPage) {
 
 
 int removeCachePage(Buffer *buf, DiskAddress diskPage) {
-    
+   Block *cachePage;
+   int result;
     //check cache
-    
+   result = getIndex(cacheMap, diskPage)
+   if (result != -1) {
+     /* page is in volatile storage */
+      cachePage = buf->cache[result];
+      free(cachePage);
+      removeIndex(cacheMap, diskPage);
+      buf->numCacheOccupied--;
+      buf->cache[result] = NULL;
+      
+   } else {
+      /* in buffer or on disk */
+      result = getIndex(bufMap, diskPage);
+      if (result != -1) {
+         /* drop the volatile page out of the cache.
+            since we don't need it anymore just nuke it */
+         cachePage = buf->pages[result];
+         free(cachePage);
+         removeIndex(bufMap, diskPage);
+         buf->pages[result] = buf->pages[buf->numBufferOccupied - 1];
+         removeIndex(bufMap, buf->pages[buf->numBufferOccupied - 1]->diskAddress);
+         putIndex(bufMap, buf->pages[result]->diskAddress);
+         buf->pages[buf->numBufferOccupied - 1] = NULL;
+         buf->numBufferOccupied--;
+         
+         /* move the last entry in the buffer to the vacated slot*/
+      }
+   }
     
     //check buffer
     
