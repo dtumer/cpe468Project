@@ -492,11 +492,62 @@ int newPage(Buffer *buf, DiskAddress diskPage) {
 
 
 int allocateCachePage(Buffer *buf, DiskAddress diskPage) {
+    int i, retval, index, insertNdx = -1;
+    Block *newBlock, *tempBlock;
+    
+    //check not already in cache
+    index = getIndex(cacheMap, diskPage);
+    if(index != -1){
+        fprintf(stderr, "INFO: page already in Cache\n");
+        return BFMG_ERR;
+    }
+    
+    //find first open slot in cache
+    if(buf->numCacheOccupied < buf->nCacheBlocks) {
+        for(i=0; i<buf->nCacheBlocks; i++) {
+            if(buf->cache[i] == NULL){
+                insertNdx = i;
+                break;
+            }
+        }
+    }
+    
+    //evict from cache to buffer if cache is full
+    if(insertNdx == -1) {
+        insertNdx = cacheEvictionPolicy(buf);
+        tempBlock = buf->cache[insertNdx];
+        retval = placePageInBuffer(buf, tempBlock);
+        
+        if(retval == BFMG_ERR)
+        {
+            fprintf(stderr, "ERROR: failed to move page from Cache to Buffer\n");
+            return BFMG_ERR;
+        }
+    }
+    
+    //create new block
+    newBlock = calloc(1, sizeof(Block));
+    newBlock->diskAddress = diskPage;
+    
+    //write block to cache
+    buf->cache[insertNdx] = newBlock;
+    buf->cacheTimestamp[insertNdx] = ops++;
+    
     return BFMG_ERR;
 }
 
 
 int removeCachePage(Buffer *buf, DiskAddress diskPage) {
+    
+    //check cache
+    
+    
+    //check buffer
+    
+    
+    //check file
+    
+    
     return BFMG_ERR;
 }
 
