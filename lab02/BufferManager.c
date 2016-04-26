@@ -9,9 +9,12 @@
 
 
 int lru_evict(Buffer *buf);
+int lru_cacheEvict(Buffer *buf);
 /* type for a replacement policy function 
    It returns the buffer index of the page that should be evicted */
 static evictFn evictionPolicy = lru_evict;
+static evictFn cacheEvictionPolicy = lru_cacheEvict;
+
 /* using an operation counter rather than a timestamp because it's simpler*/
 /* TODO? change to timevals, and alter the buffer struct accordingly?*/
 static unsigned long ops = 0;
@@ -660,5 +663,40 @@ int lru_evict(Buffer *buf) {
       return oldestCleanIndex;
    }
 }
+
+/*
+ * lru_cacheEvict analyzes the state of the input cache and returns the slot which should be
+ * evicted and returns that index.
+ * Least Recently Used algorithm finds the oldest
+ * timestamp (i.e. the block which has been inactive
+ * for longest) and returns that index.
+ */
+int lru_cacheEvict(Buffer *buf) {
+    int i;
+    /* oldest clean/dirty pages- start from current operation count */
+    unsigned long oldestPage = ops + 1;
+    int oldestIndex = -1;
+    
+    if (buf == NULL) {
+        fprintf(stderr, "Null buffer ptr passed to eviction fn\n");
+    }
+    
+    /* find the oldest pages by iterating through
+     timestamps*/
+    for (i = 0; i < buf->nCacheBlocks; i++) {
+        if (buf->cacheTimestamp[i] < oldestPage) {
+            oldestPage = buf->cacheTimestamp[i];
+            oldestIndex = i;
+        }
+    }
+    
+    if (buf->numCacheOccupied < buf->nCacheBlocks) {
+        fprintf(stderr, "WARNING: lru_cacheEvict called on a non-full cache\n");
+    }
+    
+    printf("oldest slot: %d, with timestamp: %lu\n", oldestIndex, oldestPage);
+	return oldestIndex;
+}
+
 
 
