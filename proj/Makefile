@@ -20,12 +20,10 @@ TestHarness: TestHarness.c BufferManager.c
 
 runTestHarness: TestHarness
 	-@rm *.disk
-	./TestHarness commands1.txt
-
-cleanTestHarness:
-	rm TestHarness
+	./TestHarness ./test_files/TestHarness1.txt
 
 handin:
 	handin dekhtyar 468-lab3 *.c *.h Makefile README
 
-clean: cleanTestHarness
+clean:
+	rm TestHarness
