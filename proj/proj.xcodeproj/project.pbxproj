@@ -10,7 +10,6 @@
 		0FB6CEC31CB5E432007B9F6E /* libTinyFS.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = libTinyFS.h; sourceTree = "<group>"; };
 		0FB6CEC41CB5E5B1007B9F6E /* tinyFS.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = tinyFS.h; sourceTree = "<group>"; };
 		0FB6CEC51CB5E5E2007B9F6E /* Makefile */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.make; path = Makefile; sourceTree = "<group>"; };
-		0FB6CEC61CB5E609007B9F6E /* tests.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = tests.c; sourceTree = "<group>"; };
 		0FB6CF4B1CBAF414007B9F6E /* testHashmap.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = testHashmap.c; sourceTree = "<group>"; };
 		0FB6CF4C1CBAF425007B9F6E /* smartalloc.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = smartalloc.c; sourceTree = "<group>"; };
 		0FB6CF4D1CBAF425007B9F6E /* smartalloc.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = smartalloc.h; sourceTree = "<group>"; };
@@ -38,7 +37,6 @@
 				638E34D71CB823C5006530E0 /* libDisk.o */,
 				638E34D81CB823C5006530E0 /* README */,
 				638E34D91CB823C5006530E0 /* TestHarness.c */,
-				0FB6CEC61CB5E609007B9F6E /* tests.c */,
 				0FB6CF4B1CBAF414007B9F6E /* testHashmap.c */,
 				0FB6CEC31CB5E432007B9F6E /* libTinyFS.h */,
 				0FB6CEC41CB5E5B1007B9F6E /* tinyFS.h */,
@@ -58,7 +56,7 @@
 			attributes = {
 				LastUpgradeCheck = 0720;
 			};
-			buildConfigurationList = 0FB6CEBF1CB5E351007B9F6E /* Build configuration list for PBXProject "lab02" */;
+			buildConfigurationList = 0FB6CEBF1CB5E351007B9F6E /* Build configuration list for PBXProject "proj" */;
 			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
@@ -89,7 +87,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		0FB6CEBF1CB5E351007B9F6E /* Build configuration list for PBXProject "lab02" */ = {
+		0FB6CEBF1CB5E351007B9F6E /* Build configuration list for PBXProject "proj" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				0FB6CEC01CB5E351007B9F6E /* Debug */,
