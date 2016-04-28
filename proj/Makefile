@@ -1,5 +1,6 @@
 CC = gcc
 CFLAGS = -Wall -g
+LIBS  = libs/hashmap.c libs/smartalloc.c libs/TFS468/libDisk.o libs/TFS468/libTinyFS.o
 
 all: clean
 
@@ -15,8 +16,17 @@ handinPostConfig: TFS468
 	mv hashmap.* ./libs
 	mv smartalloc.* ./libs
 
-TestHarness: TestHarness.c BufferManager.c
-	$(CC) $(CFLAGS) -o TestHarness TestHarness.c BufferManager.c libs/hashmap.c libs/smartalloc.c libs/TFS468/libDisk.o libs/TFS468/libTinyFS.o
+BufferManager.o: BufferManager.c
+	$(CC) $(CFLAGS) -c -o $@ $^
+
+ReadWrite.o: ReadWrite.c
+	$(CC) $(CFLAGS) -c -o $@ $^
+
+TestHarness: TestHarness.c BufferManager.o $(LIBS)
+	$(CC) $(CFLAGS) -o $@ $^
+
+TestReadWrite: TestReadWrite.c ReadWrite.o BufferManager.o $(LIBS)
+	$(CC) $(CFLAGS) -o $@ $^
 
 runTestHarness: TestHarness
 	-@rm *.disk
@@ -26,4 +36,6 @@ handin:
 	handin dekhtyar 468-lab3 *.c *.h Makefile README
 
 clean:
-	rm TestHarness
+	-@rm TestHarness
+	-@rm *.o
+	-@rm *.disk
