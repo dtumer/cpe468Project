@@ -4,8 +4,8 @@
 #include <sys/types.h>
 
 #include "BufferManager.h"
-#include "hashmap.h"
-#include "smartalloc.h"
+#include "libs/hashmap.h"
+#include "libs/smartalloc.h"
 
 
 int lru_evict(Buffer *buf);

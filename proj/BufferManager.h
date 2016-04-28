@@ -1,6 +1,6 @@
-#include "tinyFS.h"
-#include "libTinyFS.h"
-#include "libDisk.h"
+#include "libs/TFS468/tinyFS.h"
+#include "libs/TFS468/libTinyFS.h"
+#include "libs/TFS468/libDisk.h"
 
 
 

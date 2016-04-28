@@ -1,7 +1,7 @@
 #include <stdio.h>
 
 #include "BufferManager.h"
-#include "smartalloc.h"
+#include "libs/smartalloc.h"
 
 typedef struct FileNode {
 	fileDescriptor FD;
