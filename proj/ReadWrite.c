@@ -24,14 +24,14 @@ int putPage(Buffer buf, DiskAddress page, char * data) {
 }
 
 //return a portion of the disk page
-char * read(Buffer * buf, DiskAddress page, int startOffset, int nBytes)
+char * buf_read(Buffer * buf, DiskAddress page, int startOffset, int nBytes)
 {
     
     return NULL;
 }
 
 //write data to disk page
-int write(Buffer * buf, DiskAddress page, int startOffset, int nBytes, char * data) {
+int buf_write(Buffer * buf, DiskAddress page, int startOffset, int nBytes, char * data) {
     
     return 0;
 }
