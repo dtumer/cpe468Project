@@ -5,6 +5,7 @@
 
 #include "BufferManager.h"
 
+#define PAGE_SIZE 1024
 
 char * getPage(Buffer * buf, DiskAddress page);
 int putPage(Buffer buf, DiskAddress page, char * data);

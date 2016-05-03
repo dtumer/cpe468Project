@@ -125,7 +125,7 @@ int removeIndex(map_t map, DiskAddress diskAdd) {
 //finds whether or not there is a Block in the page location specified in the buffer
 Block* findPageInBuffer(Buffer *buf, int index) {
     if (index >= 0 && index < buf->nBufferBlocks) {
-        return buf->pages[index];
+        return buf->persistentPages[index];
     }
     else {
         return NULL;
@@ -144,7 +144,7 @@ void initBuffer(Buffer *buf, char *database, int nBufferBlocks, int nCacheBlocks
     //buffer
     buf->nBufferBlocks = nBufferBlocks;
     /* allocate the page arrays for nBufferBlocks pages */
-    buf->pages = calloc(nBufferBlocks, sizeof(Block*));
+    buf->persistentPages = calloc(nBufferBlocks, sizeof(Block*));
     buf->timestamp = calloc(nBufferBlocks, sizeof(unsigned long));
     buf->pin = calloc(nBufferBlocks, sizeof(char));
     buf->dirty = calloc(nBufferBlocks, sizeof(char));
@@ -152,8 +152,8 @@ void initBuffer(Buffer *buf, char *database, int nBufferBlocks, int nCacheBlocks
     /* a new buffer has no pages occupied */
     buf->numBufferOccupied = 0;
     
-    //cache
-    buf->cache = calloc(nCacheBlocks, sizeof(Block*));
+    //volatile
+    buf->volatilePages = calloc(nCacheBlocks, sizeof(Block*));
     buf->cacheTimestamp = calloc(nCacheBlocks, sizeof(unsigned long));
     buf->nCacheBlocks = nCacheBlocks;
     buf->numCacheOccupied = 0;
@@ -172,7 +172,7 @@ int cleanupBuffer(Buffer *buf) {
     Block *pageBlock;
         
     for (i = 0; i < buf->nBufferBlocks; i++) {
-    	pageBlock = buf->pages[i];
+    	pageBlock = buf->persistentPages[i];
     	
     	if (pageBlock != NULL) {
     		//unpin page
@@ -188,25 +188,25 @@ int cleanupBuffer(Buffer *buf) {
             
             //free the page
             free(pageBlock);
-            buf->pages[i] = NULL;
+            buf->persistentPages[i] = NULL;
     	}
     }
     
     for (i = 0; i < buf->nCacheBlocks; i++) {
-        pageBlock = buf->cache[i];
+        pageBlock = buf->volatilePages[i];
         
         if (pageBlock != NULL) {
             //free the page
             free(pageBlock);
-            buf->cache[i] = NULL;
+            buf->volatilePages[i] = NULL;
         }
     }
     
     
     //clear buffer 
     free(buf->database);
-    free(buf->pages);
-    free(buf->cache);
+    free(buf->persistentPages);
+    free(buf->volatilePages);
     free(buf->timestamp);
     free(buf->isVolatile);
     free(buf->cacheTimestamp);
@@ -302,24 +302,24 @@ int placePageInBuffer(Buffer *buf, Block *newBlock) {
          toEvict = evictionPolicy(buf);
          /* flush the page, and update the map */
          if (buf->dirty[toEvict] == 'T') {
-            if (flushPage(buf, buf->pages[toEvict]->diskAddress) == BFMG_ERR) {
+            if (flushPage(buf, buf->persistentPages[toEvict]->diskAddress) == BFMG_ERR) {
                fprintf(stderr, "placePageInBuffer: failed to flush dirty page\n");
                return BFMG_ERR;
             }
          }
-         removeIndex(bufMap, buf->pages[toEvict]->diskAddress);
+         removeIndex(bufMap, buf->persistentPages[toEvict]->diskAddress);
          fprintf(stderr, "info: freeing the page at %d\n", toEvict);
-         free(buf->pages[toEvict]);
+         free(buf->persistentPages[toEvict]);
          
          insertNdx = toEvict;
       }
       
-      buf->pages[insertNdx] = newBlock;
+      buf->persistentPages[insertNdx] = newBlock;
       buf->pin[insertNdx] = 'F';
       buf->dirty[insertNdx] = 'F';
       buf->isVolatile[insertNdx] = 'F';
       buf->timestamp[insertNdx] = ops++;
-      putIndex(bufMap, buf->pages[insertNdx]->diskAddress, insertNdx);
+      putIndex(bufMap, buf->persistentPages[insertNdx]->diskAddress, insertNdx);
       
       retval = insertNdx;
    }
@@ -515,7 +515,7 @@ int allocateCachePage(Buffer *buf, DiskAddress diskPage) {
     //find first open slot in cache
     if(buf->numCacheOccupied < buf->nCacheBlocks) {
         for(i=0; i<buf->nCacheBlocks; i++) {
-            if(buf->cache[i] == NULL){
+            if(buf->volatilePages[i] == NULL){
                 insertNdx = i;
                 break;
             }
@@ -525,7 +525,7 @@ int allocateCachePage(Buffer *buf, DiskAddress diskPage) {
     //evict from cache to buffer if cache is full
     if(insertNdx == -1) {
         insertNdx = cacheEvictionPolicy(buf);
-        tempBlock = buf->cache[insertNdx];
+        tempBlock = buf->volatilePages[insertNdx];
         
         bufNdx = placePageInBuffer(buf, tempBlock);
         if(bufNdx == BFMG_ERR)
@@ -544,7 +544,7 @@ int allocateCachePage(Buffer *buf, DiskAddress diskPage) {
     newBlock->diskAddress = diskPage;
     
     //write block to cache
-    buf->cache[insertNdx] = newBlock;
+    buf->volatilePages[insertNdx] = newBlock;
     buf->cacheTimestamp[insertNdx] = ops++;
     buf->numCacheOccupied += buf->numCacheOccupied < buf->nCacheBlocks ? 1 : 0;
     putIndex(cacheMap, newBlock->diskAddress, insertNdx);
@@ -560,25 +560,25 @@ int removeCachePage(Buffer *buf, DiskAddress diskPage) {
    result = getIndex(cacheMap, diskPage);
    if (result != -1) {
      /* page is in volatile storage */
-      cachePage = buf->cache[result];
+      cachePage = buf->volatilePages[result];
       free(cachePage);
       removeIndex(cacheMap, diskPage);
       buf->numCacheOccupied--;
-      buf->cache[result] = NULL;
+      buf->volatilePages[result] = NULL;
    } else {
       /* in buffer or on disk */
       result = getIndex(bufMap, diskPage);
       if (result != -1) {
          /* drop the volatile page out of the cache.
             since we don't need it anymore just nuke it */
-         cachePage = buf->pages[result];
+         cachePage = buf->persistentPages[result];
          free(cachePage);
          removeIndex(bufMap, diskPage);
          /* move the last entry in the buffer to the vacated slot*/
-         buf->pages[result] = buf->pages[buf->numBufferOccupied - 1];
-         removeIndex(bufMap, buf->pages[buf->numBufferOccupied - 1]->diskAddress);
-         putIndex(bufMap, buf->pages[result]->diskAddress, result);
-         buf->pages[buf->numBufferOccupied - 1] = NULL;
+         buf->persistentPages[result] = buf->persistentPages[buf->numBufferOccupied - 1];
+         removeIndex(bufMap, buf->persistentPages[buf->numBufferOccupied - 1]->diskAddress);
+         putIndex(bufMap, buf->persistentPages[result]->diskAddress, result);
+         buf->persistentPages[buf->numBufferOccupied - 1] = NULL;
          buf->numBufferOccupied--;
          
          
@@ -618,8 +618,8 @@ void checkpoint(Buffer * buf) {
         }
         else {
             printf("Buffer Slot %d:\n", i);
-            printf("\ttinyFS FD: %d\n", buf->pages[i]->diskAddress.FD);
-            printf("\ttinyFS blockID: %d\n", buf->pages[i]->diskAddress.pageId);
+            printf("\ttinyFS FD: %d\n", buf->persistentPages[i]->diskAddress.FD);
+            printf("\ttinyFS blockID: %d\n", buf->persistentPages[i]->diskAddress.pageId);
             printf("\ttimestamps for the block: %ld\n", buf->timestamp[i]);
             printf("\tpin flag: %d\n", buf->pin[i]);
             printf("\tdirty flag: %d\n", buf->dirty[i]);
@@ -634,8 +634,8 @@ void checkpoint(Buffer * buf) {
         }
         else {
             printf("Cache Slot %d:\n", i);
-            printf("\ttinyFS FD: %d\n", buf->cache[i]->diskAddress.FD);
-            printf("\ttinyFS blockID: %d\n", buf->cache[i]->diskAddress.pageId);
+            printf("\ttinyFS FD: %d\n", buf->volatilePages[i]->diskAddress.FD);
+            printf("\ttinyFS blockID: %d\n", buf->volatilePages[i]->diskAddress.pageId);
         }
     }
 }
@@ -649,7 +649,7 @@ void checkpoint(Buffer * buf) {
  */
 int pageDump(Buffer *buf, int index) {
     if (index >= 0 && index < buf->nBufferBlocks) {
-        fwrite(&(buf->pages[index]), BLOCKSIZE, 1, stdout);
+        fwrite(&(buf->persistentPages[index]), BLOCKSIZE, 1, stdout);
         return BFMG_OK;
     }
     
