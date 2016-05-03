@@ -8,20 +8,20 @@
 #include "libs/smartalloc.h"
 
 
-int lru_evict(Buffer *buf);
-int lru_cacheEvict(Buffer *buf);
+int lru_persistentEvict(Buffer *buf);
+int lru_volatileEvict(Buffer *buf);
 /* type for a replacement policy function 
    It returns the buffer index of the page that should be evicted */
-static evictFn evictionPolicy = lru_evict;
-static evictFn cacheEvictionPolicy = lru_cacheEvict;
+static evictFn persistentEvictionPolicy = lru_persistentEvict;
+static evictFn volatileEvictionPolicy = lru_volatileEvict;
 
 /* using an operation counter rather than a timestamp because it's simpler*/
 /* TODO? change to timevals, and alter the buffer struct accordingly?*/
 static unsigned long ops = 0;
 
 //global map variable for holding references to disk addresses and their location in the buffer
-map_t bufMap;
-map_t cacheMap;
+map_t persistentMap;
+map_t volatileMap;
 
 //returns the number of digits in a number
 int numDigits(int n) {
@@ -154,13 +154,13 @@ void initBuffer(Buffer *buf, char *database, int nBufferBlocks, int nCacheBlocks
     
     //volatile
     buf->volatilePages = calloc(nCacheBlocks, sizeof(Block*));
-    buf->cacheTimestamp = calloc(nCacheBlocks, sizeof(unsigned long));
+    buf->volatileTimestamp = calloc(nCacheBlocks, sizeof(unsigned long));
     buf->nCacheBlocks = nCacheBlocks;
     buf->numCacheOccupied = 0;
     
     /* initialize the hashmaps */
-    bufMap = hashmap_new();
-    cacheMap = hashmap_new();
+    persistentMap = hashmap_new();
+    volatileMap = hashmap_new();
 }
 
 
@@ -209,7 +209,7 @@ int cleanupBuffer(Buffer *buf) {
     free(buf->volatilePages);
     free(buf->timestamp);
     free(buf->isVolatile);
-    free(buf->cacheTimestamp);
+    free(buf->volatileTimestamp);
     free(buf->pin);
     free(buf->dirty);
     free(buf);
@@ -290,7 +290,7 @@ int placePageInBuffer(Buffer *buf, Block *newBlock) {
     Priority for eviction:
     1. Unpinned dirty pages (flush and replace)
     2. If none of those, pick from the unpinned, un-dirty pages and ask the eviction policy (for now, LRU)  */
-   index = getIndex(bufMap, newBlock->diskAddress);
+   index = getIndex(persistentMap, newBlock->diskAddress);
    if (index == -1) {
       /* need to fetch it */
       if (buf->numBufferOccupied < buf->nBufferBlocks) {
@@ -299,7 +299,7 @@ int placePageInBuffer(Buffer *buf, Block *newBlock) {
          buf->numBufferOccupied++;
       } else {
          /* these calls will be replaced by evictPage */
-         toEvict = evictionPolicy(buf);
+         toEvict = persistentEvictionPolicy(buf);
          /* flush the page, and update the map */
          if (buf->dirty[toEvict] == 'T') {
             if (flushPage(buf, buf->persistentPages[toEvict]->diskAddress) == BFMG_ERR) {
@@ -307,7 +307,7 @@ int placePageInBuffer(Buffer *buf, Block *newBlock) {
                return BFMG_ERR;
             }
          }
-         removeIndex(bufMap, buf->persistentPages[toEvict]->diskAddress);
+         removeIndex(persistentMap, buf->persistentPages[toEvict]->diskAddress);
          fprintf(stderr, "info: freeing the page at %d\n", toEvict);
          free(buf->persistentPages[toEvict]);
          
@@ -319,7 +319,7 @@ int placePageInBuffer(Buffer *buf, Block *newBlock) {
       buf->dirty[insertNdx] = 'F';
       buf->isVolatile[insertNdx] = 'F';
       buf->timestamp[insertNdx] = ops++;
-      putIndex(bufMap, buf->persistentPages[insertNdx]->diskAddress, insertNdx);
+      putIndex(persistentMap, buf->persistentPages[insertNdx]->diskAddress, insertNdx);
       
       retval = insertNdx;
    }
@@ -343,7 +343,7 @@ int readPage(Buffer *buf, DiskAddress diskPage) {
    int existingIndex;
    Block *newBlock;
    
-   existingIndex = getIndex(bufMap, diskPage);
+   existingIndex = getIndex(persistentMap, diskPage);
    if (existingIndex == -1) {
       newBlock = malloc(sizeof(Block));
       newBlock->diskAddress = diskPage;
@@ -378,7 +378,7 @@ int readPage(Buffer *buf, DiskAddress diskPage) {
  * on error, errno is also set
  */
 int writePage(Buffer *buf, DiskAddress diskPage) {
-    int index = getIndex(bufMap, diskPage);
+    int index = getIndex(persistentMap, diskPage);
     Block *pageBlock = findPageInBuffer(buf, index);
     
     if (pageBlock) {
@@ -403,7 +403,7 @@ int writePage(Buffer *buf, DiskAddress diskPage) {
  * on error, errno is also set
  */
 int flushPage(Buffer *buf, DiskAddress diskPage) {
-    int index = getIndex(bufMap, diskPage);
+    int index = getIndex(persistentMap, diskPage);
     Block *pageBlock = findPageInBuffer(buf, index);
 
     //Exits if page is not in the buffer
@@ -438,7 +438,7 @@ int flushPage(Buffer *buf, DiskAddress diskPage) {
  * on error, errno is also set
  */
 int pinPage(Buffer *buf, DiskAddress diskPage) {
-    int index = getIndex(bufMap, diskPage);
+    int index = getIndex(persistentMap, diskPage);
     Block *pageBlock = findPageInBuffer(buf, index);
     
     if (pageBlock) {
@@ -462,7 +462,7 @@ int pinPage(Buffer *buf, DiskAddress diskPage) {
  * on error, errno is also set
  */
 int unPinPage(Buffer *buf, DiskAddress diskPage) {
-    int index = getIndex(bufMap, diskPage);
+    int index = getIndex(persistentMap, diskPage);
     Block *pageBlock = findPageInBuffer(buf, index);
    
     if (pageBlock) {
@@ -505,14 +505,14 @@ int allocateCachePage(Buffer *buf, DiskAddress diskPage) {
     int i, bufNdx, index, insertNdx = -1;
     Block *newBlock, *tempBlock;
     
-    //check not already in cache
-    index = getIndex(cacheMap, diskPage);
+    //check not already in volatile storage
+    index = getIndex(volatileMap, diskPage);
     if(index != -1){
         fprintf(stderr, "INFO: page already in Cache: %d\n", index);
         return BFMG_ERR;
     }
     
-    //find first open slot in cache
+    //find first open slot in volatile storage
     if(buf->numCacheOccupied < buf->nCacheBlocks) {
         for(i=0; i<buf->nCacheBlocks; i++) {
             if(buf->volatilePages[i] == NULL){
@@ -522,9 +522,10 @@ int allocateCachePage(Buffer *buf, DiskAddress diskPage) {
         }
     }
     
-    //evict from cache to buffer if cache is full
+    //evict from volatile storage to persistent storage if 
+    //volatile storage is full
     if(insertNdx == -1) {
-        insertNdx = cacheEvictionPolicy(buf);
+        insertNdx = volatileEvictionPolicy(buf);
         tempBlock = buf->volatilePages[insertNdx];
         
         bufNdx = placePageInBuffer(buf, tempBlock);
@@ -543,41 +544,41 @@ int allocateCachePage(Buffer *buf, DiskAddress diskPage) {
     newBlock = calloc(1, sizeof(Block));
     newBlock->diskAddress = diskPage;
     
-    //write block to cache
+    //write block to volatile storage
     buf->volatilePages[insertNdx] = newBlock;
-    buf->cacheTimestamp[insertNdx] = ops++;
+    buf->volatileTimestamp[insertNdx] = ops++;
     buf->numCacheOccupied += buf->numCacheOccupied < buf->nCacheBlocks ? 1 : 0;
-    putIndex(cacheMap, newBlock->diskAddress, insertNdx);
+    putIndex(volatileMap, newBlock->diskAddress, insertNdx);
    
     return BFMG_ERR;
 }
 
 
 int removeCachePage(Buffer *buf, DiskAddress diskPage) {
-   Block *cachePage;
+   Block *volatilePage;
    int result;
-    //check cache
-   result = getIndex(cacheMap, diskPage);
+    //check volatile storage
+   result = getIndex(volatileMap, diskPage);
    if (result != -1) {
      /* page is in volatile storage */
-      cachePage = buf->volatilePages[result];
-      free(cachePage);
-      removeIndex(cacheMap, diskPage);
+      volatilePage = buf->volatilePages[result];
+      free(volatilePage);
+      removeIndex(volatileMap, diskPage);
       buf->numCacheOccupied--;
       buf->volatilePages[result] = NULL;
    } else {
       /* in buffer or on disk */
-      result = getIndex(bufMap, diskPage);
+      result = getIndex(persistentMap, diskPage);
       if (result != -1) {
-         /* drop the volatile page out of the cache.
+         /* drop the volatile page out of the volatile storage.
             since we don't need it anymore just nuke it */
-         cachePage = buf->persistentPages[result];
-         free(cachePage);
-         removeIndex(bufMap, diskPage);
+         volatilePage = buf->persistentPages[result];
+         free(volatilePage);
+         removeIndex(persistentMap, diskPage);
          /* move the last entry in the buffer to the vacated slot*/
          buf->persistentPages[result] = buf->persistentPages[buf->numBufferOccupied - 1];
-         removeIndex(bufMap, buf->persistentPages[buf->numBufferOccupied - 1]->diskAddress);
-         putIndex(bufMap, buf->persistentPages[result]->diskAddress, result);
+         removeIndex(persistentMap, buf->persistentPages[buf->numBufferOccupied - 1]->diskAddress);
+         putIndex(persistentMap, buf->persistentPages[result]->diskAddress, result);
          buf->persistentPages[buf->numBufferOccupied - 1] = NULL;
          buf->numBufferOccupied--;
          
@@ -668,7 +669,7 @@ int pageDump(Buffer *buf, int index) {
  * returns BFMG_OK if there are no errors and BFMG_ERR if there is an error.
  */
 int printPage(Buffer *buf, DiskAddress diskPage) {
-    int index = getIndex(bufMap, diskPage);
+    int index = getIndex(persistentMap, diskPage);
     int numpages = tfs_numPages(diskPage.FD);
     
     if(diskPage.pageId > numpages) {
@@ -705,7 +706,7 @@ int printBlock(Buffer *buf, DiskAddress diskPage) {
 }
 
 /* 
- * lru_evict analyzes the state of the input buffer and returns the slot which should be flushed/dropped,
+ * lru_persistentEvict analyzes the state of the input buffer and returns the slot which should be flushed/dropped,
  * and returns that. Called by readPage
  * readPage and writePage update the timestamp for
  * blocks used.
@@ -718,14 +719,14 @@ int printBlock(Buffer *buf, DiskAddress diskPage) {
  * 2. pick from the unpinned, un-dirty pages.
  * 3. volatile pages
  */
-int lru_evict(Buffer *buf) {
+int lru_persistentEvict(Buffer *buf) {
     int i;
     /* oldest clean/dirty pages- start from current operation count */
     unsigned long oldestDirtyPage = ops + 1, oldestCleanPage = ops + 1, oldestVolPage = ops + 1;;
     int oldestDirtyIndex = -1, oldestCleanIndex = -1, oldestVolIndex = -1;
     
     if (buf->numBufferOccupied < buf->nBufferBlocks) {
-        fprintf(stderr, "WARNING: lru_evict called on a non-full buffer\n");
+        fprintf(stderr, "WARNING: lru_persistentEvict called on a non-full buffer\n");
     }
     
     //find the oldest pages by iterating through timestamps
@@ -767,13 +768,13 @@ int lru_evict(Buffer *buf) {
 }
 
 /*
- * lru_cacheEvict analyzes the state of the input cache and returns the slot which should be
+ * lru_volatileEvict analyzes the state of the volatile input volatile and returns the slot which should be
  * evicted and returns that index.
  * Least Recently Used algorithm finds the oldest
  * timestamp (i.e. the block which has been inactive
  * for longest) and returns that index.
  */
-int lru_cacheEvict(Buffer *buf) {
+int lru_volatileEvict(Buffer *buf) {
     int i;
     /* oldest clean/dirty pages- start from current operation count */
     unsigned long oldestPage = ops + 1;
@@ -786,14 +787,14 @@ int lru_cacheEvict(Buffer *buf) {
     /* find the oldest pages by iterating through
      timestamps*/
     for (i = 0; i < buf->nCacheBlocks; i++) {
-        if (buf->cacheTimestamp[i] < oldestPage) {
-            oldestPage = buf->cacheTimestamp[i];
+        if (buf->volatileTimestamp[i] < oldestPage) {
+            oldestPage = buf->volatileTimestamp[i];
             oldestIndex = i;
         }
     }
     
     if (buf->numCacheOccupied < buf->nCacheBlocks) {
-        fprintf(stderr, "WARNING: lru_cacheEvict called on a non-full cache\n");
+        fprintf(stderr, "WARNING: lru_volatileEvict called on non-full volatile storage\n");
     }
     
     printf("oldest slot: %d, with timestamp: %lu\n", oldestIndex, oldestPage);

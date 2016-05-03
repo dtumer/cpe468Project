@@ -30,7 +30,7 @@ typedef struct Buffer {
 	Block **persistentPages;
     Block **volatilePages;
 	unsigned long *timestamp;
-    unsigned long *cacheTimestamp;
+    unsigned long *volatileTimestamp;
 	char *pin;
 	char *dirty;
     char *isVolatile;
@@ -44,6 +44,7 @@ typedef int (*evictFn)(Buffer *);
 int commence(char *database, Buffer *buf, int nBufferBlocks, int nCacheBlocks);
 int squash(Buffer *buf);
 int loadPage(Buffer *buf, DiskAddress diskPage);
+int readPage(Buffer *buf, DiskAddress diskPage);
 int writePage(Buffer *buf, DiskAddress diskPage);
 int flushPage(Buffer *buf, DiskAddress diskPage);
 int pinPage(Buffer *buf, DiskAddress diskPage);

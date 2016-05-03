@@ -30,7 +30,7 @@ char *buf_read(Buffer * buf, DiskAddress page, int startOffset, int nBytes)
     char *data = calloc(nBytes, sizeof(char));
     
     //check cache
-    index = getIndex(cacheMap, page);
+    index = getIndex(volatileMap, page);
     
     if(index >= 0)
     {
@@ -69,12 +69,12 @@ int buf_write(Buffer * buf, DiskAddress page, int startOffset, int nBytes, char 
 
 //read from volatile storage
 char * readVolatile(Buffer * buf, DiskAddress page, int startOffset, int nBytes) {
-    int index = getIndex(cacheMap, page);
+    int index = getIndex(volatileMap, page);
     char *ptr = NULL, *data = NULL;
     
     if(index >= 0)
     {
-        ptr = buf->cache[index]->block;
+        ptr = buf->volatilePages[index]->block;
     }
     
     if(ptr != NULL)
