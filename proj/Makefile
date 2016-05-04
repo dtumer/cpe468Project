@@ -37,5 +37,6 @@ handin:
 
 clean:
 	-@rm TestHarness
+	-@rm TestReadWrite
 	-@rm *.o
 	-@rm *.disk

@@ -43,15 +43,16 @@ typedef int (*evictFn)(Buffer *);
 
 int commence(char *database, Buffer *buf, int nBufferBlocks, int nCacheBlocks);
 int squash(Buffer *buf);
-int loadPage(Buffer *buf, DiskAddress diskPage);
-int readPage(Buffer *buf, DiskAddress diskPage);
+int loadPersistentPage(Buffer *buf, DiskAddress diskPage);
 int writePage(Buffer *buf, DiskAddress diskPage);
 int flushPage(Buffer *buf, DiskAddress diskPage);
 int pinPage(Buffer *buf, DiskAddress diskPage);
 int unPinPage(Buffer *buf, DiskAddress diskPage);
 int newPage(Buffer *buf, DiskAddress diskPage);
+
 int allocateCachePage(Buffer *buf, DiskAddress diskPage);
 int removeCachePage(Buffer *buf, DiskAddress diskPage);
+int loadVolatilePage(Buffer *buf, DiskAddress diskPage);
 
 //test functions
 void checkpoint(Buffer * buf);

@@ -328,17 +328,17 @@ int placePageInBuffer(Buffer *buf, Block *newBlock) {
 }
 
 /**
- * This function provides read access to the specified block of the disk.
+ * This function provides access to the specified block of data in the persistent buffer.
  * \param buf       the currently used buffer struct
  * \param diskPage  a TinyFS identifier for the disk page needed
+ * 
+ * If the data is not in the persistent buffer it will load it from disk using the
+ * buffer replacement policy
  *
- * readPage guarantees that after its return, the parameter page will be in the 
- * buffer. Further calls can use the other map-access function (not yet defined)
- * to access the page read by this function.
  * returns the index of the requested page, or BFMG_ERR if something is wrong.
  * on error, errno is also set
  */
-int readPage(Buffer *buf, DiskAddress diskPage) {
+int loadPersistentPage(Buffer *buf, DiskAddress diskPage) {
    int result = BFMG_OK;
    int existingIndex;
    Block *newBlock;
@@ -359,7 +359,6 @@ int readPage(Buffer *buf, DiskAddress diskPage) {
    else
    {
        buf->timestamp[existingIndex] = ops++;
-       fprintf(stderr, "info: page passed to readPage already exists in buffer\n");
    }
 
    return result;
@@ -593,6 +592,28 @@ int removeCachePage(Buffer *buf, DiskAddress diskPage) {
 }
 
 /**
+ * This function provides access to the specified block of data in the persistent buffer.
+ * \param buf       the currently used buffer struct
+ * \param diskPage  a TinyFS identifier for the disk page needed
+ *
+ * If the data is not in the persistent buffer it will load it from disk using the
+ * buffer replacement policy
+ *
+ * returns the index of the requested page, or BFMG_ERR if something is wrong.
+ * on error, errno is also set
+ */
+int loadVolatilePage(Buffer *buf, DiskAddress diskPage) {
+    int existingIndex;
+    
+    existingIndex = getIndex(volatileMap, diskPage);
+    if (existingIndex > -1) {
+        buf->volatileTimestamp[existingIndex] = ops++;
+    }
+    
+    return existingIndex;
+}
+
+/**
  * This function prints the current state of the buffer.
  * \param buf       the buffer structure
  *
@@ -707,8 +728,8 @@ int printBlock(Buffer *buf, DiskAddress diskPage) {
 
 /* 
  * lru_persistentEvict analyzes the state of the input buffer and returns the slot which should be flushed/dropped,
- * and returns that. Called by readPage
- * readPage and writePage update the timestamp for
+ * and returns that. Called by loadPersistentPage
+ * loadPersistentPage and writePage update the timestamp for
  * blocks used.
  * Least Recently Used algorithm finds the oldest
  * timestamp (i.e. the block which has been inactive
