@@ -124,7 +124,7 @@ int removeIndex(map_t map, DiskAddress diskAdd) {
 
 //finds whether or not there is a Block in the page location specified in the buffer
 Block* findPageInBuffer(Buffer *buf, int index) {
-    if (index >= 0 && index < buf->nBufferBlocks) {
+    if (index >= 0 && index < buf->nPersistentBlocks) {
         return buf->persistentPages[index];
     }
     else {
@@ -135,28 +135,28 @@ Block* findPageInBuffer(Buffer *buf, int index) {
 /*initializes the buffer
  
  */
-void initBuffer(Buffer *buf, char *database, int nBufferBlocks, int nCacheBlocks) {
+void initBuffer(Buffer *buf, char *database, int nPersistentBlocks, int nVolatileBlocks) {
     
     //copy database name over
     buf->database = calloc(strlen(database) + 1, sizeof(char));
     strcpy(buf->database, database);
     
     //buffer
-    buf->nBufferBlocks = nBufferBlocks;
-    /* allocate the page arrays for nBufferBlocks pages */
-    buf->persistentPages = calloc(nBufferBlocks, sizeof(Block*));
-    buf->timestamp = calloc(nBufferBlocks, sizeof(unsigned long));
-    buf->pin = calloc(nBufferBlocks, sizeof(char));
-    buf->dirty = calloc(nBufferBlocks, sizeof(char));
-    buf->isVolatile = calloc(nBufferBlocks, sizeof(char));
+    buf->nPersistentBlocks = nPersistentBlocks;
+    /* allocate the page arrays for nPersistentBlocks pages */
+    buf->persistentPages = calloc(nPersistentBlocks, sizeof(Block*));
+    buf->persistentTimestamp = calloc(nPersistentBlocks, sizeof(unsigned long));
+    buf->pin = calloc(nPersistentBlocks, sizeof(char));
+    buf->dirty = calloc(nPersistentBlocks, sizeof(char));
+    buf->isVolatile = calloc(nPersistentBlocks, sizeof(char));
     /* a new buffer has no pages occupied */
-    buf->numBufferOccupied = 0;
+    buf->numPersistentOccupied = 0;
     
     //volatile
-    buf->volatilePages = calloc(nCacheBlocks, sizeof(Block*));
-    buf->volatileTimestamp = calloc(nCacheBlocks, sizeof(unsigned long));
-    buf->nCacheBlocks = nCacheBlocks;
-    buf->numCacheOccupied = 0;
+    buf->volatilePages = calloc(nVolatileBlocks, sizeof(Block*));
+    buf->volatileTimestamp = calloc(nVolatileBlocks, sizeof(unsigned long));
+    buf->nVolatileBlocks = nVolatileBlocks;
+    buf->numVolatileOccupied = 0;
     
     /* initialize the hashmaps */
     persistentMap = hashmap_new();
@@ -171,7 +171,7 @@ int cleanupBuffer(Buffer *buf) {
     int i;
     Block *pageBlock;
         
-    for (i = 0; i < buf->nBufferBlocks; i++) {
+    for (i = 0; i < buf->nPersistentBlocks; i++) {
     	pageBlock = buf->persistentPages[i];
     	
     	if (pageBlock != NULL) {
@@ -192,7 +192,7 @@ int cleanupBuffer(Buffer *buf) {
     	}
     }
     
-    for (i = 0; i < buf->nCacheBlocks; i++) {
+    for (i = 0; i < buf->nVolatileBlocks; i++) {
         pageBlock = buf->volatilePages[i];
         
         if (pageBlock != NULL) {
@@ -207,7 +207,7 @@ int cleanupBuffer(Buffer *buf) {
     free(buf->database);
     free(buf->persistentPages);
     free(buf->volatilePages);
-    free(buf->timestamp);
+    free(buf->persistentTimestamp);
     free(buf->isVolatile);
     free(buf->volatileTimestamp);
     free(buf->pin);
@@ -221,10 +221,10 @@ int cleanupBuffer(Buffer *buf) {
  * commence is called once at the beginning of a program that uses the buffer.
  * \param Database  name of the tinyFS disk file
  * \param buf       The buffer to create/initialize
- * \param nBufferBlocks   how many buffer slots to create in the buffer
+ * \param nPersistentBlocks   how many buffer slots to create in the buffer
  *
  * Open or create a TinyFS filesystem using tfs_mount/tfs_mkfs,
- * then initialize the buffer with nBufferBlocks buffer slots.
+ * then initialize the buffer with nPersistentBlocks buffer slots.
  * Load any pages that might be needed into the buffer. 
  * In our case, pages needed are:
  *
@@ -234,7 +234,7 @@ int cleanupBuffer(Buffer *buf) {
  * Commence returns BFMG_OK upon success, BFMG_ERR upon other failure
  * If more error codes are needed, feel free to #define them
  */
-int commence(char *Database, Buffer *buf, int nBufferBlocks, int nCacheBlocks) {
+int commence(char *Database, Buffer *buf, int nPersistentBlocks, int nVolatileBlocks) {
     int tfsErr;
 
     tfsErr = tfs_mount(Database);
@@ -244,7 +244,7 @@ int commence(char *Database, Buffer *buf, int nBufferBlocks, int nCacheBlocks) {
         tfs_mount(Database);
     }
     
-    initBuffer(buf, Database, nBufferBlocks, nCacheBlocks);
+    initBuffer(buf, Database, nPersistentBlocks, nVolatileBlocks);
     
     return BFMG_OK;
 }
@@ -293,10 +293,10 @@ int placePageInBuffer(Buffer *buf, Block *newBlock) {
    index = getIndex(persistentMap, newBlock->diskAddress);
    if (index == -1) {
       /* need to fetch it */
-      if (buf->numBufferOccupied < buf->nBufferBlocks) {
-         /* numBufferOccupied is the first open index */
-         insertNdx = buf->numBufferOccupied;
-         buf->numBufferOccupied++;
+      if (buf->numPersistentOccupied < buf->nPersistentBlocks) {
+         /* numPersistentOccupied is the first open index */
+         insertNdx = buf->numPersistentOccupied;
+         buf->numPersistentOccupied++;
       } else {
          /* these calls will be replaced by evictPage */
          toEvict = persistentEvictionPolicy(buf);
@@ -318,7 +318,7 @@ int placePageInBuffer(Buffer *buf, Block *newBlock) {
       buf->pin[insertNdx] = 'F';
       buf->dirty[insertNdx] = 'F';
       buf->isVolatile[insertNdx] = 'F';
-      buf->timestamp[insertNdx] = ops++;
+      buf->persistentTimestamp[insertNdx] = ops++;
       putIndex(persistentMap, buf->persistentPages[insertNdx]->diskAddress, insertNdx);
       
       retval = insertNdx;
@@ -358,7 +358,7 @@ int loadPersistentPage(Buffer *buf, DiskAddress diskPage) {
    }
    else
    {
-       buf->timestamp[existingIndex] = ops++;
+       buf->persistentTimestamp[existingIndex] = ops++;
    }
 
    return result;
@@ -382,7 +382,7 @@ int writePage(Buffer *buf, DiskAddress diskPage) {
     
     if (pageBlock) {
         buf->dirty[index] = 'T';
-        buf->timestamp[index] = ops++;
+        buf->persistentTimestamp[index] = ops++;
         return BFMG_OK;
     }
     else {
@@ -512,8 +512,8 @@ int allocateCachePage(Buffer *buf, DiskAddress diskPage) {
     }
     
     //find first open slot in volatile storage
-    if(buf->numCacheOccupied < buf->nCacheBlocks) {
-        for(i=0; i<buf->nCacheBlocks; i++) {
+    if(buf->numVolatileOccupied < buf->nVolatileBlocks) {
+        for(i=0; i<buf->nVolatileBlocks; i++) {
             if(buf->volatilePages[i] == NULL){
                 insertNdx = i;
                 break;
@@ -546,7 +546,7 @@ int allocateCachePage(Buffer *buf, DiskAddress diskPage) {
     //write block to volatile storage
     buf->volatilePages[insertNdx] = newBlock;
     buf->volatileTimestamp[insertNdx] = ops++;
-    buf->numCacheOccupied += buf->numCacheOccupied < buf->nCacheBlocks ? 1 : 0;
+    buf->numVolatileOccupied += buf->numVolatileOccupied < buf->nVolatileBlocks ? 1 : 0;
     putIndex(volatileMap, newBlock->diskAddress, insertNdx);
    
     return BFMG_ERR;
@@ -563,7 +563,7 @@ int removeCachePage(Buffer *buf, DiskAddress diskPage) {
       volatilePage = buf->volatilePages[result];
       free(volatilePage);
       removeIndex(volatileMap, diskPage);
-      buf->numCacheOccupied--;
+      buf->numVolatileOccupied--;
       buf->volatilePages[result] = NULL;
    } else {
       /* in buffer or on disk */
@@ -575,11 +575,11 @@ int removeCachePage(Buffer *buf, DiskAddress diskPage) {
          free(volatilePage);
          removeIndex(persistentMap, diskPage);
          /* move the last entry in the buffer to the vacated slot*/
-         buf->persistentPages[result] = buf->persistentPages[buf->numBufferOccupied - 1];
-         removeIndex(persistentMap, buf->persistentPages[buf->numBufferOccupied - 1]->diskAddress);
+         buf->persistentPages[result] = buf->persistentPages[buf->numPersistentOccupied - 1];
+         removeIndex(persistentMap, buf->persistentPages[buf->numPersistentOccupied - 1]->diskAddress);
          putIndex(persistentMap, buf->persistentPages[result]->diskAddress, result);
-         buf->persistentPages[buf->numBufferOccupied - 1] = NULL;
-         buf->numBufferOccupied--;
+         buf->persistentPages[buf->numPersistentOccupied - 1] = NULL;
+         buf->numPersistentOccupied--;
          
          
       } else {
@@ -623,7 +623,7 @@ int loadVolatilePage(Buffer *buf, DiskAddress diskPage) {
  *
  * For each disk slot the following is printed:
  *    tinyFS blockID (indicates if empty)
- *    timestamps for the block
+ *    persistentTimestamps for the block
  *    pin flag
  *    dirty flag
  *    any other attributes about the slot
@@ -632,26 +632,26 @@ void checkpoint(Buffer * buf) {
     int i;
     
     printf("Disk: %s\n", buf->database);
-    printf("Buffer Slots Occupied: %d\n", buf->numBufferOccupied);
+    printf("Buffer Slots Occupied: %d\n", buf->numPersistentOccupied);
     
-    for(i=0; i < buf->nBufferBlocks; i++) {
-        if(i > buf->numBufferOccupied) {
+    for(i=0; i < buf->nPersistentBlocks; i++) {
+        if(i > buf->numPersistentOccupied) {
             printf("Buffer Slot %d is empty\n", i);
         }
         else {
             printf("Buffer Slot %d:\n", i);
             printf("\ttinyFS FD: %d\n", buf->persistentPages[i]->diskAddress.FD);
             printf("\ttinyFS blockID: %d\n", buf->persistentPages[i]->diskAddress.pageId);
-            printf("\ttimestamps for the block: %ld\n", buf->timestamp[i]);
+            printf("\tpersistentTimestamps for the block: %ld\n", buf->persistentTimestamp[i]);
             printf("\tpin flag: %d\n", buf->pin[i]);
             printf("\tdirty flag: %d\n", buf->dirty[i]);
         }
     }
     
-    printf("Cache Slots Occupied: %d\n", buf->numCacheOccupied);
+    printf("Cache Slots Occupied: %d\n", buf->numVolatileOccupied);
     
-    for(i=0; i < buf->nCacheBlocks; i++) {
-        if(i >= buf->numCacheOccupied) {
+    for(i=0; i < buf->nVolatileBlocks; i++) {
+        if(i >= buf->numVolatileOccupied) {
             printf("Cache Slot %d is empty\n", i);
         }
         else {
@@ -670,7 +670,7 @@ void checkpoint(Buffer * buf) {
  * returns BFMG_OK if the slot exists and BFMG_ERR if it does not.
  */
 int pageDump(Buffer *buf, int index) {
-    if (index >= 0 && index < buf->nBufferBlocks) {
+    if (index >= 0 && index < buf->nPersistentBlocks) {
         fwrite(&(buf->persistentPages[index]), BLOCKSIZE, 1, stdout);
         return BFMG_OK;
     }
@@ -746,26 +746,26 @@ int lru_persistentEvict(Buffer *buf) {
     unsigned long oldestDirtyPage = ops + 1, oldestCleanPage = ops + 1, oldestVolPage = ops + 1;;
     int oldestDirtyIndex = -1, oldestCleanIndex = -1, oldestVolIndex = -1;
     
-    if (buf->numBufferOccupied < buf->nBufferBlocks) {
+    if (buf->numPersistentOccupied < buf->nPersistentBlocks) {
         fprintf(stderr, "WARNING: lru_persistentEvict called on a non-full buffer\n");
     }
     
     //find the oldest pages by iterating through timestamps
-    for (i = 0; i < buf->nBufferBlocks; i++) {
+    for (i = 0; i < buf->nPersistentBlocks; i++) {
         if (buf->pin[i] == 'F') {
             if (buf->isVolatile[i] == 'T') {
-                if (buf->timestamp[i] < oldestVolPage) {
-                    oldestVolPage = buf->timestamp[i];
+                if (buf->persistentTimestamp[i] < oldestVolPage) {
+                    oldestVolPage = buf->persistentTimestamp[i];
                     oldestVolIndex = i;
                 }
             } else if (buf->dirty[i] == 'T') {
-                if (buf->timestamp[i] < oldestDirtyPage) {
-                    oldestDirtyPage = buf->timestamp[i];
+                if (buf->persistentTimestamp[i] < oldestDirtyPage) {
+                    oldestDirtyPage = buf->persistentTimestamp[i];
                     oldestDirtyIndex = i;
                 }
             } else {
-                if(buf->timestamp[i] < oldestCleanPage) {
-                    oldestCleanPage = buf->timestamp[i];
+                if(buf->persistentTimestamp[i] < oldestCleanPage) {
+                    oldestCleanPage = buf->persistentTimestamp[i];
                     oldestCleanIndex = i;
                 }
             }
@@ -807,14 +807,14 @@ int lru_volatileEvict(Buffer *buf) {
     
     /* find the oldest pages by iterating through
      timestamps*/
-    for (i = 0; i < buf->nCacheBlocks; i++) {
+    for (i = 0; i < buf->nVolatileBlocks; i++) {
         if (buf->volatileTimestamp[i] < oldestPage) {
             oldestPage = buf->volatileTimestamp[i];
             oldestIndex = i;
         }
     }
     
-    if (buf->numCacheOccupied < buf->nCacheBlocks) {
+    if (buf->numVolatileOccupied < buf->nVolatileBlocks) {
         fprintf(stderr, "WARNING: lru_volatileEvict called on non-full volatile storage\n");
     }
     

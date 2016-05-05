@@ -25,23 +25,25 @@ typedef struct Block {
 //struct defining the actual buffer
 typedef struct Buffer {
 	char *database;
-	int nBufferBlocks;
-    int nCacheBlocks;
+	int nPersistentBlocks;
 	Block **persistentPages;
-    Block **volatilePages;
-	unsigned long *timestamp;
-    unsigned long *volatileTimestamp;
+	unsigned long *persistentTimestamp;
+    int numPersistentOccupied;
 	char *pin;
 	char *dirty;
     char *isVolatile;
-	int numBufferOccupied;
-    int numCacheOccupied;
+	
+    int nVolatileBlocks;
+    Block **volatilePages;
+    unsigned long *volatileTimestamp;
+    int numVolatileOccupied;
+    
 } Buffer;
 
 /* function type for eviction policy */
 typedef int (*evictFn)(Buffer *);
 
-int commence(char *database, Buffer *buf, int nBufferBlocks, int nCacheBlocks);
+int commence(char *database, Buffer *buf, int nPersistentBlocks, int nVolatileBlocks);
 int squash(Buffer *buf);
 int loadPersistentPage(Buffer *buf, DiskAddress diskPage);
 int writePage(Buffer *buf, DiskAddress diskPage);
