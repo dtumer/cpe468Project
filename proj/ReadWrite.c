@@ -9,40 +9,40 @@
 #include <sys/types.h>
 
 #include "ReadWrite.h"
-#include "libs/hashmap.h"
+#include "libs/smartalloc.h"
 
 
 //return the byte array with the contents of entire page
-char * getPage(Buffer * buf, DiskAddress page) {
+unsigned char * getPage(Buffer * buf, DiskAddress page) {
     return buf_read(buf, page, 0, PAGE_SIZE);
 }
 
 //make data the contents of a disk page
-int putPage(Buffer buf, DiskAddress page, char * data) {
+int putPage(Buffer * buf, DiskAddress page, char * data) {
     return buf_write(buf, page, 0, PAGE_SIZE, data);
 }
 
 //return a portion of the disk page
-char *buf_read(Buffer * buf, DiskAddress page, int startOffset, int nBytes)
+unsigned char *buf_read(Buffer * buf, DiskAddress page, int startOffset, int nBytes)
 {
+    int index;
+    unsigned char *ptr = NULL, *data = NULL;
+    
     if(nBytes > PAGE_SIZE || startOffset > PAGE_SIZE) {
         return NULL;
     }
-    int index;
-    char *ptr = NULL, *data = NULL;
-    char *data = calloc(nBytes, sizeof(char));
     
-    //check cache
-    index = getIndex(volatileMap, page);
+    //check volatile storage
+    index = loadVolatilePage(buf, page);
     
     if(index >= 0)
     {
-        ptr = cache[index]->block;
-        ptr = prt + startOffset;
+        ptr = buf->volatilePages[index]->block;
+        ptr = ptr + startOffset;
     }
     else
     {
-        index = readPage(buf, page);
+        index = loadPersistentPage(buf, page);
         if(index < 0)
         {
             return NULL;
@@ -50,12 +50,13 @@ char *buf_read(Buffer * buf, DiskAddress page, int startOffset, int nBytes)
         else
         {
             ptr = buf->persistentPages[index]->block;
-            ptr = prt + startOffset;
+            ptr = ptr + startOffset;
         }
-        
     }
     
+    
     data = calloc(nBytes, sizeof(char));
+    
     if(startOffset - 1 + nBytes > PAGE_SIZE) {
         memcpy(data, ptr, (PAGE_SIZE - startOffset));
     } else {
@@ -71,27 +72,27 @@ int buf_write(Buffer * buf, DiskAddress page, int startOffset, int nBytes, char 
         return 1;
     }
     int index;
-    char *ptr = NULL, *data = NULL;
+    unsigned char *ptr = NULL;
     
     //check volatile storage
-    index = getIndex(volatileMap, page);
+    index = loadVolatilePage(buf, page);
     
     if(index >= 0)
     {
         ptr = buf->volatilePages[index]->block;
-        ptr = prt + startOffset;
+        ptr = ptr + startOffset;
     }
     else
     {
-        index = readPage(buf, page);
+        index = loadPersistentPage(buf, page);
         if(index < 0)
         {
-            return NULL;
+            return -1;
         }
         else
         {
             ptr = buf->persistentPages[index]->block;
-            ptr = prt + startOffset;
+            ptr = ptr + startOffset;
         }
         
     }
@@ -102,9 +103,9 @@ int buf_write(Buffer * buf, DiskAddress page, int startOffset, int nBytes, char 
 }
 
 //read from volatile storage
-char * readVolatile(Buffer * buf, DiskAddress page, int startOffset, int nBytes) {
-    int index = getIndex(volatileMap, page);
-    char *ptr = NULL, *data = NULL;
+unsigned char * readVolatile(Buffer * buf, DiskAddress page, int startOffset, int nBytes) {
+    int index = loadVolatilePage(buf, page);
+    unsigned char *ptr = NULL, *data = NULL;
     
     if(index >= 0)
     {
@@ -124,8 +125,8 @@ char * readVolatile(Buffer * buf, DiskAddress page, int startOffset, int nBytes)
 
 //write to volatile storage
 int writeVolatile(Buffer* buf, DiskAddress page, int startOffset, int nBytes, char * data) {
-    int index = getIndex(volatileMap, page);
-    char *ptr = NULL;
+    int index = loadVolatilePage(buf, page);
+    unsigned char *ptr = NULL;
     
     if(index >= 0)
     {
@@ -134,7 +135,7 @@ int writeVolatile(Buffer* buf, DiskAddress page, int startOffset, int nBytes, ch
     	
         memcpy(ptr, data, nBytes);
     } else {
-        return NULL;
+        return -1;
     }
     
     return 0;

@@ -36,6 +36,7 @@ handin:
 	handin dekhtyar 468-lab3 *.c *.h Makefile README
 
 clean:
-	-@rm TestHarness
-	-@rm *.o
-	-@rm *.disk
+	rm -f TestHarness
+	rm -f TestReadWrite
+	rm -f *.o
+	rm -f *.disk

@@ -25,33 +25,36 @@ typedef struct Block {
 //struct defining the actual buffer
 typedef struct Buffer {
 	char *database;
-	int nBufferBlocks;
-    int nCacheBlocks;
+	int nPersistentBlocks;
 	Block **persistentPages;
-    Block **volatilePages;
-	unsigned long *timestamp;
-    unsigned long *volatileTimestamp;
+	unsigned long *persistentTimestamp;
+    int numPersistentOccupied;
 	char *pin;
 	char *dirty;
     char *isVolatile;
-	int numBufferOccupied;
-    int numCacheOccupied;
+	
+    int nVolatileBlocks;
+    Block **volatilePages;
+    unsigned long *volatileTimestamp;
+    int numVolatileOccupied;
+    
 } Buffer;
 
 /* function type for eviction policy */
 typedef int (*evictFn)(Buffer *);
 
-int commence(char *database, Buffer *buf, int nBufferBlocks, int nCacheBlocks);
+int commence(char *database, Buffer *buf, int nPersistentBlocks, int nVolatileBlocks);
 int squash(Buffer *buf);
-int loadPage(Buffer *buf, DiskAddress diskPage);
-int readPage(Buffer *buf, DiskAddress diskPage);
+int loadPersistentPage(Buffer *buf, DiskAddress diskPage);
 int writePage(Buffer *buf, DiskAddress diskPage);
 int flushPage(Buffer *buf, DiskAddress diskPage);
 int pinPage(Buffer *buf, DiskAddress diskPage);
 int unPinPage(Buffer *buf, DiskAddress diskPage);
 int newPage(Buffer *buf, DiskAddress diskPage);
+
 int allocateCachePage(Buffer *buf, DiskAddress diskPage);
 int removeCachePage(Buffer *buf, DiskAddress diskPage);
+int loadVolatilePage(Buffer *buf, DiskAddress diskPage);
 
 //test functions
 void checkpoint(Buffer * buf);

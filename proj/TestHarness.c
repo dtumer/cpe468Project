@@ -107,7 +107,7 @@ void runBuffer(FILE *fp) {
 				FD = getFileDescriptor(&first, fileName);
 				dAdd.FD = FD;
 				dAdd.pageId = num1;
- 				readPage(buf, dAdd);
+ 				loadPersistentPage(buf, dAdd);
 			}
 		}
 		//write command
