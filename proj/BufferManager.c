@@ -651,7 +651,7 @@ void checkpoint(Buffer * buf) {
     printf("Cache Slots Occupied: %d\n", buf->numVolatileOccupied);
     
     for(i=0; i < buf->nVolatileBlocks; i++) {
-        if(i >= buf->numVolatileOccupied) {
+        if(buf->volatilePages[i] == NULL) {
             printf("Cache Slot %d is empty\n", i);
         }
         else {
