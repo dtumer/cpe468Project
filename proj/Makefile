@@ -22,10 +22,16 @@ BufferManager.o: BufferManager.c
 ReadWrite.o: ReadWrite.c
 	$(CC) $(CFLAGS) -c -o $@ $^
 
+HeapFile.o: HeapFile.c
+	$(CC) $(CFLAGS) -c -o $@ $^
+
 TestHarness: TestHarness.c BufferManager.o $(LIBS)
 	$(CC) $(CFLAGS) -o $@ $^
 
 TestReadWrite: TestReadWrite.c ReadWrite.o BufferManager.o $(LIBS)
+	$(CC) $(CFLAGS) -o $@ $^
+
+TestHeapFile: TestHeapFile.c HeapFile.o BufferManager.o $(LIBS)
 	$(CC) $(CFLAGS) -o $@ $^
 
 runTestHarness: TestHarness
