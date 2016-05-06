@@ -19,6 +19,10 @@
 		CB1739A91CD19F3100405878 /* ReadWrite.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = ReadWrite.c; sourceTree = "<group>"; };
 		CB1739AA1CD19F3100405878 /* ReadWrite.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ReadWrite.h; sourceTree = "<group>"; };
 		CB1739AB1CD1B73800405878 /* TestReadWrite.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = TestReadWrite.c; sourceTree = "<group>"; };
+		CB1DD2BF1CDC2A1900185A27 /* FileManager.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = FileManager.c; sourceTree = "<group>"; };
+		CB1DD2C01CDC2A1900185A27 /* FileManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FileManager.h; sourceTree = "<group>"; };
+		CB1DD2C11CDC36DD00185A27 /* HeapFile.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = HeapFile.c; sourceTree = "<group>"; };
+		CB1DD2C21CDC36DD00185A27 /* HeapFile.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = HeapFile.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
@@ -33,6 +37,10 @@
 				638E34D31CB823C5006530E0 /* BufferManager.h */,
 				CB1739A91CD19F3100405878 /* ReadWrite.c */,
 				CB1739AA1CD19F3100405878 /* ReadWrite.h */,
+				CB1DD2BF1CDC2A1900185A27 /* FileManager.c */,
+				CB1DD2C01CDC2A1900185A27 /* FileManager.h */,
+				CB1DD2C11CDC36DD00185A27 /* HeapFile.c */,
+				CB1DD2C21CDC36DD00185A27 /* HeapFile.h */,
 				638E34D81CB823C5006530E0 /* README */,
 				638E34D91CB823C5006530E0 /* TestHarness.c */,
 				CB1739AB1CD1B73800405878 /* TestReadWrite.c */,
