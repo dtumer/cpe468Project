@@ -8,7 +8,7 @@ typedef struct FileHeader {
 	char fileName[64];
 }__attribute__((packed));
 
-typedef struct HeapFile {
+typedef struct HeapFileHeader {
 	uint16_t recordSize;
 	uint16_t numRecordsPerPage;
 	uint16_t numPages;
@@ -18,12 +18,31 @@ typedef struct HeapFile {
 	char recordDescription[600]; //uint8_t colType, uint8_t colSize(optional), uint8_t nameLen, char colName[nameLen + 1]
 }__attribute__((packed));
 
-typedef struct SeqFile {
+typedef struct HeapPageHeader {
+	uint16_t nextFreeSlotPage;
+}__attribute__((packed));
+
+typedef struct SeqFileHeader {
+    uint16_t recordSize;
+    uint16_t numRecordsPerPage;
+    uint16_t numPages;
+    uint16_t nextPage;
+    uint16_t lastPage;
+    char tableName[32];
+    char recordDescription[600]; //uint8_t colType, uint8_t colSize(optional), uint8_t nameLen, char colName[nameLen + 1]
+}__attribute__((packed));
+
+typedef struct SeqPageHeader {
+    uint16_t nextPage;
+    uint8_t seqPageType; //1: node, 2: leaf
+}__attribute__((packed));
+
+typedef struct HashFileHeader {
 
 }__attribute__((packed));
 
-typedef struct HashFile {
-
+typedef struct HashPageHeader {
+    
 }__attribute__((packed));
 
 #endif
