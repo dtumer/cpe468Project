@@ -276,7 +276,8 @@ int hashmap_put(map_t in, char* key, any_t value){
 
 	/* Set the data */
 	m->data[index].data = value;
-	m->data[index].key = key;
+    m->data[index].key = malloc(strlen(key)+1);
+    strcpy(m->data[index].key, key);
 	m->data[index].in_use = 1;
 	m->size++; 
 
@@ -368,6 +369,7 @@ int hashmap_remove(map_t in, char* key){
                 /* Blank out the fields */
                 m->data[curr].in_use = 0;
                 m->data[curr].data = NULL;
+                free(m->data[curr].key);
                 m->data[curr].key = NULL;
 
                 /* Reduce the size */
