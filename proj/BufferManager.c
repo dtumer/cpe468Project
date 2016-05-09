@@ -68,10 +68,10 @@ char* diskAddressToString(DiskAddress diskAdd) {
    Used for looking up the index in buffer of a given page */
 int getIndex(map_t map, DiskAddress diskAdd) {
      char *diskStr;
-     int *retValue, error;
+     int retValue, error;
     
      diskStr = diskAddressToString(diskAdd);
-     error = hashmap_get(map, diskStr, (void**)&retValue);
+     error = hashmap_get(map, diskStr, &retValue);
      free(diskStr);
     
      //print error if the map returned an error
@@ -83,7 +83,7 @@ int getIndex(map_t map, DiskAddress diskAdd) {
          return BFMG_ERR;
      }
      else {
-         return *retValue;
+         return retValue;
     }
 }
 
@@ -93,16 +93,16 @@ int putIndex(map_t map, DiskAddress diskAdd, int index) {
     int error;
     
     diskStr = diskAddressToString(diskAdd);
-    error = hashmap_put(map, diskStr, &index);
+    error = hashmap_put(map, diskStr, index);
     free(diskStr);
     
     //print error if there is one, return 0 is no error
     if (error != MAP_OK) {
         printHashmapError(error);
-        return -1;
+        return BFMG_ERR;
     }
     else {
-        return 0;
+        return BFMG_OK;
     }
 }
 

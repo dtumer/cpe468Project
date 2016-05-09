@@ -16,6 +16,7 @@
 		CB1739A91CD19F3100405878 /* ReadWrite.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = ReadWrite.c; sourceTree = "<group>"; };
 		CB1739AA1CD19F3100405878 /* ReadWrite.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ReadWrite.h; sourceTree = "<group>"; };
 		CB1739AB1CD1B73800405878 /* TestReadWrite.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = TestReadWrite.c; sourceTree = "<group>"; };
+		CB1DD2C41CE12D9300185A27 /* test_files */ = {isa = PBXFileReference; lastKnownFileType = folder; path = test_files; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
@@ -23,6 +24,7 @@
 			isa = PBXGroup;
 			children = (
 				CB1739A51CD1945200405878 /* libs */,
+				CB1DD2C41CE12D9300185A27 /* test_files */,
 				638E34D21CB823C5006530E0 /* BufferManager.c */,
 				638E34D31CB823C5006530E0 /* BufferManager.h */,
 				CB1739A91CD19F3100405878 /* ReadWrite.c */,
