@@ -23,6 +23,7 @@
 		CB1DD2C01CDC2A1900185A27 /* FileManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FileManager.h; sourceTree = "<group>"; };
 		CB1DD2C11CDC36DD00185A27 /* HeapFile.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = HeapFile.c; sourceTree = "<group>"; };
 		CB1DD2C21CDC36DD00185A27 /* HeapFile.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = HeapFile.h; sourceTree = "<group>"; };
+		CB1DD2C51CE1486300185A27 /* test_files */ = {isa = PBXFileReference; lastKnownFileType = folder; path = test_files; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
@@ -33,6 +34,7 @@
 				63B790A71CD96629000F782B /* StatementParser.h */,
 				63B790A81CD96710000F782B /* ParserTest.c */,
 				CB1739A51CD1945200405878 /* libs */,
+				CB1DD2C51CE1486300185A27 /* test_files */,
 				638E34D21CB823C5006530E0 /* BufferManager.c */,
 				638E34D31CB823C5006530E0 /* BufferManager.h */,
 				CB1739A91CD19F3100405878 /* ReadWrite.c */,
