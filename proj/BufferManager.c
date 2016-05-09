@@ -529,6 +529,8 @@ int allocateCachePage(Buffer *buf, DiskAddress diskPage) {
         insertNdx = volatileEvictionPolicy(buf);
         tempBlock = buf->volatilePages[insertNdx];
         
+        removeIndex(volatileMap, tempBlock->diskAddress);
+        
         bufNdx = placePageInBuffer(buf, tempBlock);
         if(bufNdx == BFMG_ERR)
         {
