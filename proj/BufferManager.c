@@ -47,7 +47,7 @@ void printHashmapError(int errorCode) {
         printf("ERROR: Map is full!\n");
     }
     else if (errorCode == MAP_MISSING) {
-        //printf("ERROR: There is no such element in the Map!\n");
+        printf("ERROR: There is no such element in the Map!\n");
     }
 }
 
@@ -75,10 +75,12 @@ int getIndex(map_t map, DiskAddress diskAdd) {
      free(diskStr);
     
      //print error if the map returned an error
-     if (error != MAP_OK) {
-        /* if not in map, error should be MAP_MISSING */
+     if (error == MAP_MISSING) {
+        return BFMG_ERR;
+     }
+     else if (error != MAP_OK) {
          printHashmapError(error);
-         return -1;
+         return BFMG_ERR;
      }
      else {
          return *retValue;
