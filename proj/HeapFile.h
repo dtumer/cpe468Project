@@ -5,8 +5,8 @@
 #include "StatementParser.h"
 
 /* file-level functions */
-int heap_createFile(char *tableName, tableDescription *tableDesc, int volatileFlag);
-int heap_deleteFile(char *tableName);
+int heap_createFile(Buffer *buf, char *tableName, tableDescription *tableDesc, int volatileFlag);
+int heap_deleteFile(Buffer *buf, char *tableName);
 
 /* File Header functions */
 // Get the table name from a given header page

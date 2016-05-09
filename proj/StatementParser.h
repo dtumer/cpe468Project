@@ -30,4 +30,8 @@ typedef struct Tables {
    foreignKeys * fKeys;
 } tableDescription;
 
+//creates the buffer pages necessary for the creation of the table
+//also writes to the header page all necessary information
+int createPersistentTable(Buffer buf, tableDescription table);
+
 #endif /* StatementParser_h */
