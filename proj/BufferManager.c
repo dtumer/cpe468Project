@@ -635,7 +635,7 @@ void checkpoint(Buffer * buf) {
     printf("Buffer Slots Occupied: %d\n", buf->numPersistentOccupied);
     
     for(i=0; i < buf->nPersistentBlocks; i++) {
-        if(i > buf->numPersistentOccupied) {
+        if(i >= buf->numPersistentOccupied) {
             printf("Buffer Slot %d is empty\n", i);
         }
         else {
