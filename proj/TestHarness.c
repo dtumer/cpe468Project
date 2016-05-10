@@ -64,8 +64,8 @@ fileDescriptor getFileDescriptor(FileNode **node, char *fileName) {
         tempNode = tempNode->next;
     }
     
-    newNode = calloc(1, sizeof(FileNode));
-    newNode->fileName = calloc(strlen(fileName) + 1, sizeof(char));
+    newNode = (FileNode *)calloc(1, sizeof(FileNode));
+    newNode->fileName = (char *)calloc(strlen(fileName) + 1, sizeof(char));
     newNode->FD = tfs_openFile(fileName);
     strcpy(newNode->fileName, fileName);
     newNode->next = *node;
@@ -77,7 +77,7 @@ fileDescriptor getFileDescriptor(FileNode **node, char *fileName) {
 
 //function for running the buffer
 void runBuffer(FILE *fp) {
-	Buffer *buf = calloc(1, sizeof(Buffer));
+	Buffer *buf = (Buffer *)calloc(1, sizeof(Buffer));
 	FileNode *first = NULL;
 	char command[10], diskName[1024], fileName[1024];
 	int num1, num2, i;
