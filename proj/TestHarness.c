@@ -1,6 +1,8 @@
 #include <stdio.h>
 
 #include "BufferManager.h"
+#include <stdlib.h>
+#include <string.h>
 
 typedef struct FileNode {
 	fileDescriptor FD;

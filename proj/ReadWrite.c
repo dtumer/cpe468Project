@@ -7,6 +7,8 @@
 #include <stdio.h>
 #include <sys/time.h>
 #include <sys/types.h>
+#include <stdlib.h>
+#include <string.h>
 
 #include "ReadWrite.h"
 
@@ -53,7 +55,7 @@ unsigned char *buf_read(Buffer * buf, DiskAddress page, int startOffset, int nBy
     }
     
     
-    data = calloc(nBytes, sizeof(char));
+    data = (unsigned char *) calloc(nBytes, sizeof(char));
     
     if(startOffset - 1 + nBytes > PAGE_SIZE) {
         memcpy(data, ptr, (PAGE_SIZE - startOffset));
@@ -113,7 +115,7 @@ unsigned char * readVolatile(Buffer * buf, DiskAddress page, int startOffset, in
     if(ptr != NULL)
     {
     	ptr = ptr + startOffset;
-    	data = calloc(nBytes, sizeof(char));
+    	data = (unsigned char *) calloc(nBytes, sizeof(char));
     	
     	memcpy(data, ptr, nBytes);
     }
