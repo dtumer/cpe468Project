@@ -25,7 +25,11 @@ read file4 3
 read file4 4
 read file4 5
 newcache file5 1
+newcache file5 2
+newcache file5 3
+newcache file5 4
+newcache file5 5
 check
-removecache file5 1
+removecache file5 3
 check
 end

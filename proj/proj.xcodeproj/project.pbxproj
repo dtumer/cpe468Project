@@ -8,7 +8,6 @@
 
 /* Begin PBXFileReference section */
 		0FB6CEC51CB5E5E2007B9F6E /* Makefile */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.make; path = Makefile; sourceTree = "<group>"; };
-		0FE6BB6F1CE158F80011F380 /* TestHeapFile.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = TestHeapFile.c; sourceTree = "<group>"; };
 		638E34D21CB823C5006530E0 /* BufferManager.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = BufferManager.c; sourceTree = "<group>"; };
 		638E34D31CB823C5006530E0 /* BufferManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BufferManager.h; sourceTree = "<group>"; };
 		638E34D81CB823C5006530E0 /* README */ = {isa = PBXFileReference; lastKnownFileType = text; path = README; sourceTree = "<group>"; };
@@ -20,6 +19,13 @@
 		CB1739A91CD19F3100405878 /* ReadWrite.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = ReadWrite.c; sourceTree = "<group>"; };
 		CB1739AA1CD19F3100405878 /* ReadWrite.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ReadWrite.h; sourceTree = "<group>"; };
 		CB1739AB1CD1B73800405878 /* TestReadWrite.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = TestReadWrite.c; sourceTree = "<group>"; };
+		CB1DD2BF1CDC2A1900185A27 /* FileManager.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = FileManager.c; sourceTree = "<group>"; };
+		CB1DD2C01CDC2A1900185A27 /* FileManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FileManager.h; sourceTree = "<group>"; };
+		CB1DD2C11CDC36DD00185A27 /* HeapFile.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = HeapFile.c; sourceTree = "<group>"; };
+		CB1DD2C21CDC36DD00185A27 /* HeapFile.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = HeapFile.h; sourceTree = "<group>"; };
+		CB1DD2C51CE1486300185A27 /* test_files */ = {isa = PBXFileReference; lastKnownFileType = folder; path = test_files; sourceTree = "<group>"; };
+		CB1DD2C61CE1592500185A27 /* TestFileManager.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = TestFileManager.c; sourceTree = "<group>"; };
+		CB1DD2C71CE1639200185A27 /* TestHeapFile.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = TestHeapFile.c; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
@@ -30,16 +36,30 @@
 				63B790A71CD96629000F782B /* StatementParser.h */,
 				63B790A81CD96710000F782B /* ParserTest.c */,
 				CB1739A51CD1945200405878 /* libs */,
+				CB1DD2C51CE1486300185A27 /* test_files */,
 				638E34D21CB823C5006530E0 /* BufferManager.c */,
 				638E34D31CB823C5006530E0 /* BufferManager.h */,
 				CB1739A91CD19F3100405878 /* ReadWrite.c */,
 				CB1739AA1CD19F3100405878 /* ReadWrite.h */,
+				CB1DD2BF1CDC2A1900185A27 /* FileManager.c */,
+				CB1DD2C01CDC2A1900185A27 /* FileManager.h */,
+				CB1DD2C11CDC36DD00185A27 /* HeapFile.c */,
+				CB1DD2C21CDC36DD00185A27 /* HeapFile.h */,
 				638E34D81CB823C5006530E0 /* README */,
-				0FE6BB6F1CE158F80011F380 /* TestHeapFile.c */,
-				638E34D91CB823C5006530E0 /* TestHarness.c */,
-				CB1739AB1CD1B73800405878 /* TestReadWrite.c */,
+				CB1DD2C81CE1639800185A27 /* Tests */,
 				0FB6CEC51CB5E5E2007B9F6E /* Makefile */,
 			);
+			sourceTree = "<group>";
+		};
+		CB1DD2C81CE1639800185A27 /* Tests */ = {
+			isa = PBXGroup;
+			children = (
+				638E34D91CB823C5006530E0 /* TestHarness.c */,
+				CB1739AB1CD1B73800405878 /* TestReadWrite.c */,
+				CB1DD2C61CE1592500185A27 /* TestFileManager.c */,
+				CB1DD2C71CE1639200185A27 /* TestHeapFile.c */,
+			);
+			name = Tests;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */

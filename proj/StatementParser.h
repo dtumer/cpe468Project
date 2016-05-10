@@ -14,13 +14,13 @@
 typedef struct Attributes {
    char *attName;
    int attType; //change to enum
-   Attribute *next;
+   struct Attributes *next;
 } Attribute;
 
 typedef struct FK {
    char *tableName; /* table that this FK references*/
    Attribute *key;
-   foreignKeys *next;
+   struct FK *next;
 } foreignKeys;
 
 typedef struct Tables {
@@ -29,5 +29,9 @@ typedef struct Tables {
    Attribute *pKey;
    foreignKeys * fKeys;
 } tableDescription;
+
+//creates the buffer pages necessary for the creation of the table
+//also writes to the header page all necessary information
+int createPersistentTable(Buffer buf, tableDescription table);
 
 #endif /* StatementParser_h */

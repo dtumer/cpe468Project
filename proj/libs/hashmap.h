@@ -24,7 +24,7 @@ typedef void *any_t;
  * PFany is a pointer to a function that can take two any_t arguments
  * and return an integer. Returns status code..
  */
-typedef int (*PFany)(any_t, any_t);
+typedef int (*PFany)(any_t, int);
 
 /*
  * map_t is a pointer to an internally maintained data structure.
@@ -50,12 +50,12 @@ extern int hashmap_iterate(map_t in, PFany f, any_t item);
 /*
  * Add an element to the hashmap. Return MAP_OK or MAP_OMEM.
  */
-extern int hashmap_put(map_t in, char* key, any_t value);
+extern int hashmap_put(map_t in, char* key, int value);
 
 /*
  * Get an element from the hashmap. Return MAP_OK or MAP_MISSING.
  */
-extern int hashmap_get(map_t in, char* key, any_t *arg);
+extern int hashmap_get(map_t in, char* key, int *arg);
 
 /*
  * Remove an element from the hashmap. Return MAP_OK or MAP_MISSING.

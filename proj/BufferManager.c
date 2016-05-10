@@ -47,7 +47,7 @@ void printHashmapError(int errorCode) {
         printf("ERROR: Map is full!\n");
     }
     else if (errorCode == MAP_MISSING) {
-        //printf("ERROR: There is no such element in the Map!\n");
+        printf("ERROR: There is no such element in the Map!\n");
     }
 }
 
@@ -68,20 +68,22 @@ char* diskAddressToString(DiskAddress diskAdd) {
    Used for looking up the index in buffer of a given page */
 int getIndex(map_t map, DiskAddress diskAdd) {
      char *diskStr;
-     int *retValue, error;
+     int retValue, error;
     
      diskStr = diskAddressToString(diskAdd);
-     error = hashmap_get(map, diskStr, (void**)&retValue);
+     error = hashmap_get(map, diskStr, &retValue);
      free(diskStr);
     
      //print error if the map returned an error
-     if (error != MAP_OK) {
-        /* if not in map, error should be MAP_MISSING */
+     if (error == MAP_MISSING) {
+        return BFMG_ERR;
+     }
+     else if (error != MAP_OK) {
          printHashmapError(error);
-         return -1;
+         return BFMG_ERR;
      }
      else {
-         return *retValue;
+         return retValue;
     }
 }
 
@@ -91,16 +93,16 @@ int putIndex(map_t map, DiskAddress diskAdd, int index) {
     int error;
     
     diskStr = diskAddressToString(diskAdd);
-    error = hashmap_put(map, diskStr, &index);
+    error = hashmap_put(map, diskStr, index);
     free(diskStr);
     
     //print error if there is one, return 0 is no error
     if (error != MAP_OK) {
         printHashmapError(error);
-        return -1;
+        return BFMG_ERR;
     }
     else {
-        return 0;
+        return BFMG_OK;
     }
 }
 
@@ -527,6 +529,8 @@ int allocateCachePage(Buffer *buf, DiskAddress diskPage) {
         insertNdx = volatileEvictionPolicy(buf);
         tempBlock = buf->volatilePages[insertNdx];
         
+        removeIndex(volatileMap, tempBlock->diskAddress);
+        
         bufNdx = placePageInBuffer(buf, tempBlock);
         if(bufNdx == BFMG_ERR)
         {
@@ -635,7 +639,7 @@ void checkpoint(Buffer * buf) {
     printf("Buffer Slots Occupied: %d\n", buf->numPersistentOccupied);
     
     for(i=0; i < buf->nPersistentBlocks; i++) {
-        if(i > buf->numPersistentOccupied) {
+        if(i >= buf->numPersistentOccupied) {
             printf("Buffer Slot %d is empty\n", i);
         }
         else {
@@ -651,7 +655,7 @@ void checkpoint(Buffer * buf) {
     printf("Cache Slots Occupied: %d\n", buf->numVolatileOccupied);
     
     for(i=0; i < buf->nVolatileBlocks; i++) {
-        if(i >= buf->numVolatileOccupied) {
+        if(buf->volatilePages[i] == NULL) {
             printf("Cache Slot %d is empty\n", i);
         }
         else {

@@ -1,0 +1,10 @@
+start Foo.disk 5
+newcache file5 1
+newcache file5 2
+newcache file5 3
+newcache file5 4
+newcache file5 5
+check
+removecache file5 3
+check
+end
