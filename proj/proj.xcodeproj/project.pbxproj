@@ -14,7 +14,7 @@
 		638E34D91CB823C5006530E0 /* TestHarness.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = TestHarness.c; sourceTree = "<group>"; };
 		63B790A61CD96629000F782B /* StatementParser.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = StatementParser.c; sourceTree = "<group>"; };
 		63B790A71CD96629000F782B /* StatementParser.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = StatementParser.h; sourceTree = "<group>"; };
-		63B790A81CD96710000F782B /* ParserTest.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = ParserTest.c; sourceTree = "<group>"; };
+		63B790A81CD96710000F782B /* TestParser.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = TestParser.c; sourceTree = "<group>"; };
 		CB1739A51CD1945200405878 /* libs */ = {isa = PBXFileReference; lastKnownFileType = folder; path = libs; sourceTree = "<group>"; };
 		CB1739A91CD19F3100405878 /* ReadWrite.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = ReadWrite.c; sourceTree = "<group>"; };
 		CB1739AA1CD19F3100405878 /* ReadWrite.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ReadWrite.h; sourceTree = "<group>"; };
@@ -32,9 +32,6 @@
 		0FB6CEBB1CB5E351007B9F6E = {
 			isa = PBXGroup;
 			children = (
-				63B790A61CD96629000F782B /* StatementParser.c */,
-				63B790A71CD96629000F782B /* StatementParser.h */,
-				63B790A81CD96710000F782B /* ParserTest.c */,
 				CB1739A51CD1945200405878 /* libs */,
 				CB1DD2C51CE1486300185A27 /* test_files */,
 				638E34D21CB823C5006530E0 /* BufferManager.c */,
@@ -45,6 +42,8 @@
 				CB1DD2C01CDC2A1900185A27 /* FileManager.h */,
 				CB1DD2C11CDC36DD00185A27 /* HeapFile.c */,
 				CB1DD2C21CDC36DD00185A27 /* HeapFile.h */,
+				63B790A61CD96629000F782B /* StatementParser.c */,
+				63B790A71CD96629000F782B /* StatementParser.h */,
 				638E34D81CB823C5006530E0 /* README */,
 				CB1DD2C81CE1639800185A27 /* Tests */,
 				0FB6CEC51CB5E5E2007B9F6E /* Makefile */,
@@ -58,6 +57,7 @@
 				CB1739AB1CD1B73800405878 /* TestReadWrite.c */,
 				CB1DD2C61CE1592500185A27 /* TestFileManager.c */,
 				CB1DD2C71CE1639200185A27 /* TestHeapFile.c */,
+				63B790A81CD96710000F782B /* TestParser.c */,
 			);
 			name = Tests;
 			sourceTree = "<group>";
