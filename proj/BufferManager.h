@@ -1,3 +1,7 @@
+#ifndef BufferManager_h
+#define BufferManager_h
+
+
 #include "libs/TFS468/tinyFS.h"
 #include "libs/TFS468/libTinyFS.h"
 #include "libs/TFS468/libDisk.h"
@@ -61,3 +65,5 @@ void checkpoint(Buffer * buf);
 int pageDump(Buffer *buf, int index);
 int printPage(Buffer *buf, DiskAddress diskPage);
 int printBlock(Buffer *buf, DiskAddress diskPage);
+
+#endif
