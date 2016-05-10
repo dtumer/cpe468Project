@@ -1,4 +1,5 @@
-CC = g++
+CPP = g++
+CC = gcc
 CFLAGS = -Wall -g
 LIBS  = libs/hashmap.c libs/TFS468/libDisk.o libs/TFS468/libTinyFS.o
 

@@ -1,7 +1,9 @@
 #ifndef BufferManager_h
 #define BufferManager_h
 
-#include "libs/tiny.h"
+#include "libs/TFS468/tinyFS.h"
+#include "libs/TFS468/libTinyFS.h"
+#include "libs/TFS468/libDisk.h"
 
 #define MAX_BUFFER_SIZE 1024
 
