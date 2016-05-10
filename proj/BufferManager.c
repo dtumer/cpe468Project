@@ -2,11 +2,11 @@
 #include <stdio.h>
 #include <sys/time.h>
 #include <sys/types.h>
+#include <stdlib.h>
+#include <string.h>
 
 #include "BufferManager.h"
 #include "libs/hashmap.h"
-#include "libs/smartalloc.h"
-
 
 int lru_persistentEvict(Buffer *buf);
 int lru_volatileEvict(Buffer *buf);
@@ -56,7 +56,7 @@ char* diskAddressToString(DiskAddress diskAdd) {
     int lenFD = numDigits(diskAdd.FD);
     int lenPageId = numDigits(diskAdd.pageId);
     
-    char *str = calloc(lenFD + 1 + lenPageId + 1, sizeof(char));
+    char *str = (char *)calloc(lenFD + 1 + lenPageId + 1, sizeof(char));
 
     sprintf(str, "%d,%d", diskAdd.FD, diskAdd.pageId);
 
@@ -138,23 +138,23 @@ Block* findPageInBuffer(Buffer *buf, int index) {
 void initBuffer(Buffer *buf, char *database, int nPersistentBlocks, int nVolatileBlocks) {
     
     //copy database name over
-    buf->database = calloc(strlen(database) + 1, sizeof(char));
+    buf->database = (char *)calloc(strlen(database) + 1, sizeof(char));
     strcpy(buf->database, database);
     
     //buffer
     buf->nPersistentBlocks = nPersistentBlocks;
     /* allocate the page arrays for nPersistentBlocks pages */
-    buf->persistentPages = calloc(nPersistentBlocks, sizeof(Block*));
-    buf->persistentTimestamp = calloc(nPersistentBlocks, sizeof(unsigned long));
-    buf->pin = calloc(nPersistentBlocks, sizeof(char));
-    buf->dirty = calloc(nPersistentBlocks, sizeof(char));
-    buf->isVolatile = calloc(nPersistentBlocks, sizeof(char));
+    buf->persistentPages = (Block **)calloc(nPersistentBlocks, sizeof(Block*));
+    buf->persistentTimestamp = (unsigned long *)calloc(nPersistentBlocks, sizeof(unsigned long));
+    buf->pin = (char *)calloc(nPersistentBlocks, sizeof(char));
+    buf->dirty = (char *)calloc(nPersistentBlocks, sizeof(char));
+    buf->isVolatile = (char *)calloc(nPersistentBlocks, sizeof(char));
     /* a new buffer has no pages occupied */
     buf->numPersistentOccupied = 0;
     
     //volatile
-    buf->volatilePages = calloc(nVolatileBlocks, sizeof(Block*));
-    buf->volatileTimestamp = calloc(nVolatileBlocks, sizeof(unsigned long));
+    buf->volatilePages = (Block **)calloc(nVolatileBlocks, sizeof(Block*));
+    buf->volatileTimestamp = (unsigned long *)calloc(nVolatileBlocks, sizeof(unsigned long));
     buf->nVolatileBlocks = nVolatileBlocks;
     buf->numVolatileOccupied = 0;
     
@@ -345,7 +345,7 @@ int loadPersistentPage(Buffer *buf, DiskAddress diskPage) {
    
    existingIndex = getIndex(persistentMap, diskPage);
    if (existingIndex == -1) {
-      newBlock = malloc(sizeof(Block));
+      newBlock = (Block *)malloc(sizeof(Block));
       newBlock->diskAddress = diskPage;
       
       result = tfs_readPage(diskPage.FD, diskPage.pageId,
@@ -487,7 +487,7 @@ int unPinPage(Buffer *buf, DiskAddress diskPage) {
  */
 int newPage(Buffer *buf, DiskAddress diskPage) {
     int result;
-    Block *pageBlock = calloc(1, sizeof(Block));
+    Block *pageBlock = (Block *)calloc(1, sizeof(Block));
     
     pageBlock->diskAddress = diskPage;
     
@@ -540,7 +540,7 @@ int allocateCachePage(Buffer *buf, DiskAddress diskPage) {
     }
     
     //create new block
-    newBlock = calloc(1, sizeof(Block));
+    newBlock = (Block *)calloc(1, sizeof(Block));
     newBlock->diskAddress = diskPage;
     
     //write block to volatile storage

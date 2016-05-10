@@ -9,8 +9,6 @@
 #include <sys/types.h>
 
 #include "ReadWrite.h"
-#include "libs/smartalloc.h"
-
 
 //return the byte array with the contents of entire page
 unsigned char * getPage(Buffer * buf, DiskAddress page) {

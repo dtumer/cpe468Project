@@ -1,8 +1,4 @@
-#include "libs/TFS468/tinyFS.h"
-#include "libs/TFS468/libTinyFS.h"
-#include "libs/TFS468/libDisk.h"
-
-
+#include "libs/tiny.h"
 
 #define MAX_BUFFER_SIZE 1024
 

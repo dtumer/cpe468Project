@@ -8,6 +8,7 @@
 
 /* Begin PBXFileReference section */
 		0FB6CEC51CB5E5E2007B9F6E /* Makefile */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.make; path = Makefile; sourceTree = "<group>"; };
+		0FE6BB6F1CE158F80011F380 /* TestHeapFile.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = TestHeapFile.c; sourceTree = "<group>"; };
 		638E34D21CB823C5006530E0 /* BufferManager.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = BufferManager.c; sourceTree = "<group>"; };
 		638E34D31CB823C5006530E0 /* BufferManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BufferManager.h; sourceTree = "<group>"; };
 		638E34D81CB823C5006530E0 /* README */ = {isa = PBXFileReference; lastKnownFileType = text; path = README; sourceTree = "<group>"; };
@@ -34,6 +35,7 @@
 				CB1739A91CD19F3100405878 /* ReadWrite.c */,
 				CB1739AA1CD19F3100405878 /* ReadWrite.h */,
 				638E34D81CB823C5006530E0 /* README */,
+				0FE6BB6F1CE158F80011F380 /* TestHeapFile.c */,
 				638E34D91CB823C5006530E0 /* TestHarness.c */,
 				CB1739AB1CD1B73800405878 /* TestReadWrite.c */,
 				0FB6CEC51CB5E5E2007B9F6E /* Makefile */,
