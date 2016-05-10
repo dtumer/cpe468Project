@@ -25,18 +25,24 @@ ReadWrite.o: ReadWrite.c
 HeapFile.o: HeapFile.c
 	$(CC) $(CFLAGS) -c -o $@ $^
 
+FileManager.o: FileManager.c
+	$(CC) $(CFLAGS) -c -o $@ $^
+
 TestHarness: TestHarness.c BufferManager.o $(LIBS)
 	$(CC) $(CFLAGS) -o $@ $^
 
 TestReadWrite: TestReadWrite.c ReadWrite.o BufferManager.o $(LIBS)
 	$(CC) $(CFLAGS) -o $@ $^
 
-TestHeapFile: TestHeapFile.c HeapFile.o BufferManager.o $(LIBS)
+TestHeapFile: TestHeapFile.c HeapFile.o FileManager.o ReadWrite.o BufferManager.o $(LIBS)
 	$(CC) $(CFLAGS) -o $@ $^
 
 runTestHarness: TestHarness
 	-@rm *.disk
 	./TestHarness ./test_files/TestHarness1.txt
+
+runTestHeapFile: TestHeapFile
+	./TestHeapFile ./test_files/TestHeapFile1.txt
 
 handin:
 	handin dekhtyar 468-lab3 *.c *.h Makefile README

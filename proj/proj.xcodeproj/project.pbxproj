@@ -24,6 +24,8 @@
 		CB1DD2C11CDC36DD00185A27 /* HeapFile.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = HeapFile.c; sourceTree = "<group>"; };
 		CB1DD2C21CDC36DD00185A27 /* HeapFile.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = HeapFile.h; sourceTree = "<group>"; };
 		CB1DD2C51CE1486300185A27 /* test_files */ = {isa = PBXFileReference; lastKnownFileType = folder; path = test_files; sourceTree = "<group>"; };
+		CB1DD2C61CE1592500185A27 /* TestFileManager.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = TestFileManager.c; sourceTree = "<group>"; };
+		CB1DD2C71CE1639200185A27 /* TestHeapFile.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = TestHeapFile.c; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
@@ -44,10 +46,20 @@
 				CB1DD2C11CDC36DD00185A27 /* HeapFile.c */,
 				CB1DD2C21CDC36DD00185A27 /* HeapFile.h */,
 				638E34D81CB823C5006530E0 /* README */,
-				638E34D91CB823C5006530E0 /* TestHarness.c */,
-				CB1739AB1CD1B73800405878 /* TestReadWrite.c */,
+				CB1DD2C81CE1639800185A27 /* Tests */,
 				0FB6CEC51CB5E5E2007B9F6E /* Makefile */,
 			);
+			sourceTree = "<group>";
+		};
+		CB1DD2C81CE1639800185A27 /* Tests */ = {
+			isa = PBXGroup;
+			children = (
+				638E34D91CB823C5006530E0 /* TestHarness.c */,
+				CB1739AB1CD1B73800405878 /* TestReadWrite.c */,
+				CB1DD2C61CE1592500185A27 /* TestFileManager.c */,
+				CB1DD2C71CE1639200185A27 /* TestHeapFile.c */,
+			);
+			name = Tests;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
