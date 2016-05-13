@@ -65,6 +65,9 @@ int heap_createFile(Buffer *buf, char *tableName, tableDescription *tableDesc, i
     printf("filename: %s;\n", fileHeader->fileName);
     
     printFileHeader(buf, firstPage.FD);
+    
+    free(fileHeader);
+    free(heapHeader);
     return 0;
 }
 
@@ -74,5 +77,6 @@ int heap_headerGetTableName(Buffer *buf, fileDescriptor fd, char *name) {
     
     name = header->tableName;
     
+    free(header);
     return 0;
 }

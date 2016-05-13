@@ -51,6 +51,8 @@ typedef struct Buffer {
 /* function type for eviction policy */
 typedef int (*evictFn)(Buffer *);
 
+fileDescriptor getFileDescriptor(Buffer *buf, char *fileName);
+
 int commence(char *database, Buffer *buf, int nPersistentBlocks, int nVolatileBlocks);
 int squash(Buffer *buf);
 int loadPersistentPage(Buffer *buf, DiskAddress diskPage);

@@ -4,83 +4,12 @@
 #include <string.h>
 #include <stdio.h>
 
+#include "libs/smartalloc.h"
 
-
-typedef struct FileNode {
-	fileDescriptor FD;
-	char *fileName;
-	struct FileNode *next;
-} FileNode;
-
-//prints all open files
-void printOpenFilesNow(FileNode *first) {
-	FileNode *temp = first;
-	
-	while (temp != NULL) {
-		printf("File: %s, %d\n", temp->fileName, temp->FD);
-		temp = temp->next;
-	}
-}
-
-
-//Closes open files
-void closeFiles(FileNode *node) {
-    if(node != NULL) {
-        closeFiles(node->next);
-        
-        tfs_closeFile(node->FD);
-        free(node->fileName);
-        free(node);
-    }
-}
-
-//adds file node to end of file list
-void addFileNode(FileNode **list, FileNode *add) {
-	FileNode *first = *list;
-	FileNode *temp = first;
-	
-	//if the first node is null set it
-	if (first == NULL) {
-		*list = add;
-	}
-	else {
-		while (temp != NULL) {
-			if (temp->next == NULL) {
-				temp->next = add;
-				break;
-			}
-		
-			temp = temp->next;
-		}
-	}
-} 
-
-//gets FD of open file
-fileDescriptor getFileDescriptor(FileNode **node, char *fileName) {
-    FileNode *newNode, *tempNode = *node;
-    
-    while (tempNode != NULL) {
-        if (strcmp(fileName, tempNode->fileName) == 0) {
-            return tempNode->FD;
-        }
-        tempNode = tempNode->next;
-    }
-    
-    newNode = (FileNode *)calloc(1, sizeof(FileNode));
-    newNode->fileName = (char *)calloc(strlen(fileName) + 1, sizeof(char));
-    newNode->FD = tfs_openFile(fileName);
-    strcpy(newNode->fileName, fileName);
-    newNode->next = *node;
-    
-    *node = newNode;
-    
-	return newNode->FD;
-}
 
 //function for running the buffer
 void runBuffer(FILE *fp) {
 	Buffer *buf = (Buffer *)calloc(1, sizeof(Buffer));
-	FileNode *first = NULL;
 	char command[10], diskName[1024], fileName[1024];
 	int num1, num2, i;
 	fileDescriptor FD;
@@ -98,16 +27,13 @@ void runBuffer(FILE *fp) {
 		else if (!strcmp(command, "end")) {
 			printf("END\n");
 			squash(buf);
-			
-			printOpenFilesNow(first);
-			closeFiles(first);
 		}
 		//read command
 		else if (!strcmp(command, "read")) {
 			if (fscanf(fp, "%s %d", fileName, &num1) == 2) {
 				printf("READ: %s %d\n", fileName, num1);
 				
-				FD = getFileDescriptor(&first, fileName);
+				FD = getFileDescriptor(buf, fileName);
 				dAdd.FD = FD;
 				dAdd.pageId = num1;
  				loadPersistentPage(buf, dAdd);
@@ -118,7 +44,7 @@ void runBuffer(FILE *fp) {
 			if (fscanf(fp, "%s %d", fileName, &num1) == 2) {
 				printf("WRITE: %s %d\n", fileName, num1);
 				
-				FD = getFileDescriptor(&first, fileName);
+				FD = getFileDescriptor(buf, fileName);
 				dAdd.FD = FD;
 				dAdd.pageId = num1;
 				
@@ -130,7 +56,7 @@ void runBuffer(FILE *fp) {
 			if (fscanf(fp, "%s %d", fileName, &num1) == 2) {
 				printf("FLUSH: %s %d\n", fileName, num1);
 				
-				FD = getFileDescriptor(&first, fileName);
+				FD = getFileDescriptor(buf, fileName);
 				dAdd.FD = FD;
 				dAdd.pageId = num1;
 				
@@ -142,7 +68,7 @@ void runBuffer(FILE *fp) {
 			if (fscanf(fp, "%s %d", fileName, &num1) == 2) {
 				printf("PIN: %s %d\n", fileName, num1);
 				
-				FD = getFileDescriptor(&first, fileName);
+				FD = getFileDescriptor(buf, fileName);
 				dAdd.FD = FD;
 				dAdd.pageId = num1;
 				
@@ -154,7 +80,7 @@ void runBuffer(FILE *fp) {
 			if (fscanf(fp, "%s %d", fileName, &num1) == 2) {
 				printf("UNPIN: %s %d\n", fileName, num1);
 				
-				FD = getFileDescriptor(&first, fileName);
+				FD = getFileDescriptor(buf, fileName);
 				dAdd.FD = FD;
 				dAdd.pageId = num1;
 				
@@ -167,7 +93,8 @@ void runBuffer(FILE *fp) {
 				printf("NEW: %s %d %d\n", fileName, num1, num2);
 				
 				//get file
-				FD = getFileDescriptor(&first, fileName);
+				FD = getFileDescriptor(buf, fileName);
+                printf("FD: %d\n", FD);
 				dAdd.FD = FD;
 				
 				//for each disk page create it in the buffer
@@ -184,7 +111,7 @@ void runBuffer(FILE *fp) {
 				printf("NEW CACHE: %s %d\n", fileName, num1);
 				
 				//get file
-				FD = getFileDescriptor(&first, fileName);
+				FD = getFileDescriptor(buf, fileName);
 				dAdd.FD = FD;
                 dAdd.pageId = num1;
 				
@@ -197,7 +124,7 @@ void runBuffer(FILE *fp) {
 				printf("REMOVE CACHE: %s %d\n", fileName, num1);
 				
 				//get file
-				FD = getFileDescriptor(&first, fileName);
+				FD = getFileDescriptor(buf, fileName);
 				dAdd.FD = FD;
                 dAdd.pageId = num1;
 				

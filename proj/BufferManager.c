@@ -48,6 +48,27 @@ void printHashmapError(int errorCode) {
     }
 }
 
+/**
+ * get the FD by filename
+ * if it does not exist it create it
+ * if it exists but it is not open, open it
+ * if it is not open but exists it return it
+ */
+fileDescriptor getFileDescriptor(Buffer *buf, char *fileName) {
+    fileDescriptor retValue;
+    
+    int error = hashmap_get(buf->openFileMap, fileName, &retValue);
+    
+    //print error if the map returned an error
+    if (error == MAP_MISSING) {
+        return tfs_openFile(fileName);
+    } else if (error != MAP_OK) {
+        printHashmapError(error);
+        return -1;
+    }
+    return retValue;
+}
+
 //converts a disk address to a string value
 char* diskAddressToString(DiskAddress diskAdd) {
     int lenFD = numDigits(diskAdd.FD);
@@ -224,6 +245,7 @@ int commence(char *database, Buffer *buf, int nPersistentBlocks, int nVolatileBl
     /* initialize the hashmaps */
     buf->persistentMap = hashmap_new();
     buf->volatileMap = hashmap_new();
+    buf->openFileMap = hashmap_new();
     
     return BFMG_OK;
 }
@@ -279,6 +301,7 @@ int squash(Buffer *buf) {
     //free hashmaps
     hashmap_free(buf->persistentMap);
     hashmap_free(buf->volatileMap);
+    hashmap_free(buf->openFileMap);
     
     //free buffer
     free(buf->database);
