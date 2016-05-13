@@ -386,7 +386,21 @@ int hashmap_remove(map_t in, char* key){
 
 /* Deallocate the hashmap */
 void hashmap_free(map_t in){
-	hashmap_map* m = (hashmap_map*) in;
+    int i;
+    hashmap_map* m = (hashmap_map*) in;
+    
+    /* Linear probing */
+    for(i = 0; i< m->table_size; i++)
+        if(m->data[i].in_use != 0) {
+            m->data[i].in_use = 0;
+            m->data[i].data = -1;
+            free(m->data[i].key);
+            m->data[i].key = NULL;
+            
+            /* Reduce the size */
+            m->size--;
+        }
+    
 	free(m->data);
 	free(m);
 }

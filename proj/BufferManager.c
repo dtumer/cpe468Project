@@ -52,7 +52,7 @@ void printHashmapError(int errorCode) {
 char* diskAddressToString(DiskAddress diskAdd) {
     int lenFD = numDigits(diskAdd.FD);
     int lenPageId = numDigits(diskAdd.pageId);
-    char *str = (char *)calloc(lenFD + 1 + lenPageId + 1, sizeof(char));
+    char *str = (char *)calloc(lenFD + 1 + lenPageId + 2, sizeof(char));
 
     sprintf(str, "%d,%d", diskAdd.FD, diskAdd.pageId);
    
@@ -275,6 +275,10 @@ int squash(Buffer *buf) {
             buf->volatilePages[i] = NULL;
         }
     }
+    
+    //free hashmaps
+    hashmap_free(buf->persistentMap);
+    hashmap_free(buf->volatileMap);
     
     //free buffer
     free(buf->database);
