@@ -8,7 +8,7 @@
 
 typedef struct FileHeader {
 	uint32_t fileType; //1: Heap, 2: Sequential, 3: Hash
-	char fileName[64];
+	char fileName[16];
 }__attribute__((packed)) FileHeader;
 
 typedef struct SeqFileHeader {
@@ -17,7 +17,7 @@ typedef struct SeqFileHeader {
     uint16_t numPages;
     uint16_t nextPage;
     uint16_t lastPage;
-    char tableName[32];
+    char tableName[10];
     char recordDescription[600]; //uint8_t colType, uint8_t colSize(optional), uint8_t nameLen, char colName[nameLen + 1]
 }__attribute__((packed)) SeqFileHeader;
 
