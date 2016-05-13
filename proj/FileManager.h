@@ -11,21 +11,6 @@ typedef struct FileHeader {
 	char fileName[64];
 }__attribute__((packed)) FileHeader;
 
-typedef struct HeapFileHeader {
-	uint16_t recordSize;
-	uint16_t numRecordsPerPage;
-	uint16_t numPages;
-	uint16_t firstPage;
-	uint16_t firstFreeSlotPage;
-	char tableName[32];
-	char recordDescription[600]; //uint8_t colType, uint8_t colSize(optional), uint8_t nameLen, char colName[nameLen + 1]
-}__attribute__((packed)) HeapFileHeader;
-
-typedef struct HeapPageHeader {
-	uint16_t nextFreeSlotPage;
-}__attribute__((packed)) HeapPageHeader;
-
-
 typedef struct SeqFileHeader {
     uint16_t recordSize;
     uint16_t numRecordsPerPage;
@@ -51,6 +36,6 @@ typedef struct HashPageHeader {
 
 
 FileHeader * file_getHeader(Buffer *buf, fileDescriptor fd);
-
+int calcBitmapSize(int recordSize, int pageSize, int headerSize, int curBitmapSize);
 
 #endif

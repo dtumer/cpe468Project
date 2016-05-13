@@ -1,5 +1,30 @@
 #include "FileManager.h"
 
+int calcBitmapSize(int recordSize, int pageSize, int headerSize, int curBitmapSize) {
+	int numRecordsOnPage = (pageSize - headerSize - curBitmapSize) / recordSize;
+	int newBitmapSize = numRecordsOnPage / 8;
+	int newHeaderSize;
+	
+	if (numRecordsOnPage % 8 > 0) {
+		newBitmapSize++;
+	}
+	
+	newHeaderSize = headerSize + newBitmapSize;
+	
+	if (newHeaderSize % 8 > 0) {
+		newBitmapSize += 8 - newHeaderSize % 8;
+	}
+	
+	printf("New Bitmap Size: %d\n", newBitmapSize);
+	
+	if (curBitmapSize == newBitmapSize) {
+		return curBitmapSize;
+	}
+	else {
+		return calcBitmapSize(recordSize, pageSize, headerSize, newBitmapSize);
+	}
+}
+
 FileHeader * file_getHeader(Buffer *buf, fileDescriptor fd) {
     //FileHeader *header;
     DiskAddress page;
