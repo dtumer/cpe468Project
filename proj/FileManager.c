@@ -1,4 +1,5 @@
 #include "FileManager.h"
+#include <stdio.h>
 
 //returns the index of the first free record in the bitmap
 int getFirstFreeRecord(uint8_t *bitmap, int numRecords) {
@@ -45,9 +46,7 @@ int calcBitmapSize(int recordSize, int pageSize, int headerSize, int curBitmapSi
 	if (newHeaderSize % 8 > 0) {
 		newBitmapSize += 8 - newHeaderSize % 8;
 	}
-	
-	printf("New Bitmap Size: %d\n", newBitmapSize);
-	
+    
 	if (curBitmapSize == newBitmapSize) {
 		return curBitmapSize;
 	}
@@ -79,7 +78,7 @@ void file_writeHeader(Buffer *buf, fileDescriptor fd, FileHeader *header) {
 
 
 void printFileHeader(Buffer *buf, fileDescriptor fd) {
-    FileHeader *header = file_getHeader(Buffer *buf, fileDescriptor fd);
+    FileHeader *header = file_getHeader(buf, fd);
     
     printf("File Header:\n");
     printf("\t FD: %d\n", fd);

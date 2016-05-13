@@ -40,7 +40,7 @@ void file_writeHeader(Buffer *buf, fileDescriptor fd, FileHeader *header);
 
 /* General Helper Functions */
 int calcBitmapSize(int recordSize, int pageSize, int headerSize, int curBitmapSize);
-int getFirstFreeRecord(char *bitmap, int numRecords);
+int getFirstFreeRecord(uint8_t *bitmap, int numRecords);
 
 /* Test Fucntions */
 void printFileHeader(Buffer *buf, fileDescriptor fd);
