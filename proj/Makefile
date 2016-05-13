@@ -50,6 +50,7 @@ runTestHarness: TestHarness.out
 	./TestHarness.out ./test_files/TestHarness1.txt
 
 runTestHeapFile: TestHeapFile.out
+	-@rm *.disk
 	./TestHeapFile.out ./test_files/TestHeapFile1.txt
 
 handin:

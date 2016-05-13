@@ -5,6 +5,9 @@
 #include "StatementParser.h"
 #include "FileManager.h"
 
+#include <stdlib.h>
+#include <string.h>
+
 //structure storing heap file information
 typedef struct HeapFileHeader {
 	uint16_t recordSize;
@@ -12,7 +15,7 @@ typedef struct HeapFileHeader {
 	uint16_t numPages;
 	uint16_t firstPage;
 	uint16_t firstFreeSlotPage;
-	char tableName[32];
+	char tableName[10];
 	char recordDescription[600]; //uint8_t colType, uint8_t colSize(optional), uint8_t nameLen, char colName[nameLen + 1]
 }__attribute__((packed)) HeapFileHeader;
 

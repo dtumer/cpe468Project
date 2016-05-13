@@ -155,28 +155,33 @@ void cleanupTable(tableDescription *table) {
 }
 
 //cleanup
-void cleanup(tableDescription *table, Buffer *buf) {
+void cleanup(tableDescription *table) {
 	cleanupTable(table);
 	
 	free(table);
-	free(buf);
 }
 
 int main(int argc, char *argv[]) {
 	
 	tableDescription *table = (tableDescription *)calloc(1, sizeof(tableDescription)); //description of table (after parsing)
 	Buffer *buf = (Buffer *)calloc(1, sizeof(Buffer)); //buffer object for page storage
-	
+    commence("Foo.disk", buf, 5, 5);
+
+    
+    
 	initTableDesc(table);
 	
 	printTableDesc(table);
+    
+    heap_createFile(buf, "people", table, 1);
 	
-	//2. create table
+    //2. create table
 		//create header page for table
 	//3. store data?
 	
 	//cleanup
-	cleanup(table, buf);
+	cleanup(table);
+    squash(buf);
 
 	return 0;
 }
