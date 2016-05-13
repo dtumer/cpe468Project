@@ -63,6 +63,8 @@ int heap_createFile(Buffer *buf, char *tableName, tableDescription *tableDesc, i
     buf_write(buf, headerPage, sizeof(FileHeader), sizeof(HeapFileHeader), (char *) heapHeader);
         
     printf("filename: %s;\n", fileHeader->fileName);
+    
+    printFileHeader(buf, firstPage.FD);
     return 0;
 }
 

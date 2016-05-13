@@ -34,10 +34,15 @@ typedef struct HashPageHeader {
     
 }__attribute__((packed)) HashPageHeader;
 
-
+/* FileHeader Functions */
 FileHeader * file_getHeader(Buffer *buf, fileDescriptor fd);
 void file_writeHeader(Buffer *buf, fileDescriptor fd, FileHeader *header);
+
+/* General Helper Functions */
 int calcBitmapSize(int recordSize, int pageSize, int headerSize, int curBitmapSize);
 int getFirstFreeRecord(char *bitmap, int numRecords);
+
+/* Test Fucntions */
+void printFileHeader(Buffer *buf, fileDescriptor fd);
 
 #endif

@@ -47,5 +47,7 @@ int pHGetRecSize(Buffer *buf, DiskAddress page);
 int pHGetMaxRecords(Buffer *buf, DiskAddress page);
 
 
+/* Test Functions */
+void printHeapFileHeader(Buffer *buf, fileDescriptor fd);
 
 #endif

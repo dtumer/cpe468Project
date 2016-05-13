@@ -76,3 +76,25 @@ void file_writeHeader(Buffer *buf, fileDescriptor fd, FileHeader *header) {
     
     buf_write(buf, page, 0, sizeof(FileHeader), (char *) header);
 }
+
+
+void printFileHeader(Buffer *buf, fileDescriptor fd) {
+    FileHeader *header = file_getHeader(Buffer *buf, fileDescriptor fd);
+    
+    printf("File Header:\n");
+    printf("\t FD: %d\n", fd);
+    
+    if(header->fileType == 1)
+        printf("\t File Type: Heap\n");
+    else if(header->fileType == 2)
+        printf("\t File Type: Sequential\n");
+    else if(header->fileType == 3)
+        printf("\t File Type: Hash\n");
+    else
+        printf("\t File Type: Unkown\n");
+    
+    printf("\t File Name: %s\n", header->fileName);
+}
+
+
+
