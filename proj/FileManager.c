@@ -21,8 +21,6 @@ int calcBitmapSize(int recordSize, int pageSize, int headerSize, int curBitmapSi
 		newBitmapSize += 8 - newHeaderSize % 8;
 	}
 	
-	printf("New Bitmap Size: %d\n", newBitmapSize);
-	
 	if (curBitmapSize == newBitmapSize) {
 		return curBitmapSize;
 	}
