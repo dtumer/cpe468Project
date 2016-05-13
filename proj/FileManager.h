@@ -51,6 +51,6 @@ typedef struct HashPageHeader {
 
 
 FileHeader * file_getHeader(Buffer *buf, fileDescriptor fd);
-
+void file_writeHeader(Buffer *buf, fileDescriptor fd, FileHeader *header);
 
 #endif
