@@ -4,6 +4,7 @@
 #include "libs/TFS468/tinyFS.h"
 #include "libs/TFS468/libTinyFS.h"
 #include "libs/TFS468/libDisk.h"
+#include "libs/hashmap.h"
 
 #define MAX_BUFFER_SIZE 1024
 
@@ -39,6 +40,11 @@ typedef struct Buffer {
     unsigned long *volatileTimestamp;
     int numVolatileOccupied;
     
+    //global map variable for holding references to disk addresses and their location in the buffer
+    map_t persistentMap;
+    map_t volatileMap;
+    
+    map_t openFileMap;
 } Buffer;
 
 /* function type for eviction policy */
