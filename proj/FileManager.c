@@ -1,5 +1,11 @@
 #include "FileManager.h"
 
+//returns the index of the first free record in the bitmap
+int getFirstFreeRecord(char *bitmap, int numRecords) {
+	return 0;
+}
+
+//calculates the size of the bitmap given a page
 int calcBitmapSize(int recordSize, int pageSize, int headerSize, int curBitmapSize) {
 	int numRecordsOnPage = (pageSize - headerSize - curBitmapSize) / recordSize;
 	int newBitmapSize = numRecordsOnPage / 8;

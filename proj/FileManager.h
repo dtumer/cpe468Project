@@ -38,5 +38,6 @@ typedef struct HashPageHeader {
 FileHeader * file_getHeader(Buffer *buf, fileDescriptor fd);
 void file_writeHeader(Buffer *buf, fileDescriptor fd, FileHeader *header);
 int calcBitmapSize(int recordSize, int pageSize, int headerSize, int curBitmapSize);
+int getFirstFreeRecord(char *bitmap, int numRecords);
 
 #endif
