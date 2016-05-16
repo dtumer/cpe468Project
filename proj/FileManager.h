@@ -41,6 +41,8 @@ void file_writeHeader(Buffer *buf, fileDescriptor fd, FileHeader *header);
 /* General Helper Functions */
 int calcBitmapSize(int recordSize, int pageSize, int headerSize, int curBitmapSize);
 int getFirstFreeRecord(uint8_t *bitmap, int numRecords);
+void setBitmapRecordEmpty(uint8_t *bitmap, int recordNum);
+void setBitmapRecordFull(uint8_t *bitmap, int recordNum);
 
 /* Test Fucntions */
 void printFileHeader(Buffer *buf, fileDescriptor fd);

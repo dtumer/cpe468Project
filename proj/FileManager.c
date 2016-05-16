@@ -31,6 +31,31 @@ int getFirstFreeRecord(uint8_t *bitmap, int numRecords) {
 	return counter;
 }
 
+//sets a record in the bitmap as empty given its recordNum
+void setBitmapRecordEmpty(uint8_t *bitmap, int recordNum) {
+	int byteNum = recordNum / 8;
+	int bitNum = recordNum % 8;
+	uint8_t mask = 1 << (7 - bitNum);
+	uint8_t *temp = bitmap;
+	
+	temp += byteNum; //navigates to correct byte number
+	mask = ~mask; //creates the mask on the appropriate bit within the byte
+	
+	*temp = *temp & mask;
+}
+
+//sets a record in the bitmap as full given its recordNum
+void setBitmapRecordFull(uint8_t *bitmap, int recordNum) {
+	int byteNum = recordNum / 8;
+	int bitNum = recordNum % 8;
+	uint8_t mask = 1 << (7 - bitNum);
+	uint8_t *temp = bitmap;
+	
+	temp += byteNum; //navigates to correct byte number
+	
+	*temp = *temp | mask;
+}
+
 //calculates the size of the bitmap given a page
 int calcBitmapSize(int recordSize, int pageSize, int headerSize, int curBitmapSize) {
 	int numRecordsOnPage = (pageSize - headerSize - curBitmapSize) / recordSize;
@@ -94,6 +119,3 @@ void printFileHeader(Buffer *buf, fileDescriptor fd) {
     
     printf("\t File Name: %s\n", header->fileName);
 }
-
-
-
