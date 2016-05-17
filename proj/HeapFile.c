@@ -80,3 +80,17 @@ int heap_headerGetTableName(Buffer *buf, fileDescriptor fd, char *name) {
     free(header);
     return 0;
 }
+
+int heap_headerGetRecordDesc(Buffer *buf, fileDescriptor fd, tableDescription *desc) {
+ 	HeapFileHeader *header = getHeapFileHeader(buf, fd);
+ 	
+ 	free(header);
+ 	return 0;
+}
+
+int head_headerGetNextPage(Buffer *buf, fileDescriptor fd, DiskAddress *page) {
+	HeapFileHeader *header = getHeapFileHeaeder(buf, fd);
+	
+	free(header);
+	return 0;
+}
