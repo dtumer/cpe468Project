@@ -22,7 +22,7 @@ int heap_createFile(Buffer *buf, char *tableName, tableDescription *tableDesc, i
     DiskAddress headerPage, firstPage;
     
     //FileHeader
-    fileHeader->fileType = 1;
+    fileHeader->fileType = HEAP_FILE_TYPE;
     
     ptr = fileHeader->fileName;
     strcpy(ptr, tbl);

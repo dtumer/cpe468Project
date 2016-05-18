@@ -6,6 +6,10 @@
 #include "BufferManager.h"
 #include "ReadWrite.h"
 
+#define HEAP_FILE_TYPE 1
+#define SEQ_FILE_TYPE 2
+#define HASH_FILE_TYPE 3
+
 typedef struct FileHeader {
 	uint32_t fileType; //1: Heap, 2: Sequential, 3: Hash
 	char fileName[16];
