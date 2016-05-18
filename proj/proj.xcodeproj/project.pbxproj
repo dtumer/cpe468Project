@@ -26,6 +26,10 @@
 		CB1DD2C51CE1486300185A27 /* test_files */ = {isa = PBXFileReference; lastKnownFileType = folder; path = test_files; sourceTree = "<group>"; };
 		CB1DD2C61CE1592500185A27 /* TestFileManager.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = TestFileManager.c; sourceTree = "<group>"; };
 		CB1DD2C71CE1639200185A27 /* TestHeapFile.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = TestHeapFile.c; sourceTree = "<group>"; };
+		CB4270881CED2D150038493C /* BplusTree.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = BplusTree.c; sourceTree = "<group>"; };
+		CB4270891CED2D150038493C /* BplusTree.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BplusTree.h; sourceTree = "<group>"; };
+		CB42708A1CED2D280038493C /* SeqFile.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = SeqFile.c; sourceTree = "<group>"; };
+		CB42708B1CED2D280038493C /* SeqFile.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SeqFile.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
@@ -42,6 +46,10 @@
 				CB1DD2C01CDC2A1900185A27 /* FileManager.h */,
 				CB1DD2C11CDC36DD00185A27 /* HeapFile.c */,
 				CB1DD2C21CDC36DD00185A27 /* HeapFile.h */,
+				CB42708A1CED2D280038493C /* SeqFile.c */,
+				CB42708B1CED2D280038493C /* SeqFile.h */,
+				CB4270881CED2D150038493C /* BplusTree.c */,
+				CB4270891CED2D150038493C /* BplusTree.h */,
 				63B790A61CD96629000F782B /* StatementParser.c */,
 				63B790A71CD96629000F782B /* StatementParser.h */,
 				638E34D81CB823C5006530E0 /* README */,
