@@ -108,14 +108,16 @@ void printFileHeader(Buffer *buf, fileDescriptor fd) {
     printf("File Header:\n");
     printf("\t FD: %d\n", fd);
     
-    if(header->fileType == 1)
+    if(header->fileType == HEAP_FILE_TYPE)
         printf("\t File Type: Heap\n");
-    else if(header->fileType == 2)
+    else if(header->fileType == SEQ_FILE_TYPE)
         printf("\t File Type: Sequential\n");
-    else if(header->fileType == 3)
+    else if(header->fileType == HASH_FILE_TYPE)
         printf("\t File Type: Hash\n");
     else
         printf("\t File Type: Unkown\n");
     
-    printf("\t File Name: %s\n", header->fileName);
+    printf("\t File Name: %s;\n", header->fileName);
+    
+    free(header);
 }

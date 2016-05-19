@@ -173,7 +173,10 @@ int main(int argc, char *argv[]) {
 	
 	printTableDesc(table);
     
-    heap_createFile(buf, "people", table, 1);
+    fileDescriptor fd = heap_createFile(buf, "people", table, 1);
+    
+    printFileHeader(buf, fd);
+    printHeapFileHeader(buf, fd);
 	
     //2. create table
 		//create header page for table
