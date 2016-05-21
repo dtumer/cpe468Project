@@ -23,7 +23,11 @@ typedef struct HeapFileHeader {
 }__attribute__((packed)) HeapFileHeader;
 
 typedef struct HeapPageHeader {
+    uint16_t pageId;
 	uint16_t nextFreeSlotPage;
+    uint16_t nextPage;
+    uint16_t numRecords;
+    char fileName[FILE_NAME_SIZE];
 }__attribute__((packed)) HeapPageHeader;
 
 
@@ -35,23 +39,33 @@ int heap_deleteFile(Buffer *buf, char *tableName);
 // Get the table name from a given header page
 int heap_headerGetTableName(Buffer *buf, fileDescriptor fd, char *name);
 // Get the file descriptor structure
-int heap_headerGetRecordDesc(Buffer *buf, fileDescriptor fd, tableDescription *desc);
+uint16_t heap_headerGetRecordDesc(Buffer *buf, fileDescriptor fd, tableDescription *desc);
 // Return the address of the next page in the pagelist list
-int heap_headerGetNextPage(Buffer *buf, fileDescriptor fd, DiskAddress *page);
+DiskAddress heap_headerGetNextPage(Buffer *buf, fileDescriptor fd);
 // Return the address of the next page in the freespace list
 int heap_headerGetFreeSpace(Buffer *buf, fileDescriptor fd, DiskAddress *page);
 
 /* Data Page functions */
 //given a page id and a location on the page (represented by id) retrieve the contents of the record into output array
-int heap_getRecord(Buffer *buf, DiskAddress page, int recordId, char *bytes);
+unsigned char * heap_getRecord(Buffer *buf, DiskAddress page, uint16_t dataOffset, uint16_t recordSize, int recordId);
 //given a page id and a location on the page, place the given record onto the appropriate slot of the page
-int heap_putRecord(Buffer *buf, DiskAddress page, int recordId, char *bytes);
-//
+int heap_putRecord(Buffer *buf, DiskAddress page, uint16_t dataOffset, uint16_t recordSize, int recordId, char *data);
+
+
 int pHGetRecSize(Buffer *buf, DiskAddress page);
 int pHGetMaxRecords(Buffer *buf, DiskAddress page);
 
+/* Heap File CRUD operations */
+
+int heap_insertRecord(Buffer *buf, char * tableName, char * record);
+
+int heap_deleteRecord(Buffer *buf, DiskAddress page, int recordId);
+
+int heap_updateRecord(Buffer *buf, DiskAddress page, int recordId, char * record);
+
 
 /* Test Functions */
-void printHeapFileHeader(Buffer *buf, fileDescriptor fd);
+void printHeapFileInfo(Buffer *buf, fileDescriptor fd);
+void printHeapPageInfo(Buffer *buf, DiskAddress page);
 
 #endif

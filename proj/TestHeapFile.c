@@ -3,13 +3,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-typedef struct FileNode {
-	fileDescriptor FD;
-	char *fileName;
-	struct FileNode *next;
-} FileNode;
-
-
 //prints out attributes
 void printAttributes(Attribute *head, char *prefix) {
 	Attribute *temp = head;
@@ -162,22 +155,47 @@ void cleanup(tableDescription *table) {
 }
 
 int main(int argc, char *argv[]) {
-	
+    int ndx;
+    DiskAddress dAdd;
+    
 	tableDescription *table = (tableDescription *)calloc(1, sizeof(tableDescription)); //description of table (after parsing)
 	Buffer *buf = (Buffer *)calloc(1, sizeof(Buffer)); //buffer object for page storage
     commence("Foo.disk", buf, 5, 5);
 
-    
     
 	initTableDesc(table);
 	
 	printTableDesc(table);
     
     fileDescriptor fd = heap_createFile(buf, "people", table, 1);
+    dAdd.FD = fd;
     
+    dAdd.pageId = 1;
     printFileHeader(buf, fd);
-    printHeapFileHeader(buf, fd);
-	
+    printHeapFileInfo(buf, fd);
+    printHeapPageInfo(buf, dAdd);
+    
+    char *record = calloc(48, sizeof(char));
+    strcpy(record, "1234567890;1234567890;1234567890;1234567890;aaa");
+    for(ndx=0; ndx<41; ndx++) {
+    	heap_insertRecord(buf, "people", record);
+    }
+    
+    
+    printHeapFileInfo(buf, fd);
+    printHeapPageInfo(buf, dAdd);
+    
+    heap_insertRecord(buf, "people", record);
+    
+    printHeapFileInfo(buf, fd);
+    
+    printHeapPageInfo(buf, dAdd);
+    dAdd.pageId = 2;
+    printHeapPageInfo(buf, dAdd);
+    
+    
+    free(record);
+    
     //2. create table
 		//create header page for table
 	//3. store data?
