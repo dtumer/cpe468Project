@@ -55,18 +55,20 @@ void printHashmapError(int errorCode) {
  * if it is not open but exists it return it
  */
 fileDescriptor getFileDescriptor(Buffer *buf, char *fileName) {
-    fileDescriptor retValue;
-    
-    int error = hashmap_get(buf->openFileMap, fileName, &retValue);
+    fileDescriptor fd = -1;
+    int error = hashmap_get(buf->openFileMap, fileName, &fd);
     
     //print error if the map returned an error
     if (error == MAP_MISSING) {
-        return tfs_openFile(fileName);
-    } else if (error != MAP_OK) {
-        printHashmapError(error);
-        return -1;
+        fd = tfs_openFile(fileName);
+        error = hashmap_put(buf->openFileMap, fileName, fd);
     }
-    return retValue;
+    
+    if (error != MAP_OK) {
+        printHashmapError(error);
+        return BFMG_ERR;
+    }
+    return fd;
 }
 
 //converts a disk address to a string value
