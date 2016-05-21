@@ -33,7 +33,8 @@ int getFirstFreeRecord(uint8_t *bitmap, int numRecords);
 void setBitmapRecordEmpty(uint8_t *bitmap, int recordNum);
 void setBitmapRecordFull(uint8_t *bitmap, int recordNum);
 
-/* Test Fucntions */
+/* Test Functions */
 void printFileHeader(Buffer *buf, fileDescriptor fd);
+void printBitmap(uint8_t *bitmap, int numRecords);
 
 #endif

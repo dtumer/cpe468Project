@@ -6,7 +6,7 @@ int getFirstFreeRecord(uint8_t *bitmap, int numRecords) {
 	int result, counter = 0;
 	uint16_t mask = 128;
 	uint8_t *temp;
-	
+    
 	if (numRecords <= 0) {
 		return -1;
 	}
@@ -27,6 +27,9 @@ int getFirstFreeRecord(uint8_t *bitmap, int numRecords) {
 		mask >>= 1;
 		counter++;
 	}
+    
+    if(counter >= numRecords)
+        return -1;
 	
 	return counter;
 }
@@ -102,6 +105,9 @@ void file_writeHeader(Buffer *buf, fileDescriptor fd, FileHeader *header) {
 }
 
 
+/* Test Functions */
+
+
 void printFileHeader(Buffer *buf, fileDescriptor fd) {
     FileHeader *header = file_getHeader(buf, fd);
     
@@ -120,4 +126,30 @@ void printFileHeader(Buffer *buf, fileDescriptor fd) {
     printf("\t File Name: %s;\n", header->fileName);
     
     free(header);
+}
+
+
+//returns the index of the first free record in the bitmap
+void printBitmap(uint8_t *bitmap, int numRecords) {
+    if(numRecords >=1)
+        printf("%d",(*bitmap & 0x80 ? 1 : 0));
+    if(numRecords >=2)
+        printf("%d",(*bitmap & 0x40 ? 1 : 0));
+    if(numRecords >=3)
+        printf("%d",(*bitmap & 0x20 ? 1 : 0));
+    if(numRecords >=4)
+        printf("%d",(*bitmap & 0x10 ? 1 : 0));
+    if(numRecords >=5)
+        printf("%d",(*bitmap & 0x08 ? 1 : 0));
+    if(numRecords >=6)
+        printf("%d",(*bitmap & 0x04 ? 1 : 0));
+    if(numRecords >=7)
+        printf("%d",(*bitmap & 0x02 ? 1 : 0));
+    if(numRecords >=8)
+        printf("%d",(*bitmap & 0x01 ? 1 : 0));
+    
+    if (numRecords > 8) {
+        printf(" ");
+        printBitmap(bitmap + 1, numRecords - 8);
+    }
 }
