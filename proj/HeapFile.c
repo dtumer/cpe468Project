@@ -1,6 +1,15 @@
 #include "HeapFile.h"
 #include "BufferManager.h"
 
+/* Helper functions */
+
+void heap_getFileName(char *tableName, char *fileName) {
+    strcpy(fileName, "T_");
+    strncpy(&fileName[2], tableName, FILE_NAME_SIZE-3);
+    fileName[FILE_NAME_SIZE-1] = '\0';
+    return;
+}
+
 HeapFileHeader * heap_getFileHeader(Buffer *buf, fileDescriptor fd) {
     DiskAddress page;
     unsigned char *data;
@@ -72,18 +81,12 @@ void heap_createNewPage(Buffer *buf, fileDescriptor fd) {
 fileDescriptor heap_createFile(Buffer *buf, char *tableName, tableDescription *tableDesc, int volatileFlag) {
     FileHeader *fileHeader = malloc(sizeof(FileHeader));
     HeapFileHeader *heapFileHeader = malloc(sizeof(HeapFileHeader));
-    
-    const char *tbl = "T_";
-    char *ptr;
     DiskAddress headerPage;
     
     //FileHeader
     fileHeader->fileType = HEAP_FILE_TYPE;
     
-    ptr = fileHeader->fileName;
-    strcpy(ptr, tbl);
-    ptr += 2;
-    strncpy(ptr, tableName, 14);
+    heap_getFileName(tableName, fileHeader->fileName);
     
     //open file
     headerPage.FD = getFileDescriptor(buf, fileHeader->fileName);

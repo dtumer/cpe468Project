@@ -10,9 +10,11 @@
 #define SEQ_FILE_TYPE 2
 #define HASH_FILE_TYPE 3
 
+#define FILE_NAME_SIZE 16
+
 typedef struct FileHeader {
 	uint32_t fileType; //1: Heap, 2: Sequential, 3: Hash
-	char fileName[16];
+	char fileName[FILE_NAME_SIZE];
 }__attribute__((packed)) FileHeader;
 
 typedef struct HashFileHeader {
