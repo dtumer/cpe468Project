@@ -260,7 +260,38 @@ int heap_insertRecord(Buffer *buf, char * tableName, char * record) {
     return 0;
 }
 
-//int heap_deleteRecord(Buffer *buf, DiskAddress page, int recordId);
+int heap_deleteRecord(Buffer *buf, DiskAddress page, int recordId) {
+    HeapFileHeader *heapFileHeader = heap_getFileHeader(buf, page.FD);
+    HeapPageHeader *heapPageHeader = heap_getPageHeader(buf, page);
+    uint8_t *bitmap;
+    
+    //get bitmap
+    bitmap = (uint8_t *) buf_read(buf, page, sizeof(HeapPageHeader), heapFileHeader->bitmapSize);
+    int prevFreeRecordId = getFirstFreeRecord(bitmap, heapFileHeader->numRecordsPerPage);
+    
+    //update record count
+    heapPageHeader->numRecords--;
+    
+    //update bitmap
+    setBitmapRecordEmpty(bitmap, recordId);
+    buf_write(buf, page, sizeof(HeapPageHeader), heapFileHeader->bitmapSize, (char *) bitmap);
+    
+    if(prevFreeRecordId == -1) {
+        //page was full
+        heapPageHeader->nextFreeSlotPage = heapFileHeader->firstFreeSlotPage;
+        heapFileHeader->firstFreeSlotPage = page.pageId;
+        
+        //write heapFileHeader
+        heap_writeFileHeader(buf, page.FD, heapFileHeader);
+    }
+    
+    //write and free heapPageHeader
+    heap_writePageHeader(buf, page, heapPageHeader);
+    free(bitmap);
+    free(heapPageHeader);
+    free(heapFileHeader);
+    return 0;
+}
 
 //int heap_updateRecord(Buffer *buf, DiskAddress page, int recordId, char * record) {}
 
@@ -288,10 +319,15 @@ void printHeapFileInfo(Buffer *buf, fileDescriptor fd) {
     free(fileHeader);
 }
 
-void printHeapPageInfo(Buffer *buf, DiskAddress page) {
+void printHeapPageInfo(Buffer *buf, fileDescriptor fd, int pageId) {
+    DiskAddress page;
+    page.FD = fd;
+    page.pageId = pageId;
+    
     HeapPageHeader *heapPageHeader = heap_getPageHeader(buf, page);
     HeapFileHeader *heapFileHeader = heap_getFileHeader(buf, page.FD);
     uint8_t *bitmap;
+    DiskAddress dAdd;
     
     printf("Heap Page %d Info:\n", heapPageHeader->pageId);
     printf("\t fileName: %s;\n", heapPageHeader->fileName);

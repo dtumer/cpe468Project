@@ -166,41 +166,55 @@ int main(int argc, char *argv[]) {
 	initTableDesc(table);
 	
 	printTableDesc(table);
-    
     fileDescriptor fd = heap_createFile(buf, "people", table, 1);
     dAdd.FD = fd;
     
-    dAdd.pageId = 1;
+    //print before adding data
+    printf("\nEmpty heap file\n");
     printFileHeader(buf, fd);
     printHeapFileInfo(buf, fd);
-    printHeapPageInfo(buf, dAdd);
+    printHeapPageInfo(buf, fd, 1);
     
     char *record = calloc(48, sizeof(char));
     strcpy(record, "1234567890;1234567890;1234567890;1234567890;aaa");
+    
+    //add data till almost full
+    printf("\nadd data till almost full\n");
     for(ndx=0; ndx<41; ndx++) {
     	heap_insertRecord(buf, "people", record);
     }
     
-    
     printHeapFileInfo(buf, fd);
-    printHeapPageInfo(buf, dAdd);
+    printHeapPageInfo(buf, fd, 1);
     
+    //fill page
+    printf("\nfill page\n");
     heap_insertRecord(buf, "people", record);
     
     printHeapFileInfo(buf, fd);
+    printHeapPageInfo(buf, fd, 1);
+    printHeapPageInfo(buf, fd, 2);
     
-    printHeapPageInfo(buf, dAdd);
-    dAdd.pageId = 2;
-    printHeapPageInfo(buf, dAdd);
+    //delete record from page 1
+    printf("\ndelete record from page 1\n");
+    dAdd.pageId = 1;
+    heap_deleteRecord(buf, dAdd, 9);
     
+    printHeapFileInfo(buf, fd);
+    printHeapPageInfo(buf, fd, 1);
+    printHeapPageInfo(buf, fd, 2);
     
-    free(record);
+    //re-fill page
+    printf("\nre-fill page\n");
+    heap_insertRecord(buf, "people", record);
     
-    //2. create table
-		//create header page for table
-	//3. store data?
+    printHeapFileInfo(buf, fd);
+    printHeapPageInfo(buf, fd, 1);
+    printHeapPageInfo(buf, fd, 2);
+    
 	
 	//cleanup
+    free(record);
 	cleanup(table);
     squash(buf);
 

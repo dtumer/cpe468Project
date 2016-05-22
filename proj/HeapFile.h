@@ -66,6 +66,6 @@ int heap_updateRecord(Buffer *buf, DiskAddress page, int recordId, char * record
 
 /* Test Functions */
 void printHeapFileInfo(Buffer *buf, fileDescriptor fd);
-void printHeapPageInfo(Buffer *buf, DiskAddress page);
+void printHeapPageInfo(Buffer *buf, fileDescriptor fd, int pageId);
 
 #endif
