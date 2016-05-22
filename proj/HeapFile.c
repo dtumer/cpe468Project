@@ -293,7 +293,16 @@ int heap_deleteRecord(Buffer *buf, DiskAddress page, int recordId) {
     return 0;
 }
 
-//int heap_updateRecord(Buffer *buf, DiskAddress page, int recordId, char * record) {}
+int heap_updateRecord(Buffer *buf, DiskAddress page, int recordId, char * record) {
+    HeapFileHeader *heapFileHeader = heap_getFileHeader(buf, page.FD);
+    
+    //write data
+    buf_write(buf, dAdd, sizeof(HeapPageHeader) + heapFileHeader->bitmapSize + (heapFileHeader->recordSize * recordId), heapFileHeader->recordSize, record);
+    
+    //free heapFileHeader
+    free(heapFileHeader);
+    return 0;
+}
 
 
 /* Test Functions */
