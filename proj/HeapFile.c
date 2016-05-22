@@ -243,7 +243,7 @@ int heap_insertRecord(Buffer *buf, char * tableName, char * record) {
         heapFileHeader->firstFreeSlotPage = heapPageHeader->nextFreeSlotPage;
         heapPageHeader->nextFreeSlotPage = 0;
         
-        if(heapPageHeader->nextFreeSlotPage == 0) {
+        if(heapFileHeader->firstFreeSlotPage == 0) {
             //no empty pages, need to create a new one
             heap_createNewPage(buf, fd, heapFileHeader);
         }
