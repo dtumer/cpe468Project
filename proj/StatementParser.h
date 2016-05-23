@@ -11,9 +11,18 @@
 
 #include <stdio.h>
 
+typedef enum ATT_TYPE {
+	INT,
+	FLOAT,
+	VARCHAR,
+	CHAR,
+	DATETIME
+} ATT_TYPE;
+
 typedef struct Attributes {
    char *attName;
-   int attType; //change to enum
+   ATT_TYPE attType;
+   int attSize;
    struct Attributes *next;
 } Attribute;
 
@@ -32,6 +41,6 @@ typedef struct Tables {
 
 //creates the buffer pages necessary for the creation of the table
 //also writes to the header page all necessary information
-int createPersistentTable(Buffer buf, tableDescription table);
+//int createPersistentTable(Buffer buf, tableDescription table);
 
 #endif /* StatementParser_h */
