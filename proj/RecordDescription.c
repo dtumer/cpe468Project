@@ -3,7 +3,8 @@
 #include <stdint.h>
 #include <string.h>
 
-#define ATTRIBUTE_OFFSET 6
+#define ATTRIBUTE_OFFSET 4
+#define MAX_LENGTH 600
 
 //calculates the size of the foreign keys that will be needed in the byte array
 uint16_t calcSizeOfForeignKeys(foreignKeys *fKeys) {
@@ -78,10 +79,9 @@ uint16_t calcSizeOfAttributes(Attribute *attrs) {
 	return runningSize;
 }
 
-void packMetaData(uint16_t pKeyOffset, uint16_t fKeyOffset, uint16_t dataLen, char *data) {
-	memcpy(data, &dataLen, sizeof(uint16_t));
-	memcpy(data + 2, &pKeyOffset, sizeof(uint16_t));
-	memcpy(data + 4, &fKeyOffset, sizeof(uint16_t));
+void packMetaData(uint16_t pKeyOffset, uint16_t fKeyOffset, char *data) {
+	memcpy(data, &pKeyOffset, sizeof(uint16_t));
+	memcpy(data + 2, &fKeyOffset, sizeof(uint16_t));
 }
 
 //packs the attributes into the data array
@@ -197,21 +197,27 @@ void packForeignKeys(uint16_t fKeyOffset, foreignKeys *fKeys, char *data) {
 	}
 }
 
-char* packRecordDescription(tableDescription *desc) {
+//function for packing the record description into a byte array
+int packRecordDescription(tableDescription *desc, char *data) {
 	uint16_t attrSize = calcSizeOfAttributes(desc->attributeList);
 	uint16_t pKeySize = calcSizeOfPrimaryKeys(desc->pKey);
 	uint16_t fKeySize = calcSizeOfForeignKeys(desc->fKeys);
 	uint16_t attrOffset = ATTRIBUTE_OFFSET;
 	uint16_t pKeyOffset = attrOffset + attrSize;
 	uint16_t fKeyOffset = pKeyOffset + pKeySize;
-	char *data = calloc(attrSize + pKeySize + fKeySize + ATTRIBUTE_OFFSET, sizeof(char));
+	int totalSize = attrSize + pKeySize + fKeySize + ATTRIBUTE_OFFSET;
 	
-	packMetaData(attrOffset, fKeyOffset, attrSize + pKeySize + fKeySize + ATTRIBUTE_OFFSET, data);
+	if (totalSize >= MAX_LENGTH) {
+		printf("ERROR: Record description is too long!!\n");
+		return -1;
+	}
+	
+	packMetaData(attrOffset, fKeyOffset, data);
 	packAttributes(attrOffset, desc->attributeList, data);
 	packPrimaryKeys(pKeyOffset, desc->pKey, data);
 	packForeignKeys(fKeyOffset, desc->fKeys, data);
 	
-	printf("\nSIZES:\n Attributes: %d\n pKeys: %d\n  pKeyOffset: %d\n fKeys: %d\n  fKeyOffset: %d\n", attrSize, pKeySize, pKeyOffset, fKeySize, fKeyOffset);
+	//printf("\nSIZES:\n Attributes: %d\n pKeys: %d\n  pKeyOffset: %d\n fKeys: %d\n  fKeyOffset: %d\n", attrSize, pKeySize, pKeyOffset, fKeySize, fKeyOffset);
 	
-	return data;
+	return totalSize;
 }

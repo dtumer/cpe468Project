@@ -5,6 +5,6 @@
 
 #include <stdlib.h>
 
-char* packRecordDescription(tableDescription *desc);
+int packRecordDescription(tableDescription *desc, char **data);
 
 #endif
