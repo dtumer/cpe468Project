@@ -297,7 +297,7 @@ int heap_updateRecord(Buffer *buf, DiskAddress page, int recordId, char * record
     HeapFileHeader *heapFileHeader = heap_getFileHeader(buf, page.FD);
     
     //write data
-    buf_write(buf, dAdd, sizeof(HeapPageHeader) + heapFileHeader->bitmapSize + (heapFileHeader->recordSize * recordId), heapFileHeader->recordSize, record);
+    buf_write(buf, page, sizeof(HeapPageHeader) + heapFileHeader->bitmapSize + (heapFileHeader->recordSize * recordId), heapFileHeader->recordSize, record);
     
     //free heapFileHeader
     free(heapFileHeader);
@@ -336,7 +336,6 @@ void printHeapPageInfo(Buffer *buf, fileDescriptor fd, int pageId) {
     HeapPageHeader *heapPageHeader = heap_getPageHeader(buf, page);
     HeapFileHeader *heapFileHeader = heap_getFileHeader(buf, page.FD);
     uint8_t *bitmap;
-    DiskAddress dAdd;
     
     printf("Heap Page %d Info:\n", heapPageHeader->pageId);
     printf("\t fileName: %s;\n", heapPageHeader->fileName);
