@@ -30,6 +30,8 @@
 		CB4270891CED2D150038493C /* BplusTree.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BplusTree.h; sourceTree = "<group>"; };
 		CB42708A1CED2D280038493C /* SeqFile.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = SeqFile.c; sourceTree = "<group>"; };
 		CB42708B1CED2D280038493C /* SeqFile.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SeqFile.h; sourceTree = "<group>"; };
+		CB42708C1CF3CE810038493C /* RecordDescription.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = RecordDescription.c; sourceTree = "<group>"; };
+		CB42708D1CF3CE810038493C /* RecordDescription.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RecordDescription.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
@@ -52,6 +54,8 @@
 				CB4270891CED2D150038493C /* BplusTree.h */,
 				63B790A61CD96629000F782B /* StatementParser.c */,
 				63B790A71CD96629000F782B /* StatementParser.h */,
+				CB42708C1CF3CE810038493C /* RecordDescription.c */,
+				CB42708D1CF3CE810038493C /* RecordDescription.h */,
 				638E34D81CB823C5006530E0 /* README */,
 				CB1DD2C81CE1639800185A27 /* Tests */,
 				0FB6CEC51CB5E5E2007B9F6E /* Makefile */,
