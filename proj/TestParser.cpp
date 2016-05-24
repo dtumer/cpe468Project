@@ -15,10 +15,10 @@
 
 
 void printCreateTableStatement(FLOPPYCreateTableStatement* statement) {
-    printf("\t TableName: %s\n", statement->tableName.c_str());
-    printf("\t volatileFlag: %d\n", statement->flags->volatileFlag);
-    printf("\t indexOnlyFlag: %d\n", statement->flags->indexOnlyFlag);
-    printf("\t splitFlag: %d\n", statement->flags->splitFlag);
+    printf("\tTableName: %s\n", statement->tableName.c_str());
+    printf("\tvolatileFlag: %d\n", statement->flags->volatileFlag);
+    printf("\tindexOnlyFlag: %d\n", statement->flags->indexOnlyFlag);
+    printf("\tsplitFlag: %d\n", statement->flags->splitFlag);
     
     
     printf("\t Columns:\n");
@@ -52,19 +52,30 @@ void printCreateTableStatement(FLOPPYCreateTableStatement* statement) {
 }
 
 void printInsertStatement(FLOPPYInsertStatement* statement) {
-    
+    printf("\tTableName: %s\n", statement->name);
+    printf("\tValues:\n");
+    for (unsigned i=0; i<statement->values->size(); i++) {
+        FLOPPYValue *val = statement->values->at(i);
+        
+        if(val->type() == ValueType::AttributeValue)
+            printf("\t\tATTRIBUTE \"%s\"\n", val->sVal);
+        else if(val->type() == ValueType::StringValue)
+            printf("\t\tSTRING \"%s\"\n", val->sVal);
+        else if(val->type() == ValueType::IntValue)
+            printf("\t\tINT %d\n", val->iVal);
+        else if(val->type() == ValueType::FloatValue)
+            printf("\t\tFLOAT %f\n", val->fVal);
+        else if(val->type() == ValueType::BooleanValue)
+            printf("\t\tBOOLEAN %d\n", val->bVal);
+        else if(val->type() == ValueType::NullValue)
+            printf("\t\tNULL\n");
+    }
 }
 
-int main(int argc, char *argv[]) {
-    //const char* sql = "CREATE TABLE NodeStats (IPAddress VARCHAR(20), BlocksUploaded  INT,BlocksDownloaded INT,RequestsReceived INT,RequestsSent INT,RequestsServed INT,RequestsFailed INT,DistrosUploaded  INT,DistrosDownloaded INT,PRIMARY KEY (IPAddress));";
-    const char* sql = "CREATE TABLE Availability VOLATILE (NodeId  VARCHAR(20), DistroId  INT, FileId  INT, BlockID  INT, TimeStamp DATETIME, PRIMARY KEY(FileId, BlockId, NodeId), FOREIGN KEY(NodeId) REFERENCES Nodes, FOREIGN KEY (DistroId) REFERENCES Distros, FOREIGN KEY (FileId) REFERENCES Files);";
-    //,FOREIGN KEY(NodeId) REFERENCES NodeStats
-    
+void TestSQLStatement(const char* sql) {
     FLOPPYOutput *result = FLOPPYParser::parseFLOPPYString(sql);
     
     if (result->isValid) { // Use isValid flag to detect is parser parsed correctly.
-        
-        printf("Parsed successfully!\n");
         
         switch (result->statement->type()) {
             case StatementType::ErrorStatement:
@@ -94,6 +105,17 @@ int main(int argc, char *argv[]) {
     } else {
         printf("Invalid FLOPPY!\n");
     }
+}
+
+int main(int argc, char *argv[]) {
+    //TestSQLStatement("CREATE TABLE NodeStats (IPAddress VARCHAR(20), BlocksUploaded  INT,BlocksDownloaded INT,RequestsReceived INT,RequestsSent INT,RequestsServed INT,RequestsFailed INT,DistrosUploaded  INT,DistrosDownloaded INT,PRIMARY KEY (IPAddress));");
+    
+    TestSQLStatement("CREATE TABLE Availability VOLATILE (NodeId  VARCHAR(20), DistroId  INT, FileId  INT, BlockID  INT, TimeStamp DATETIME, PRIMARY KEY(FileId, BlockId, NodeId), FOREIGN KEY(NodeId) REFERENCES Nodes, FOREIGN KEY (DistroId) REFERENCES Distros, FOREIGN KEY (FileId) REFERENCES Files);");
+    //,FOREIGN KEY(NodeId) REFERENCES NodeStats
+    
+    TestSQLStatement("INSERT INTO Availability VALUES ('test', 2, 10, 20);");
+    
+    
     
     return 0;
 }
