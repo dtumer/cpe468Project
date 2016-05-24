@@ -40,7 +40,7 @@
 extern int yydebug;
 #endif
 /* "%code requires" blocks.  */
-#line 23 "FLOPPY_parser.y" /* yacc.c:1915  */
+#line 24 "FLOPPY_parser.y" /* yacc.c:1915  */
 
 #include "../FLOPPY_statements/statements.h"
 #include "../FLOPPYOutput.h"
@@ -57,19 +57,56 @@ typedef void* yyscan_t;
   enum yytokentype
   {
     FLOPPY_INTVAL = 258,
-    FLOPPY_ID = 259,
-    FLOPPY_CREATE = 260,
-    FLOPPY_TABLE = 261,
-    FLOPPY_VOLATILE = 262,
-    FLOPPY_PRIMARY = 263,
-    FLOPPY_FOREIGN = 264,
-    FLOPPY_KEY = 265,
-    FLOPPY_REFERENCES = 266,
-    FLOPPY_INT = 267,
-    FLOPPY_FLOAT = 268,
-    FLOPPY_BOOLEAN = 269,
-    FLOPPY_DATETIME = 270,
-    FLOPPY_VARCHAR = 271
+    FLOPPY_FLOATVAL = 259,
+    FLOPPY_ID = 260,
+    FLOPPY_STRING = 261,
+    FLOPPY_CREATE = 262,
+    FLOPPY_TABLE = 263,
+    FLOPPY_VOLATILE = 264,
+    FLOPPY_PRIMARY = 265,
+    FLOPPY_FOREIGN = 266,
+    FLOPPY_KEY = 267,
+    FLOPPY_REFERENCES = 268,
+    FLOPPY_INDEX = 269,
+    FLOPPY_ONLY = 270,
+    FLOPPY_SPLIT = 271,
+    FLOPPY_DROP = 272,
+    FLOPPY_ON = 273,
+    FLOPPY_INTO = 274,
+    FLOPPY_VALUES = 275,
+    FLOPPY_DELETE = 276,
+    FLOPPY_INSERT = 277,
+    FLOPPY_SELECT = 278,
+    FLOPPY_FROM = 279,
+    FLOPPY_WHERE = 280,
+    FLOPPY_UPDATE = 281,
+    FLOPPY_SET = 282,
+    FLOPPY_GROUP = 283,
+    FLOPPY_BY = 284,
+    FLOPPY_HAVING = 285,
+    FLOPPY_ORDER = 286,
+    FLOPPY_LIMIT = 287,
+    FLOPPY_DISTINCT = 288,
+    FLOPPY_COUNT = 289,
+    FLOPPY_AVERAGE = 290,
+    FLOPPY_MAX = 291,
+    FLOPPY_MIN = 292,
+    FLOPPY_SUM = 293,
+    FLOPPY_NULL = 294,
+    FLOPPY_AS = 295,
+    FLOPPY_NOT = 296,
+    FLOPPY_MOD = 297,
+    FLOPPY_LE = 298,
+    FLOPPY_GE = 299,
+    FLOPPY_NE = 300,
+    FLOPPY_TRUE = 301,
+    FLOPPY_FALSE = 302,
+    FLOPPY_AND = 303,
+    FLOPPY_INT = 304,
+    FLOPPY_FLOAT = 305,
+    FLOPPY_BOOLEAN = 306,
+    FLOPPY_DATETIME = 307,
+    FLOPPY_VARCHAR = 308
   };
 #endif
 
@@ -78,24 +115,42 @@ typedef void* yyscan_t;
 
 union YYSTYPE
 {
-#line 43 "FLOPPY_parser.y" /* yacc.c:1915  */
+#line 44 "FLOPPY_parser.y" /* yacc.c:1915  */
 
 	int64_t ival;
+	float fval;
    bool bval;
    char *sval;
 
 	FLOPPYStatement *statement;
    FLOPPYCreateTableStatement *create_table_statement;
+   FLOPPYDropTableStatement *drop_table_statement;
+   FLOPPYCreateIndexStatement *create_index_statement;
+   FLOPPYDropIndexStatement *drop_index_statement;
+   FLOPPYInsertStatement *insert_statement;
+   FLOPPYDeleteStatement *delete_statement;
+   FLOPPYUpdateStatement *update_statement;
+   FLOPPYSelectStatement *select_statement;
    FLOPPYForeignKey *foreign_key;
+   FLOPPYSelectItem *select_item;
+   FLOPPYTableSpec *table_spec;
+   FLOPPYGroupBy *group_by;
 
    std::vector<char *> *str_vec;
    std::vector<FLOPPYCreateColumn *> *create_column_vec;
    std::vector<FLOPPYForeignKey *> *foreign_key_vec;
+   std::vector<FLOPPYValue *> *value_vec;
+   std::vector<FLOPPYSelectItem *> *select_item_vec;
+   std::vector<FLOPPYTableSpec *> *table_spec_vec;
+   CreateTableAdditionalFunctionality *flags;
 
    FLOPPYCreateColumn *create_column;
    FLOPPYPrimaryKey *primary_key;
 
-#line 99 "FLOPPY_parser.h" /* yacc.c:1915  */
+   FLOPPYValue *value;
+   FLOPPYNode *node;
+
+#line 154 "FLOPPY_parser.h" /* yacc.c:1915  */
 };
 
 typedef union YYSTYPE YYSTYPE;

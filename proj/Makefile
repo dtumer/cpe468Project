@@ -1,9 +1,9 @@
 CPP = g++
 CC = gcc
 CFLAGS = -Wall -g
-CPPFLAGS=-fPIC -O3 -std=c++0x -Wno-deprecated-register
-LIBS  = libs/hashmap.c libs/TFS468/libDisk.o libs/TFS468/libTinyFS.o libs/smartalloc.c
-ParserSRC= libs/FLOPPY/FLOPPY_statements/FLOPPYCreateTableStatement.cpp libs/FLOPPY/FLOPPY_statements/FLOPPYCreateColumn.cpp libs/FLOPPY/FLOPPY_statements/FLOPPYPrimaryKey.cpp libs/FLOPPY/FLOPPY_statements/FLOPPYForeignKey.cpp libs/FLOPPY/lex_parse/FLOPPY_parser.cpp libs/FLOPPY/lex_parse/FLOPPY_lexer.cpp libs/FLOPPY/FLOPPYParser.cpp libs/FLOPPY/FLOPPYOutput.cpp
+CPPFLAGS=-fPIC -O3 -std=c++0x
+LIBS  = libs/hashmap.c libs/TFS468/libDisk.o libs/TFS468/libTinyFS.o
+ParserSRC= libs/FLOPPY/FLOPPY_statements/FLOPPYCreateTableStatement.cpp libs/FLOPPY/FLOPPY_statements/FLOPPYCreateColumn.cpp libs/FLOPPY/FLOPPY_statements/FLOPPYPrimaryKey.cpp libs/FLOPPY/FLOPPY_statements/FLOPPYForeignKey.cpp libs/FLOPPY/FLOPPY_statements/FLOPPYDropTableStatement.cpp libs/FLOPPY/FLOPPY_statements/FLOPPYCreateIndexStatement.cpp libs/FLOPPY/FLOPPY_statements/FLOPPYDropIndexStatement.cpp libs/FLOPPY/FLOPPY_statements/FLOPPYInsertStatement.cpp libs/FLOPPY/FLOPPY_statements/FLOPPYValue.cpp libs/FLOPPY/FLOPPY_statements/FLOPPYDeleteStatement.cpp libs/FLOPPY/FLOPPY_statements/FLOPPYNode.cpp libs/FLOPPY/FLOPPY_statements/FLOPPYUpdateStatement.cpp libs/FLOPPY/FLOPPY_statements/FLOPPYTableSpec.cpp libs/FLOPPY/FLOPPY_statements/FLOPPYSelectItem.cpp libs/FLOPPY/FLOPPY_statements/FLOPPYSelectStatement.cpp libs/FLOPPY/lex_parse/FLOPPY_parser.cpp libs/FLOPPY/lex_parse/FLOPPY_lexer.cpp libs/FLOPPY/FLOPPYParser.cpp libs/FLOPPY/FLOPPYOutput.cpp
 
 
 all: clean
@@ -33,8 +33,6 @@ HeapFile.o: HeapFile.c
 FileManager.o: FileManager.c
 	$(CC) $(CFLAGS) -c -o $@ $^
 
-libParser.so:
-	$(CPP) $(CPPFLAGS) $(ParserSRC) -shared -o $@
 
 TestHarness.out: TestHarness.c BufferManager.o $(LIBS)
 	$(CC) $(CFLAGS) -o $@ $^
@@ -45,6 +43,9 @@ TestReadWrite.out: TestReadWrite.c ReadWrite.o BufferManager.o $(LIBS)
 TestHeapFile.out: TestHeapFile.c HeapFile.o FileManager.o ReadWrite.o BufferManager.o $(LIBS)
 	$(CC) $(CFLAGS) -o $@ $^
 
+TestParser.out: TestParser.cpp $(ParserSRC) $(LIBS)
+	$(CPP) $(CPPFLAGS) -o $@ $^
+
 runTestHarness: TestHarness.out
 	-@rm *.disk
 	./TestHarness.out ./test_files/TestHarness1.txt
@@ -52,6 +53,10 @@ runTestHarness: TestHarness.out
 runTestHeapFile: TestHeapFile.out
 	-@rm *.disk
 	./TestHeapFile.out ./test_files/TestHeapFile1.txt
+
+runTestParser: TestParser.out
+	./TestParser.out
+
 
 handin:
 	handin dekhtyar 468-lab3 *.c *.h Makefile README

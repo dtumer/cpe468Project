@@ -75,6 +75,7 @@
 #include <vector>
 #include <string>
 #include <stdio.h>
+#include <stdlib.h>
 
 int yyerror(YYLTYPE* llocp, FLOPPYOutput ** result, yyscan_t scanner, const char *msg) {
 	FLOPPYOutput *fo = new FLOPPYOutput();
@@ -85,7 +86,7 @@ int yyerror(YYLTYPE* llocp, FLOPPYOutput ** result, yyscan_t scanner, const char
 }
 
 
-#line 89 "FLOPPY_parser.cpp" /* yacc.c:339  */
+#line 90 "FLOPPY_parser.cpp" /* yacc.c:339  */
 
 # ifndef YY_NULLPTR
 #  if defined __cplusplus && 201103L <= __cplusplus
@@ -115,7 +116,7 @@ int yyerror(YYLTYPE* llocp, FLOPPYOutput ** result, yyscan_t scanner, const char
 extern int yydebug;
 #endif
 /* "%code requires" blocks.  */
-#line 23 "FLOPPY_parser.y" /* yacc.c:355  */
+#line 24 "FLOPPY_parser.y" /* yacc.c:355  */
 
 #include "../FLOPPY_statements/statements.h"
 #include "../FLOPPYOutput.h"
@@ -124,7 +125,7 @@ extern int yydebug;
 typedef void* yyscan_t;
 #endif
 
-#line 128 "FLOPPY_parser.cpp" /* yacc.c:355  */
+#line 129 "FLOPPY_parser.cpp" /* yacc.c:355  */
 
 /* Token type.  */
 #ifndef YYTOKENTYPE
@@ -132,19 +133,56 @@ typedef void* yyscan_t;
   enum yytokentype
   {
     FLOPPY_INTVAL = 258,
-    FLOPPY_ID = 259,
-    FLOPPY_CREATE = 260,
-    FLOPPY_TABLE = 261,
-    FLOPPY_VOLATILE = 262,
-    FLOPPY_PRIMARY = 263,
-    FLOPPY_FOREIGN = 264,
-    FLOPPY_KEY = 265,
-    FLOPPY_REFERENCES = 266,
-    FLOPPY_INT = 267,
-    FLOPPY_FLOAT = 268,
-    FLOPPY_BOOLEAN = 269,
-    FLOPPY_DATETIME = 270,
-    FLOPPY_VARCHAR = 271
+    FLOPPY_FLOATVAL = 259,
+    FLOPPY_ID = 260,
+    FLOPPY_STRING = 261,
+    FLOPPY_CREATE = 262,
+    FLOPPY_TABLE = 263,
+    FLOPPY_VOLATILE = 264,
+    FLOPPY_PRIMARY = 265,
+    FLOPPY_FOREIGN = 266,
+    FLOPPY_KEY = 267,
+    FLOPPY_REFERENCES = 268,
+    FLOPPY_INDEX = 269,
+    FLOPPY_ONLY = 270,
+    FLOPPY_SPLIT = 271,
+    FLOPPY_DROP = 272,
+    FLOPPY_ON = 273,
+    FLOPPY_INTO = 274,
+    FLOPPY_VALUES = 275,
+    FLOPPY_DELETE = 276,
+    FLOPPY_INSERT = 277,
+    FLOPPY_SELECT = 278,
+    FLOPPY_FROM = 279,
+    FLOPPY_WHERE = 280,
+    FLOPPY_UPDATE = 281,
+    FLOPPY_SET = 282,
+    FLOPPY_GROUP = 283,
+    FLOPPY_BY = 284,
+    FLOPPY_HAVING = 285,
+    FLOPPY_ORDER = 286,
+    FLOPPY_LIMIT = 287,
+    FLOPPY_DISTINCT = 288,
+    FLOPPY_COUNT = 289,
+    FLOPPY_AVERAGE = 290,
+    FLOPPY_MAX = 291,
+    FLOPPY_MIN = 292,
+    FLOPPY_SUM = 293,
+    FLOPPY_NULL = 294,
+    FLOPPY_AS = 295,
+    FLOPPY_NOT = 296,
+    FLOPPY_MOD = 297,
+    FLOPPY_LE = 298,
+    FLOPPY_GE = 299,
+    FLOPPY_NE = 300,
+    FLOPPY_TRUE = 301,
+    FLOPPY_FALSE = 302,
+    FLOPPY_AND = 303,
+    FLOPPY_INT = 304,
+    FLOPPY_FLOAT = 305,
+    FLOPPY_BOOLEAN = 306,
+    FLOPPY_DATETIME = 307,
+    FLOPPY_VARCHAR = 308
   };
 #endif
 
@@ -153,24 +191,42 @@ typedef void* yyscan_t;
 
 union YYSTYPE
 {
-#line 43 "FLOPPY_parser.y" /* yacc.c:355  */
+#line 44 "FLOPPY_parser.y" /* yacc.c:355  */
 
 	int64_t ival;
+	float fval;
    bool bval;
    char *sval;
 
 	FLOPPYStatement *statement;
    FLOPPYCreateTableStatement *create_table_statement;
+   FLOPPYDropTableStatement *drop_table_statement;
+   FLOPPYCreateIndexStatement *create_index_statement;
+   FLOPPYDropIndexStatement *drop_index_statement;
+   FLOPPYInsertStatement *insert_statement;
+   FLOPPYDeleteStatement *delete_statement;
+   FLOPPYUpdateStatement *update_statement;
+   FLOPPYSelectStatement *select_statement;
    FLOPPYForeignKey *foreign_key;
+   FLOPPYSelectItem *select_item;
+   FLOPPYTableSpec *table_spec;
+   FLOPPYGroupBy *group_by;
 
    std::vector<char *> *str_vec;
    std::vector<FLOPPYCreateColumn *> *create_column_vec;
    std::vector<FLOPPYForeignKey *> *foreign_key_vec;
+   std::vector<FLOPPYValue *> *value_vec;
+   std::vector<FLOPPYSelectItem *> *select_item_vec;
+   std::vector<FLOPPYTableSpec *> *table_spec_vec;
+   CreateTableAdditionalFunctionality *flags;
 
    FLOPPYCreateColumn *create_column;
    FLOPPYPrimaryKey *primary_key;
 
-#line 174 "FLOPPY_parser.cpp" /* yacc.c:355  */
+   FLOPPYValue *value;
+   FLOPPYNode *node;
+
+#line 230 "FLOPPY_parser.cpp" /* yacc.c:355  */
 };
 
 typedef union YYSTYPE YYSTYPE;
@@ -200,7 +256,7 @@ int yyparse (FLOPPYOutput** result, yyscan_t scanner);
 
 /* Copy the second part of user declarations.  */
 
-#line 204 "FLOPPY_parser.cpp" /* yacc.c:358  */
+#line 260 "FLOPPY_parser.cpp" /* yacc.c:358  */
 
 #ifdef short
 # undef short
@@ -442,23 +498,23 @@ union yyalloc
 #endif /* !YYCOPY_NEEDED */
 
 /* YYFINAL -- State number of the termination state.  */
-#define YYFINAL  6
+#define YYFINAL  26
 /* YYLAST -- Last index in YYTABLE.  */
-#define YYLAST   37
+#define YYLAST   253
 
 /* YYNTOKENS -- Number of terminals.  */
-#define YYNTOKENS  21
+#define YYNTOKENS  66
 /* YYNNTS -- Number of nonterminals.  */
-#define YYNNTS  14
+#define YYNNTS  41
 /* YYNRULES -- Number of rules.  */
-#define YYNRULES  23
+#define YYNRULES  107
 /* YYNSTATES -- Number of states.  */
-#define YYNSTATES  48
+#define YYNSTATES  230
 
 /* YYTRANSLATE[YYX] -- Symbol number corresponding to YYX as returned
    by yylex, with out-of-bounds checking.  */
 #define YYUNDEFTOK  2
-#define YYMAXUTOK   271
+#define YYMAXUTOK   308
 
 #define YYTRANSLATE(YYX)                                                \
   ((unsigned int) (YYX) <= YYMAXUTOK ? yytranslate[YYX] : YYUNDEFTOK)
@@ -471,9 +527,9 @@ static const yytype_uint8 yytranslate[] =
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-      18,    20,     2,     2,    19,     2,     2,     2,     2,     2,
-       2,     2,     2,     2,     2,     2,     2,     2,     2,    17,
-       2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+      61,    62,    59,    57,    65,    58,    63,    60,     2,     2,
+       2,     2,     2,     2,     2,     2,     2,     2,     2,    64,
+      56,    54,    55,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
@@ -494,16 +550,27 @@ static const yytype_uint8 yytranslate[] =
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     1,     2,     3,     4,
        5,     6,     7,     8,     9,    10,    11,    12,    13,    14,
-      15,    16
+      15,    16,    17,    18,    19,    20,    21,    22,    23,    24,
+      25,    26,    27,    28,    29,    30,    31,    32,    33,    34,
+      35,    36,    37,    38,    39,    40,    41,    42,    43,    44,
+      45,    46,    47,    48,    49,    50,    51,    52,    53
 };
 
 #if YYDEBUG
   /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
-static const yytype_uint8 yyrline[] =
+static const yytype_uint16 yyrline[] =
 {
-       0,    83,    83,    90,   103,   117,   118,   122,   126,   133,
-     141,   145,   152,   159,   163,   169,   177,   180,   183,   186,
-     189,   195,   198,   203
+       0,   138,   138,   145,   146,   147,   148,   149,   150,   151,
+     152,   165,   180,   184,   193,   197,   205,   209,   216,   220,
+     227,   236,   240,   247,   254,   258,   264,   272,   275,   278,
+     281,   284,   290,   293,   298,   309,   321,   334,   347,   356,
+     360,   367,   368,   372,   379,   383,   387,   391,   395,   407,
+     416,   417,   423,   428,   436,   442,   448,   454,   460,   466,
+     472,   477,   485,   486,   492,   498,   504,   510,   516,   524,
+     529,   533,   539,   545,   551,   557,   563,   577,   599,   617,
+     621,   624,   628,   635,   639,   644,   650,   656,   662,   668,
+     674,   682,   686,   693,   698,   703,   711,   712,   716,   719,
+     725,   731,   737,   740,   746,   749,   755,   758
 };
 #endif
 
@@ -512,13 +579,25 @@ static const yytype_uint8 yyrline[] =
    First, the terminals, then, starting at YYNTOKENS, nonterminals.  */
 static const char *const yytname[] =
 {
-  "$end", "error", "$undefined", "INTVAL", "ID", "CREATE", "TABLE",
-  "VOLATILE", "PRIMARY", "FOREIGN", "KEY", "REFERENCES", "INT", "FLOAT",
-  "BOOLEAN", "DATETIME", "VARCHAR", "';'", "'('", "','", "')'", "$accept",
-  "input", "statement", "create_statement", "opt_volatile",
-  "column_def_commalist", "column_def", "attribute_list", "primary_key",
-  "opt_foreign_key_list", "foreign_key", "column_type", "opt_column_size",
-  "int_literal", YY_NULLPTR
+  "$end", "error", "$undefined", "INTVAL", "FLOATVAL", "ID", "STRING",
+  "CREATE", "TABLE", "VOLATILE", "PRIMARY", "FOREIGN", "KEY", "REFERENCES",
+  "INDEX", "ONLY", "SPLIT", "DROP", "ON", "INTO", "VALUES", "DELETE",
+  "INSERT", "SELECT", "FROM", "WHERE", "UPDATE", "SET", "GROUP", "BY",
+  "HAVING", "ORDER", "LIMIT", "DISTINCT", "COUNT", "AVERAGE", "MAX", "MIN",
+  "SUM", "NULL", "AS", "NOT", "MOD", "LE", "GE", "NE", "TRUE", "FALSE",
+  "AND", "INT", "FLOAT", "BOOLEAN", "DATETIME", "VARCHAR", "'='", "'>'",
+  "'<'", "'+'", "'-'", "'*'", "'/'", "'('", "')'", "'.'", "';'", "','",
+  "$accept", "input", "statement", "create_table_statement",
+  "opt_volatile", "opt_index_only", "opt_split", "column_def_commalist",
+  "column_def", "attribute_list", "primary_key", "opt_foreign_key_list",
+  "foreign_key", "column_type", "opt_column_size", "int_literal",
+  "drop_table_statement", "create_index_statement", "drop_index_statement",
+  "insert_statement", "value_list", "value", "constant",
+  "delete_statement", "condition", "atomic_condition", "expression",
+  "atomic_expression", "update_statement", "select_statement",
+  "star_or_select_item_list", "select_item_list", "select_item",
+  "table_spec_list", "table_spec", "opt_distinct", "opt_where",
+  "opt_group_by", "opt_having", "opt_order_by", "opt_limit", YY_NULLPTR
 };
 #endif
 
@@ -528,15 +607,19 @@ static const char *const yytname[] =
 static const yytype_uint16 yytoknum[] =
 {
        0,   256,   257,   258,   259,   260,   261,   262,   263,   264,
-     265,   266,   267,   268,   269,   270,   271,    59,    40,    44,
-      41
+     265,   266,   267,   268,   269,   270,   271,   272,   273,   274,
+     275,   276,   277,   278,   279,   280,   281,   282,   283,   284,
+     285,   286,   287,   288,   289,   290,   291,   292,   293,   294,
+     295,   296,   297,   298,   299,   300,   301,   302,   303,   304,
+     305,   306,   307,   308,    61,    62,    60,    43,    45,    42,
+      47,    40,    41,    46,    59,    44
 };
 # endif
 
-#define YYPACT_NINF -14
+#define YYPACT_NINF -111
 
 #define yypact_value_is_default(Yystate) \
-  (!!((Yystate) == (-14)))
+  (!!((Yystate) == (-111)))
 
 #define YYTABLE_NINF -1
 
@@ -545,13 +628,31 @@ static const yytype_uint16 yytoknum[] =
 
   /* YYPACT[STATE-NUM] -- Index in YYTABLE of the portion describing
      STATE-NUM.  */
-static const yytype_int8 yypact[] =
+static const yytype_int16 yypact[] =
 {
-       3,     8,    15,    -1,   -14,    13,   -14,   -14,    11,   -14,
-       2,    17,   -12,     0,   -14,   -14,   -14,   -14,   -14,   -14,
-       4,     1,    20,   -14,    14,   -14,   -14,   -14,     5,     9,
-     -13,   -14,    22,    19,   -14,   -14,    -9,    21,   -14,    25,
-     -14,    12,   -14,    22,    -7,    23,    28,   -14
+     141,    -6,     1,   -18,    60,   -16,    73,    81,    27,  -111,
+    -111,  -111,  -111,  -111,  -111,  -111,  -111,   107,   109,   112,
+     128,   129,   131,  -111,    59,   110,  -111,  -111,    77,   120,
+    -111,   121,   132,   134,    96,    95,    99,   100,   104,   105,
+    -111,   148,   108,  -111,   169,   111,   114,   172,   173,    22,
+     118,   182,     8,   183,   184,   185,   186,   187,    85,   139,
+     180,  -111,   190,   135,  -111,  -111,  -111,  -111,  -111,   136,
+     137,   138,   140,   142,  -111,    22,  -111,  -111,   197,    22,
+    -111,   154,  -111,   126,  -111,    26,  -111,   143,   144,   145,
+     146,   147,   149,    -2,     6,  -111,  -111,    16,   189,    75,
+     150,  -111,   205,    11,   207,   208,   209,   211,  -111,  -111,
+     -38,    87,    22,    16,    16,    16,    16,    16,    16,    16,
+      16,    16,    16,    16,  -111,  -111,   -51,  -111,  -111,  -111,
+    -111,  -111,  -111,  -111,  -111,  -111,   212,    22,   187,   191,
+      16,    50,   153,  -111,  -111,  -111,  -111,  -111,   159,     2,
+    -111,    23,   160,   161,   162,   163,   164,   165,  -111,  -111,
+    -111,  -111,   -24,   -24,   -24,   -24,   -24,   -24,    40,    40,
+    -111,  -111,  -111,    26,  -111,   154,  -111,   192,   198,    93,
+      22,   214,  -111,   225,  -111,   219,  -111,  -111,  -111,   227,
+    -111,  -111,  -111,  -111,  -111,  -111,  -111,   205,   204,   202,
+     154,  -111,  -111,   174,   176,    39,  -111,    46,   205,   232,
+    -111,  -111,   205,  -111,   228,    22,  -111,   175,  -111,    41,
+     226,  -111,   154,  -111,   181,   205,    51,   230,   236,  -111
 };
 
   /* YYDEFACT[STATE-NUM] -- Default reduction number in state STATE-NUM.
@@ -559,25 +660,49 @@ static const yytype_int8 yypact[] =
      means the default is an error.  */
 static const yytype_uint8 yydefact[] =
 {
-       0,     0,     0,     0,     3,     0,     1,     2,     6,     5,
-       0,     0,     0,     0,     7,    16,    17,    20,    19,    18,
-      22,     0,     0,     9,     0,     8,    14,    23,     0,     0,
-       0,    21,     0,     0,     4,    10,     0,     0,    13,     0,
-      12,     0,    11,     0,     0,     0,     0,    15
+       0,     0,     0,     0,     0,    97,     0,     0,     0,     3,
+       4,     5,     6,     7,     8,     9,    10,     0,     0,     0,
+       0,     0,     0,    96,     0,     0,     1,     2,    13,     0,
+      35,     0,     0,     0,    83,     0,     0,     0,     0,     0,
+      79,     0,    80,    81,     0,    15,     0,     0,     0,     0,
+       0,     0,     0,     0,     0,     0,     0,     0,     0,     0,
+       0,    12,     0,     0,    37,    44,    46,    69,    47,     0,
+       0,     0,     0,     0,    48,     0,    60,    61,     0,     0,
+      70,    49,    50,     0,    62,     0,    84,     0,     0,     0,
+       0,     0,     0,    93,    99,    91,    82,     0,     0,     0,
+       0,    18,     0,     0,     0,     0,     0,     0,    52,    45,
+       0,     0,     0,     0,     0,     0,     0,     0,     0,     0,
+       0,     0,     0,     0,    42,    43,     0,    39,    41,    85,
+      90,    86,    87,    88,    89,    94,     0,     0,     0,   101,
+       0,     0,    17,    27,    28,    31,    30,    29,    33,     0,
+      21,     0,     0,     0,     0,     0,     0,     0,    53,    68,
+      51,    67,    57,    58,    59,    56,    55,    54,    63,    64,
+      65,    66,    38,     0,    95,    98,    92,     0,   105,     0,
+       0,     0,    14,     0,    20,     0,    19,    25,    36,     0,
+      75,    76,    74,    72,    71,    73,    40,     0,     0,   107,
+      77,    16,    34,     0,     0,     0,    22,   103,     0,     0,
+      78,    32,     0,    11,     0,     0,   100,   104,   106,     0,
+       0,    24,   102,    23,     0,     0,     0,     0,     0,    26
 };
 
   /* YYPGOTO[NTERM-NUM].  */
-static const yytype_int8 yypgoto[] =
+static const yytype_int16 yypgoto[] =
 {
-     -14,   -14,   -14,   -14,   -14,   -14,    16,   -10,   -14,   -14,
-     -14,   -14,   -14,   -14
+    -111,  -111,  -111,  -111,  -111,  -111,  -111,  -111,    97,  -110,
+    -111,  -111,  -111,  -111,  -111,  -111,  -111,  -111,  -111,  -111,
+    -111,    71,   -84,  -111,   -75,  -111,   -74,  -111,  -111,  -111,
+    -111,  -111,   193,  -111,   115,  -111,  -111,  -111,  -111,  -111,
+    -111
 };
 
   /* YYDEFGOTO[NTERM-NUM].  */
-static const yytype_int8 yydefgoto[] =
+static const yytype_int16 yydefgoto[] =
 {
-      -1,     2,     3,     4,    10,    13,    14,    36,    26,    30,
-      38,    20,    23,    28
+      -1,     7,     8,     9,    46,    61,   182,   100,   101,   151,
+     187,   205,   221,   148,   184,   203,    10,    11,    12,    13,
+     126,   127,    80,    14,    81,    82,    83,    84,    15,    16,
+      41,    42,    43,    94,    95,    24,   139,   178,   216,   199,
+     210
 };
 
   /* YYTABLE[YYPACT[STATE-NUM]] -- What to do in state STATE-NUM.  If
@@ -585,45 +710,123 @@ static const yytype_int8 yydefgoto[] =
      number is the opposite.  If YYTABLE_NINF, syntax error.  */
 static const yytype_uint8 yytable[] =
 {
-      15,    16,    17,    18,    19,    12,    33,    34,     1,    24,
-      39,    40,    39,    45,     5,     6,     7,     8,     9,    21,
-      11,    12,    22,    27,    29,    31,    35,    32,    37,    42,
-      43,    41,    47,    44,    46,     0,     0,    25
+     108,   128,    17,   135,   110,   111,    21,    99,    18,    19,
+     112,   172,   185,    87,   173,    20,   152,    23,   113,    65,
+      66,    67,    68,   141,   158,    65,    66,    67,    68,    65,
+      66,   137,    68,   120,   121,   122,   123,   160,   136,   161,
+     162,   163,   164,   165,   166,   167,   168,   169,   170,   171,
+      69,    70,    71,    72,    73,    74,    69,    70,    71,    72,
+      73,    74,   175,    75,    34,    74,   179,    88,    76,    77,
+     153,   138,   124,   125,    78,   180,   215,   140,    25,    22,
+      78,    26,   113,    79,    78,   188,    45,   207,   189,   128,
+      34,    27,   113,    35,    36,    37,    38,    39,   217,   122,
+     123,   213,   219,   223,   214,   200,   189,   120,   121,   122,
+     123,   189,    28,   227,    29,   226,   189,    30,    40,    35,
+      36,    37,    38,    39,   143,   144,   145,   146,   147,   113,
+     114,   115,   116,    31,    32,   113,    33,    44,    47,    48,
+     222,   117,   118,   119,   120,   121,   122,   123,     1,   159,
+     120,   121,   122,   123,    50,   159,    52,    49,     2,    51,
+      53,    54,     3,     4,     5,    55,    56,     6,   113,   114,
+     115,   116,    57,    58,    59,    62,    60,    63,    64,    85,
+     117,   118,   119,   120,   121,   122,   123,    86,    89,    90,
+      91,    92,    93,    97,    98,    99,   102,   103,   104,   105,
+     109,   106,   112,   107,   142,   129,   130,   131,   132,   133,
+     150,   134,   154,   155,   156,   149,   157,   174,   181,   177,
+     183,   197,   190,   191,   192,   193,   194,   195,   202,   198,
+     201,   204,   206,   208,   209,   218,   211,   212,   224,   220,
+     189,   229,   225,   228,   196,     0,   186,     0,     0,     0,
+       0,    96,     0,   176
 };
 
-static const yytype_int8 yycheck[] =
+static const yytype_int16 yycheck[] =
 {
-      12,    13,    14,    15,    16,     4,    19,    20,     5,     8,
-      19,    20,    19,    20,     6,     0,    17,     4,     7,    19,
-      18,     4,    18,     3,    10,    20,     4,    18,     9,     4,
-      18,    10,     4,    43,    11,    -1,    -1,    21
+      75,    85,     8,     5,    79,    79,    24,     5,    14,     8,
+      48,    62,    10,     5,    65,    14,     5,    33,    42,     3,
+       4,     5,     6,    97,    62,     3,     4,     5,     6,     3,
+       4,    25,     6,    57,    58,    59,    60,   112,    40,   113,
+     114,   115,   116,   117,   118,   119,   120,   121,   122,   123,
+      34,    35,    36,    37,    38,    39,    34,    35,    36,    37,
+      38,    39,   137,    41,     5,    39,   140,    59,    46,    47,
+      59,    65,    46,    47,    58,    25,    30,    61,     5,    19,
+      58,     0,    42,    61,    58,    62,     9,   197,    65,   173,
+       5,    64,    42,    34,    35,    36,    37,    38,   208,    59,
+      60,    62,   212,    62,    65,   180,    65,    57,    58,    59,
+      60,    65,     5,    62,     5,   225,    65,     5,    59,    34,
+      35,    36,    37,    38,    49,    50,    51,    52,    53,    42,
+      43,    44,    45,     5,     5,    42,     5,    27,    18,    18,
+     215,    54,    55,    56,    57,    58,    59,    60,     7,    62,
+      57,    58,    59,    60,    20,    62,    61,    25,    17,    63,
+      61,    61,    21,    22,    23,    61,    61,    26,    42,    43,
+      44,    45,    24,    65,     5,    61,    65,     5,     5,    61,
+      54,    55,    56,    57,    58,    59,    60,     5,     5,     5,
+       5,     5,     5,    54,    14,     5,    61,    61,    61,    61,
+       3,    61,    48,    61,    15,    62,    62,    62,    62,    62,
+       5,    62,     5,     5,     5,    65,     5,     5,    65,    28,
+      61,    29,    62,    62,    62,    62,    62,    62,     3,    31,
+      16,    12,     5,    29,    32,     3,    62,    61,    12,    11,
+      65,     5,    61,    13,   173,    -1,   149,    -1,    -1,    -1,
+      -1,    58,    -1,   138
 };
 
   /* YYSTOS[STATE-NUM] -- The (internal number of the) accessing
      symbol of state STATE-NUM.  */
 static const yytype_uint8 yystos[] =
 {
-       0,     5,    22,    23,    24,     6,     0,    17,     4,     7,
-      25,    18,     4,    26,    27,    12,    13,    14,    15,    16,
-      32,    19,    18,    33,     8,    27,    29,     3,    34,    10,
-      30,    20,    18,    19,    20,     4,    28,     9,    31,    19,
-      20,    10,     4,    18,    28,    20,    11,     4
+       0,     7,    17,    21,    22,    23,    26,    67,    68,    69,
+      82,    83,    84,    85,    89,    94,    95,     8,    14,     8,
+      14,    24,    19,    33,   101,     5,     0,    64,     5,     5,
+       5,     5,     5,     5,     5,    34,    35,    36,    37,    38,
+      59,    96,    97,    98,    27,     9,    70,    18,    18,    25,
+      20,    63,    61,    61,    61,    61,    61,    24,    65,     5,
+      65,    71,    61,     5,     5,     3,     4,     5,     6,    34,
+      35,    36,    37,    38,    39,    41,    46,    47,    58,    61,
+      88,    90,    91,    92,    93,    61,     5,     5,    59,     5,
+       5,     5,     5,     5,    99,   100,    98,    54,    14,     5,
+      73,    74,    61,    61,    61,    61,    61,    61,    90,     3,
+      90,    92,    48,    42,    43,    44,    45,    54,    55,    56,
+      57,    58,    59,    60,    46,    47,    86,    87,    88,    62,
+      62,    62,    62,    62,    62,     5,    40,    25,    65,   102,
+      61,    92,    15,    49,    50,    51,    52,    53,    79,    65,
+       5,    75,     5,    59,     5,     5,     5,     5,    62,    62,
+      90,    92,    92,    92,    92,    92,    92,    92,    92,    92,
+      92,    92,    62,    65,     5,    90,   100,    28,   103,    92,
+      25,    65,    72,    61,    80,    10,    74,    76,    62,    65,
+      62,    62,    62,    62,    62,    62,    87,    29,    31,   105,
+      90,    16,     3,    81,    12,    77,     5,    75,    29,    32,
+     106,    62,    61,    62,    65,    30,   104,    75,     3,    75,
+      11,    78,    90,    62,    12,    61,    75,    62,    13,     5
 };
 
   /* YYR1[YYN] -- Symbol number of symbol that rule YYN derives.  */
 static const yytype_uint8 yyr1[] =
 {
-       0,    21,    22,    23,    24,    25,    25,    26,    26,    27,
-      28,    28,    29,    30,    30,    31,    32,    32,    32,    32,
-      32,    33,    33,    34
+       0,    66,    67,    68,    68,    68,    68,    68,    68,    68,
+      68,    69,    70,    70,    71,    71,    72,    72,    73,    73,
+      74,    75,    75,    76,    77,    77,    78,    79,    79,    79,
+      79,    79,    80,    80,    81,    82,    83,    84,    85,    86,
+      86,    87,    87,    87,    88,    88,    88,    88,    88,    89,
+      90,    90,    90,    90,    91,    91,    91,    91,    91,    91,
+      91,    91,    92,    92,    92,    92,    92,    92,    92,    93,
+      93,    93,    93,    93,    93,    93,    93,    94,    95,    96,
+      96,    97,    97,    98,    98,    98,    98,    98,    98,    98,
+      98,    99,    99,   100,   100,   100,   101,   101,   102,   102,
+     103,   103,   104,   104,   105,   105,   106,   106
 };
 
   /* YYR2[YYN] -- Number of symbols on the right hand side of rule YYN.  */
 static const yytype_uint8 yyr2[] =
 {
-       0,     2,     2,     1,    10,     1,     0,     1,     3,     3,
-       1,     3,     5,     3,     0,     7,     1,     1,     1,     1,
-       1,     3,     0,     1
+       0,     2,     2,     1,     1,     1,     1,     1,     1,     1,
+       1,    10,     2,     0,     4,     0,     2,     0,     1,     3,
+       3,     1,     3,     5,     3,     0,     7,     1,     1,     1,
+       1,     1,     3,     0,     1,     3,     8,     5,     7,     1,
+       3,     1,     1,     1,     1,     2,     1,     1,     1,     5,
+       1,     3,     2,     3,     3,     3,     3,     3,     3,     3,
+       1,     1,     1,     3,     3,     3,     3,     3,     3,     1,
+       1,     4,     4,     4,     4,     4,     4,     8,     9,     1,
+       1,     1,     3,     1,     3,     4,     4,     4,     4,     4,
+       4,     1,     3,     1,     2,     3,     1,     0,     2,     0,
+       4,     0,     2,     0,     3,     0,     2,     0
 };
 
 
@@ -1403,193 +1606,982 @@ yyreduce:
   switch (yyn)
     {
         case 2:
-#line 83 "FLOPPY_parser.y" /* yacc.c:1661  */
+#line 138 "FLOPPY_parser.y" /* yacc.c:1661  */
     { 
       *result = new FLOPPYOutput((yyvsp[-1].statement)); 
       (*result)->isValid = true;
    }
-#line 1412 "FLOPPY_parser.cpp" /* yacc.c:1661  */
+#line 1615 "FLOPPY_parser.cpp" /* yacc.c:1661  */
     break;
 
   case 3:
-#line 90 "FLOPPY_parser.y" /* yacc.c:1661  */
+#line 145 "FLOPPY_parser.y" /* yacc.c:1661  */
     { (yyval.statement) = (yyvsp[0].create_table_statement); }
-#line 1418 "FLOPPY_parser.cpp" /* yacc.c:1661  */
+#line 1621 "FLOPPY_parser.cpp" /* yacc.c:1661  */
     break;
 
   case 4:
-#line 107 "FLOPPY_parser.y" /* yacc.c:1661  */
-    {
-               (yyval.create_table_statement) = new FLOPPYCreateTableStatement();
-               (yyval.create_table_statement)->tableName = (yyvsp[-7].sval);
-               (yyval.create_table_statement)->volatileFlag = (yyvsp[-6].bval);
-               (yyval.create_table_statement)->pk = (yyvsp[-2].primary_key);
-               (yyval.create_table_statement)->fk = (yyvsp[-1].foreign_key_vec);
-            }
-#line 1430 "FLOPPY_parser.cpp" /* yacc.c:1661  */
+#line 146 "FLOPPY_parser.y" /* yacc.c:1661  */
+    { (yyval.statement) = (yyvsp[0].drop_table_statement); }
+#line 1627 "FLOPPY_parser.cpp" /* yacc.c:1661  */
     break;
 
   case 5:
-#line 117 "FLOPPY_parser.y" /* yacc.c:1661  */
-    { (yyval.bval) = true; }
-#line 1436 "FLOPPY_parser.cpp" /* yacc.c:1661  */
+#line 147 "FLOPPY_parser.y" /* yacc.c:1661  */
+    { (yyval.statement) = (yyvsp[0].create_index_statement); }
+#line 1633 "FLOPPY_parser.cpp" /* yacc.c:1661  */
     break;
 
   case 6:
-#line 118 "FLOPPY_parser.y" /* yacc.c:1661  */
-    { (yyval.bval) = false; }
-#line 1442 "FLOPPY_parser.cpp" /* yacc.c:1661  */
+#line 148 "FLOPPY_parser.y" /* yacc.c:1661  */
+    { (yyval.statement) = (yyvsp[0].drop_index_statement); }
+#line 1639 "FLOPPY_parser.cpp" /* yacc.c:1661  */
     break;
 
   case 7:
-#line 122 "FLOPPY_parser.y" /* yacc.c:1661  */
+#line 149 "FLOPPY_parser.y" /* yacc.c:1661  */
+    { (yyval.statement) = (yyvsp[0].insert_statement); }
+#line 1645 "FLOPPY_parser.cpp" /* yacc.c:1661  */
+    break;
+
+  case 8:
+#line 150 "FLOPPY_parser.y" /* yacc.c:1661  */
+    { (yyval.statement) = (yyvsp[0].delete_statement); }
+#line 1651 "FLOPPY_parser.cpp" /* yacc.c:1661  */
+    break;
+
+  case 9:
+#line 151 "FLOPPY_parser.y" /* yacc.c:1661  */
+    { (yyval.statement) = (yyvsp[0].update_statement); }
+#line 1657 "FLOPPY_parser.cpp" /* yacc.c:1661  */
+    break;
+
+  case 10:
+#line 152 "FLOPPY_parser.y" /* yacc.c:1661  */
+    { (yyval.statement) = (yyvsp[0].select_statement); }
+#line 1663 "FLOPPY_parser.cpp" /* yacc.c:1661  */
+    break;
+
+  case 11:
+#line 169 "FLOPPY_parser.y" /* yacc.c:1661  */
+    {
+               (yyval.create_table_statement) = new FLOPPYCreateTableStatement();
+               (yyval.create_table_statement)->tableName = (yyvsp[-7].sval);
+               (yyval.create_table_statement)->flags = (yyvsp[-6].flags);
+               (yyval.create_table_statement)->columns = (yyvsp[-4].create_column_vec);
+               (yyval.create_table_statement)->pk = (yyvsp[-2].primary_key);
+               (yyval.create_table_statement)->fk = (yyvsp[-1].foreign_key_vec);
+            }
+#line 1676 "FLOPPY_parser.cpp" /* yacc.c:1661  */
+    break;
+
+  case 12:
+#line 180 "FLOPPY_parser.y" /* yacc.c:1661  */
+    { 
+         (yyval.flags) = (yyvsp[0].flags);
+         (yyval.flags)->volatileFlag = true;
+      }
+#line 1685 "FLOPPY_parser.cpp" /* yacc.c:1661  */
+    break;
+
+  case 13:
+#line 184 "FLOPPY_parser.y" /* yacc.c:1661  */
+    { 
+         (yyval.flags) = new CreateTableAdditionalFunctionality(); 
+         (yyval.flags)->volatileFlag = false;
+         (yyval.flags)->indexOnlyFlag = false;
+         (yyval.flags)->splitFlag = false;
+      }
+#line 1696 "FLOPPY_parser.cpp" /* yacc.c:1661  */
+    break;
+
+  case 14:
+#line 193 "FLOPPY_parser.y" /* yacc.c:1661  */
+    {
+         (yyval.flags) = (yyvsp[0].flags);
+         (yyval.flags)->indexOnlyFlag = true;
+      }
+#line 1705 "FLOPPY_parser.cpp" /* yacc.c:1661  */
+    break;
+
+  case 15:
+#line 197 "FLOPPY_parser.y" /* yacc.c:1661  */
+    { 
+         (yyval.flags) = new CreateTableAdditionalFunctionality(); 
+         (yyval.flags)->indexOnlyFlag = false;
+         (yyval.flags)->splitFlag = false;
+      }
+#line 1715 "FLOPPY_parser.cpp" /* yacc.c:1661  */
+    break;
+
+  case 16:
+#line 205 "FLOPPY_parser.y" /* yacc.c:1661  */
+    {
+         (yyval.flags) = new CreateTableAdditionalFunctionality(); 
+         (yyval.flags)->splitFlag = true;
+      }
+#line 1724 "FLOPPY_parser.cpp" /* yacc.c:1661  */
+    break;
+
+  case 17:
+#line 209 "FLOPPY_parser.y" /* yacc.c:1661  */
+    { 
+         (yyval.flags) = new CreateTableAdditionalFunctionality(); 
+         (yyval.flags)->splitFlag = false;
+      }
+#line 1733 "FLOPPY_parser.cpp" /* yacc.c:1661  */
+    break;
+
+  case 18:
+#line 216 "FLOPPY_parser.y" /* yacc.c:1661  */
     {
          (yyval.create_column_vec) = new std::vector<FLOPPYCreateColumn *>(); 
          (yyval.create_column_vec)->push_back((yyvsp[0].create_column)); 
       }
-#line 1451 "FLOPPY_parser.cpp" /* yacc.c:1661  */
+#line 1742 "FLOPPY_parser.cpp" /* yacc.c:1661  */
     break;
 
-  case 8:
-#line 126 "FLOPPY_parser.y" /* yacc.c:1661  */
+  case 19:
+#line 220 "FLOPPY_parser.y" /* yacc.c:1661  */
     {
          (yyvsp[-2].create_column_vec)->push_back((yyvsp[0].create_column));
          (yyval.create_column_vec) = (yyvsp[-2].create_column_vec);
       }
-#line 1460 "FLOPPY_parser.cpp" /* yacc.c:1661  */
+#line 1751 "FLOPPY_parser.cpp" /* yacc.c:1661  */
     break;
 
-  case 9:
-#line 133 "FLOPPY_parser.y" /* yacc.c:1661  */
+  case 20:
+#line 227 "FLOPPY_parser.y" /* yacc.c:1661  */
     {
          (yyval.create_column) = new FLOPPYCreateColumn();
          (yyval.create_column)->name = (yyvsp[-2].sval);
          (yyval.create_column)->type = (ColumnType) (yyvsp[-1].ival);
          (yyval.create_column)->size = (yyvsp[0].ival);
       }
-#line 1471 "FLOPPY_parser.cpp" /* yacc.c:1661  */
+#line 1762 "FLOPPY_parser.cpp" /* yacc.c:1661  */
     break;
 
-  case 10:
-#line 141 "FLOPPY_parser.y" /* yacc.c:1661  */
+  case 21:
+#line 236 "FLOPPY_parser.y" /* yacc.c:1661  */
     { 
          (yyval.str_vec) = new std::vector<char *>(); 
          (yyval.str_vec)->push_back((yyvsp[0].sval)); 
       }
-#line 1480 "FLOPPY_parser.cpp" /* yacc.c:1661  */
+#line 1771 "FLOPPY_parser.cpp" /* yacc.c:1661  */
     break;
 
-  case 11:
-#line 145 "FLOPPY_parser.y" /* yacc.c:1661  */
+  case 22:
+#line 240 "FLOPPY_parser.y" /* yacc.c:1661  */
     {
          (yyvsp[-2].str_vec)->push_back((yyvsp[0].sval));
          (yyval.str_vec) = (yyvsp[-2].str_vec);
       }
-#line 1489 "FLOPPY_parser.cpp" /* yacc.c:1661  */
+#line 1780 "FLOPPY_parser.cpp" /* yacc.c:1661  */
     break;
 
-  case 12:
-#line 152 "FLOPPY_parser.y" /* yacc.c:1661  */
+  case 23:
+#line 247 "FLOPPY_parser.y" /* yacc.c:1661  */
     {
          (yyval.primary_key) = new FLOPPYPrimaryKey();
          (yyval.primary_key)->attributes = (yyvsp[-1].str_vec);
       }
-#line 1498 "FLOPPY_parser.cpp" /* yacc.c:1661  */
+#line 1789 "FLOPPY_parser.cpp" /* yacc.c:1661  */
     break;
 
-  case 13:
-#line 159 "FLOPPY_parser.y" /* yacc.c:1661  */
+  case 24:
+#line 254 "FLOPPY_parser.y" /* yacc.c:1661  */
     {
          (yyval.foreign_key_vec) = (yyvsp[-2].foreign_key_vec);
          (yyval.foreign_key_vec)->push_back((yyvsp[0].foreign_key));
       }
-#line 1507 "FLOPPY_parser.cpp" /* yacc.c:1661  */
+#line 1798 "FLOPPY_parser.cpp" /* yacc.c:1661  */
     break;
 
-  case 14:
-#line 163 "FLOPPY_parser.y" /* yacc.c:1661  */
+  case 25:
+#line 258 "FLOPPY_parser.y" /* yacc.c:1661  */
     {
          (yyval.foreign_key_vec) = new std::vector<FLOPPYForeignKey *>();
       }
-#line 1515 "FLOPPY_parser.cpp" /* yacc.c:1661  */
+#line 1806 "FLOPPY_parser.cpp" /* yacc.c:1661  */
     break;
 
-  case 15:
-#line 169 "FLOPPY_parser.y" /* yacc.c:1661  */
+  case 26:
+#line 264 "FLOPPY_parser.y" /* yacc.c:1661  */
     {
          (yyval.foreign_key) = new FLOPPYForeignKey();
          (yyval.foreign_key)->attributes = (yyvsp[-3].str_vec);
          (yyval.foreign_key)->refTableName = (yyvsp[0].sval);
       }
-#line 1525 "FLOPPY_parser.cpp" /* yacc.c:1661  */
+#line 1816 "FLOPPY_parser.cpp" /* yacc.c:1661  */
     break;
 
-  case 16:
-#line 177 "FLOPPY_parser.y" /* yacc.c:1661  */
+  case 27:
+#line 272 "FLOPPY_parser.y" /* yacc.c:1661  */
     { 
          (yyval.ival) = ColumnType::INT; 
       }
-#line 1533 "FLOPPY_parser.cpp" /* yacc.c:1661  */
+#line 1824 "FLOPPY_parser.cpp" /* yacc.c:1661  */
     break;
 
-  case 17:
-#line 180 "FLOPPY_parser.y" /* yacc.c:1661  */
+  case 28:
+#line 275 "FLOPPY_parser.y" /* yacc.c:1661  */
     { 
          (yyval.ival) = ColumnType::FLOAT; 
       }
-#line 1541 "FLOPPY_parser.cpp" /* yacc.c:1661  */
+#line 1832 "FLOPPY_parser.cpp" /* yacc.c:1661  */
     break;
 
-  case 18:
-#line 183 "FLOPPY_parser.y" /* yacc.c:1661  */
+  case 29:
+#line 278 "FLOPPY_parser.y" /* yacc.c:1661  */
     { 
          (yyval.ival) = ColumnType::VARCHAR; 
       }
-#line 1549 "FLOPPY_parser.cpp" /* yacc.c:1661  */
+#line 1840 "FLOPPY_parser.cpp" /* yacc.c:1661  */
     break;
 
-  case 19:
-#line 186 "FLOPPY_parser.y" /* yacc.c:1661  */
+  case 30:
+#line 281 "FLOPPY_parser.y" /* yacc.c:1661  */
     { 
          (yyval.ival) = ColumnType::DATETIME; 
       }
-#line 1557 "FLOPPY_parser.cpp" /* yacc.c:1661  */
+#line 1848 "FLOPPY_parser.cpp" /* yacc.c:1661  */
     break;
 
-  case 20:
-#line 189 "FLOPPY_parser.y" /* yacc.c:1661  */
+  case 31:
+#line 284 "FLOPPY_parser.y" /* yacc.c:1661  */
     { 
          (yyval.ival) = ColumnType::BOOLEAN; 
       }
-#line 1565 "FLOPPY_parser.cpp" /* yacc.c:1661  */
+#line 1856 "FLOPPY_parser.cpp" /* yacc.c:1661  */
     break;
 
-  case 21:
-#line 195 "FLOPPY_parser.y" /* yacc.c:1661  */
+  case 32:
+#line 290 "FLOPPY_parser.y" /* yacc.c:1661  */
     { 
       (yyval.ival) = (yyvsp[-1].ival); 
    }
-#line 1573 "FLOPPY_parser.cpp" /* yacc.c:1661  */
+#line 1864 "FLOPPY_parser.cpp" /* yacc.c:1661  */
     break;
 
-  case 22:
-#line 198 "FLOPPY_parser.y" /* yacc.c:1661  */
+  case 33:
+#line 293 "FLOPPY_parser.y" /* yacc.c:1661  */
     {
       (yyval.ival) = 0;
    }
-#line 1581 "FLOPPY_parser.cpp" /* yacc.c:1661  */
+#line 1872 "FLOPPY_parser.cpp" /* yacc.c:1661  */
     break;
 
-  case 23:
-#line 203 "FLOPPY_parser.y" /* yacc.c:1661  */
+  case 34:
+#line 298 "FLOPPY_parser.y" /* yacc.c:1661  */
     { 
          (yyval.ival) = 1; 
       }
-#line 1589 "FLOPPY_parser.cpp" /* yacc.c:1661  */
+#line 1880 "FLOPPY_parser.cpp" /* yacc.c:1661  */
+    break;
+
+  case 35:
+#line 309 "FLOPPY_parser.y" /* yacc.c:1661  */
+    {
+         (yyval.drop_table_statement) = new FLOPPYDropTableStatement();
+         (yyval.drop_table_statement)->table = (yyvsp[0].sval);
+      }
+#line 1889 "FLOPPY_parser.cpp" /* yacc.c:1661  */
+    break;
+
+  case 36:
+#line 322 "FLOPPY_parser.y" /* yacc.c:1661  */
+    {
+      (yyval.create_index_statement) = new FLOPPYCreateIndexStatement();
+      (yyval.create_index_statement)->name = (yyvsp[-5].sval);
+      (yyval.create_index_statement)->tableReference = (yyvsp[-3].sval);
+      (yyval.create_index_statement)->attributes = (yyvsp[-1].str_vec);
+   }
+#line 1900 "FLOPPY_parser.cpp" /* yacc.c:1661  */
+    break;
+
+  case 37:
+#line 334 "FLOPPY_parser.y" /* yacc.c:1661  */
+    {
+         (yyval.drop_index_statement) = new FLOPPYDropIndexStatement();
+         (yyval.drop_index_statement)->indexName = (yyvsp[-2].sval);
+         (yyval.drop_index_statement)->tableName = (yyvsp[0].sval);
+      }
+#line 1910 "FLOPPY_parser.cpp" /* yacc.c:1661  */
+    break;
+
+  case 38:
+#line 348 "FLOPPY_parser.y" /* yacc.c:1661  */
+    {
+         (yyval.insert_statement) = new FLOPPYInsertStatement();
+         (yyval.insert_statement)->name = (yyvsp[-4].sval);
+         (yyval.insert_statement)->values = (yyvsp[-1].value_vec);
+      }
+#line 1920 "FLOPPY_parser.cpp" /* yacc.c:1661  */
+    break;
+
+  case 39:
+#line 356 "FLOPPY_parser.y" /* yacc.c:1661  */
+    {
+         (yyval.value_vec) = new std::vector<FLOPPYValue *>();
+         (yyval.value_vec)->push_back((yyvsp[0].value));
+      }
+#line 1929 "FLOPPY_parser.cpp" /* yacc.c:1661  */
+    break;
+
+  case 40:
+#line 360 "FLOPPY_parser.y" /* yacc.c:1661  */
+    {
+         (yyval.value_vec) = (yyvsp[-2].value_vec);
+         (yyval.value_vec)->push_back((yyvsp[0].value));
+      }
+#line 1938 "FLOPPY_parser.cpp" /* yacc.c:1661  */
+    break;
+
+  case 41:
+#line 367 "FLOPPY_parser.y" /* yacc.c:1661  */
+    { (yyval.value) = (yyvsp[0].value); }
+#line 1944 "FLOPPY_parser.cpp" /* yacc.c:1661  */
+    break;
+
+  case 42:
+#line 368 "FLOPPY_parser.y" /* yacc.c:1661  */
+    {
+         (yyval.value) = new FLOPPYValue(BooleanValue);
+         (yyval.value)->bVal = true;
+      }
+#line 1953 "FLOPPY_parser.cpp" /* yacc.c:1661  */
+    break;
+
+  case 43:
+#line 372 "FLOPPY_parser.y" /* yacc.c:1661  */
+    {
+         (yyval.value) = new FLOPPYValue(BooleanValue);
+         (yyval.value)->bVal = false;
+      }
+#line 1962 "FLOPPY_parser.cpp" /* yacc.c:1661  */
+    break;
+
+  case 44:
+#line 379 "FLOPPY_parser.y" /* yacc.c:1661  */
+    {
+         (yyval.value) = new FLOPPYValue(IntValue);
+         (yyval.value)->iVal = (yyvsp[0].ival);
+      }
+#line 1971 "FLOPPY_parser.cpp" /* yacc.c:1661  */
+    break;
+
+  case 45:
+#line 383 "FLOPPY_parser.y" /* yacc.c:1661  */
+    {
+         (yyval.value) = new FLOPPYValue(IntValue);
+         (yyval.value)->iVal = -(yyvsp[0].ival);
+      }
+#line 1980 "FLOPPY_parser.cpp" /* yacc.c:1661  */
+    break;
+
+  case 46:
+#line 387 "FLOPPY_parser.y" /* yacc.c:1661  */
+    {
+         (yyval.value) = new FLOPPYValue(FloatValue);
+         (yyval.value)->fVal = (yyvsp[0].fval);
+      }
+#line 1989 "FLOPPY_parser.cpp" /* yacc.c:1661  */
+    break;
+
+  case 47:
+#line 391 "FLOPPY_parser.y" /* yacc.c:1661  */
+    {
+         (yyval.value) = new FLOPPYValue(StringValue);
+         (yyval.value)->sVal = (yyvsp[0].sval);
+      }
+#line 1998 "FLOPPY_parser.cpp" /* yacc.c:1661  */
+    break;
+
+  case 48:
+#line 395 "FLOPPY_parser.y" /* yacc.c:1661  */
+    {
+         (yyval.value) = new FLOPPYValue(NullValue);
+         (yyval.value)->sVal = NULL;
+      }
+#line 2007 "FLOPPY_parser.cpp" /* yacc.c:1661  */
+    break;
+
+  case 49:
+#line 408 "FLOPPY_parser.y" /* yacc.c:1661  */
+    {
+         (yyval.delete_statement) = new FLOPPYDeleteStatement();
+         (yyval.delete_statement)->name = (yyvsp[-2].sval);
+         (yyval.delete_statement)->where = (yyvsp[0].node);
+      }
+#line 2017 "FLOPPY_parser.cpp" /* yacc.c:1661  */
+    break;
+
+  case 50:
+#line 416 "FLOPPY_parser.y" /* yacc.c:1661  */
+    { (yyval.node) = (yyvsp[0].node); }
+#line 2023 "FLOPPY_parser.cpp" /* yacc.c:1661  */
+    break;
+
+  case 51:
+#line 417 "FLOPPY_parser.y" /* yacc.c:1661  */
+    {
+         (yyval.node) = new FLOPPYNode(ConditionNode);
+         (yyval.node)->node.left = (yyvsp[-2].node);
+         (yyval.node)->node.op = FLOPPYNodeOperator::AndOperator;
+         (yyval.node)->node.right= (yyvsp[0].node);
+      }
+#line 2034 "FLOPPY_parser.cpp" /* yacc.c:1661  */
+    break;
+
+  case 52:
+#line 423 "FLOPPY_parser.y" /* yacc.c:1661  */
+    {
+         (yyval.node) = new FLOPPYNode(ConditionNode);
+         (yyval.node)->node.left = (yyvsp[0].node);
+         (yyval.node)->node.op = FLOPPYNodeOperator::NotOperator;
+      }
+#line 2044 "FLOPPY_parser.cpp" /* yacc.c:1661  */
+    break;
+
+  case 53:
+#line 428 "FLOPPY_parser.y" /* yacc.c:1661  */
+    {
+         (yyval.node) = new FLOPPYNode(ConditionNode);
+         (yyval.node)->node.left = (yyvsp[-1].node);
+         (yyval.node)->node.op = FLOPPYNodeOperator::ParenthesisOperator;
+   }
+#line 2054 "FLOPPY_parser.cpp" /* yacc.c:1661  */
+    break;
+
+  case 54:
+#line 436 "FLOPPY_parser.y" /* yacc.c:1661  */
+    {
+         (yyval.node) = new FLOPPYNode(ConditionNode);
+         (yyval.node)->node.left = (yyvsp[-2].node);
+         (yyval.node)->node.op = FLOPPYNodeOperator::LessThanOperator;
+         (yyval.node)->node.right= (yyvsp[0].node);
+      }
+#line 2065 "FLOPPY_parser.cpp" /* yacc.c:1661  */
+    break;
+
+  case 55:
+#line 442 "FLOPPY_parser.y" /* yacc.c:1661  */
+    {
+         (yyval.node) = new FLOPPYNode(ConditionNode);
+         (yyval.node)->node.left = (yyvsp[-2].node);
+         (yyval.node)->node.op = FLOPPYNodeOperator::GreaterThanOperator;
+         (yyval.node)->node.right= (yyvsp[0].node);
+      }
+#line 2076 "FLOPPY_parser.cpp" /* yacc.c:1661  */
+    break;
+
+  case 56:
+#line 448 "FLOPPY_parser.y" /* yacc.c:1661  */
+    {
+         (yyval.node) = new FLOPPYNode(ConditionNode);
+         (yyval.node)->node.left = (yyvsp[-2].node);
+         (yyval.node)->node.op = FLOPPYNodeOperator::EqualOperator;
+         (yyval.node)->node.right= (yyvsp[0].node);
+      }
+#line 2087 "FLOPPY_parser.cpp" /* yacc.c:1661  */
+    break;
+
+  case 57:
+#line 454 "FLOPPY_parser.y" /* yacc.c:1661  */
+    {
+         (yyval.node) = new FLOPPYNode(ConditionNode);
+         (yyval.node)->node.left = (yyvsp[-2].node);
+         (yyval.node)->node.op = FLOPPYNodeOperator::LessThanEqualOperator;
+         (yyval.node)->node.right= (yyvsp[0].node);
+      }
+#line 2098 "FLOPPY_parser.cpp" /* yacc.c:1661  */
+    break;
+
+  case 58:
+#line 460 "FLOPPY_parser.y" /* yacc.c:1661  */
+    {
+         (yyval.node) = new FLOPPYNode(ConditionNode);
+         (yyval.node)->node.left = (yyvsp[-2].node);
+         (yyval.node)->node.op = FLOPPYNodeOperator::GreaterThanEqualOperator;
+         (yyval.node)->node.right= (yyvsp[0].node);
+      }
+#line 2109 "FLOPPY_parser.cpp" /* yacc.c:1661  */
+    break;
+
+  case 59:
+#line 466 "FLOPPY_parser.y" /* yacc.c:1661  */
+    {
+         (yyval.node) = new FLOPPYNode(ConditionNode);
+         (yyval.node)->node.left = (yyvsp[-2].node);
+         (yyval.node)->node.op = FLOPPYNodeOperator::NotEqualOperator;
+         (yyval.node)->node.right= (yyvsp[0].node);
+      }
+#line 2120 "FLOPPY_parser.cpp" /* yacc.c:1661  */
+    break;
+
+  case 60:
+#line 472 "FLOPPY_parser.y" /* yacc.c:1661  */
+    { 
+         (yyval.node) = new FLOPPYNode(ValueNode); 
+         (yyval.node)->value = new FLOPPYValue(BooleanValue);
+         (yyval.node)->value->bVal = true;
+      }
+#line 2130 "FLOPPY_parser.cpp" /* yacc.c:1661  */
+    break;
+
+  case 61:
+#line 477 "FLOPPY_parser.y" /* yacc.c:1661  */
+    {
+         (yyval.node) = new FLOPPYNode(ValueNode); 
+         (yyval.node)->value = new FLOPPYValue(BooleanValue);
+         (yyval.node)->value->bVal = false;
+      }
+#line 2140 "FLOPPY_parser.cpp" /* yacc.c:1661  */
+    break;
+
+  case 62:
+#line 485 "FLOPPY_parser.y" /* yacc.c:1661  */
+    { (yyval.node) = (yyvsp[0].node); }
+#line 2146 "FLOPPY_parser.cpp" /* yacc.c:1661  */
+    break;
+
+  case 63:
+#line 486 "FLOPPY_parser.y" /* yacc.c:1661  */
+    {
+         (yyval.node) = new FLOPPYNode(ExpressionNode);
+         (yyval.node)->node.left = (yyvsp[-2].node);
+         (yyval.node)->node.op = FLOPPYNodeOperator::PlusOperator;
+         (yyval.node)->node.right= (yyvsp[0].node);
+      }
+#line 2157 "FLOPPY_parser.cpp" /* yacc.c:1661  */
+    break;
+
+  case 64:
+#line 492 "FLOPPY_parser.y" /* yacc.c:1661  */
+    {
+         (yyval.node) = new FLOPPYNode(ExpressionNode);
+         (yyval.node)->node.left = (yyvsp[-2].node);
+         (yyval.node)->node.op = FLOPPYNodeOperator::MinusOperator;
+         (yyval.node)->node.right= (yyvsp[0].node);
+      }
+#line 2168 "FLOPPY_parser.cpp" /* yacc.c:1661  */
+    break;
+
+  case 65:
+#line 498 "FLOPPY_parser.y" /* yacc.c:1661  */
+    {
+         (yyval.node) = new FLOPPYNode(ExpressionNode);
+         (yyval.node)->node.left = (yyvsp[-2].node);
+         (yyval.node)->node.op = FLOPPYNodeOperator::TimesOperator;
+         (yyval.node)->node.right= (yyvsp[0].node);
+      }
+#line 2179 "FLOPPY_parser.cpp" /* yacc.c:1661  */
+    break;
+
+  case 66:
+#line 504 "FLOPPY_parser.y" /* yacc.c:1661  */
+    {
+         (yyval.node) = new FLOPPYNode(ExpressionNode);
+         (yyval.node)->node.left = (yyvsp[-2].node);
+         (yyval.node)->node.op = FLOPPYNodeOperator::DivideOperator;
+         (yyval.node)->node.right= (yyvsp[0].node);
+      }
+#line 2190 "FLOPPY_parser.cpp" /* yacc.c:1661  */
+    break;
+
+  case 67:
+#line 510 "FLOPPY_parser.y" /* yacc.c:1661  */
+    {
+         (yyval.node) = new FLOPPYNode(ExpressionNode);
+         (yyval.node)->node.left = (yyvsp[-2].node);
+         (yyval.node)->node.op = FLOPPYNodeOperator::ModOperator;
+         (yyval.node)->node.right= (yyvsp[0].node);
+      }
+#line 2201 "FLOPPY_parser.cpp" /* yacc.c:1661  */
+    break;
+
+  case 68:
+#line 516 "FLOPPY_parser.y" /* yacc.c:1661  */
+    {
+         (yyval.node) = new FLOPPYNode(ExpressionNode);
+         (yyval.node)->node.op = FLOPPYNodeOperator::ParenthesisOperator;
+         (yyval.node)->node.left = (yyvsp[-1].node);
+      }
+#line 2211 "FLOPPY_parser.cpp" /* yacc.c:1661  */
+    break;
+
+  case 69:
+#line 524 "FLOPPY_parser.y" /* yacc.c:1661  */
+    {
+         (yyval.node) = new FLOPPYNode(ValueNode);
+         (yyval.node)->value = new FLOPPYValue(AttributeValue);
+         (yyval.node)->value->sVal = (yyvsp[0].sval);
+      }
+#line 2221 "FLOPPY_parser.cpp" /* yacc.c:1661  */
+    break;
+
+  case 70:
+#line 529 "FLOPPY_parser.y" /* yacc.c:1661  */
+    {
+         (yyval.node) = new FLOPPYNode(ValueNode);
+         (yyval.node)->value = (yyvsp[0].value);
+      }
+#line 2230 "FLOPPY_parser.cpp" /* yacc.c:1661  */
+    break;
+
+  case 71:
+#line 533 "FLOPPY_parser.y" /* yacc.c:1661  */
+    {
+         (yyval.node) = new FLOPPYNode(AggregateNode);
+         (yyval.node)->aggregate.op = FLOPPYAggregateOperator::MinAggregate;
+         (yyval.node)->aggregate.value = new FLOPPYValue(AttributeValue);
+         (yyval.node)->aggregate.value->sVal = (yyvsp[-1].sval);
+      }
+#line 2241 "FLOPPY_parser.cpp" /* yacc.c:1661  */
+    break;
+
+  case 72:
+#line 539 "FLOPPY_parser.y" /* yacc.c:1661  */
+    {
+         (yyval.node) = new FLOPPYNode(AggregateNode);
+         (yyval.node)->aggregate.op = FLOPPYAggregateOperator::MaxAggregate;
+         (yyval.node)->aggregate.value = new FLOPPYValue(AttributeValue);
+         (yyval.node)->aggregate.value->sVal = (yyvsp[-1].sval);
+      }
+#line 2252 "FLOPPY_parser.cpp" /* yacc.c:1661  */
+    break;
+
+  case 73:
+#line 545 "FLOPPY_parser.y" /* yacc.c:1661  */
+    {
+         (yyval.node) = new FLOPPYNode(AggregateNode);
+         (yyval.node)->aggregate.op = FLOPPYAggregateOperator::SumAggregate;
+         (yyval.node)->aggregate.value = new FLOPPYValue(AttributeValue);
+         (yyval.node)->aggregate.value->sVal = (yyvsp[-1].sval);
+      }
+#line 2263 "FLOPPY_parser.cpp" /* yacc.c:1661  */
+    break;
+
+  case 74:
+#line 551 "FLOPPY_parser.y" /* yacc.c:1661  */
+    {
+         (yyval.node) = new FLOPPYNode(AggregateNode);
+         (yyval.node)->aggregate.op = FLOPPYAggregateOperator::AverageAggregate;
+         (yyval.node)->aggregate.value = new FLOPPYValue(AttributeValue);
+         (yyval.node)->aggregate.value->sVal = (yyvsp[-1].sval);
+      }
+#line 2274 "FLOPPY_parser.cpp" /* yacc.c:1661  */
+    break;
+
+  case 75:
+#line 557 "FLOPPY_parser.y" /* yacc.c:1661  */
+    {
+         (yyval.node) = new FLOPPYNode(AggregateNode);
+         (yyval.node)->aggregate.op = FLOPPYAggregateOperator::CountAggregate;
+         (yyval.node)->aggregate.value = new FLOPPYValue(AttributeValue);
+         (yyval.node)->aggregate.value->sVal = (yyvsp[-1].sval);
+      }
+#line 2285 "FLOPPY_parser.cpp" /* yacc.c:1661  */
+    break;
+
+  case 76:
+#line 563 "FLOPPY_parser.y" /* yacc.c:1661  */
+    {
+         (yyval.node) = new FLOPPYNode(AggregateNode);
+         (yyval.node)->aggregate.op = FLOPPYAggregateOperator::CountStarAggregate;
+         (yyval.node)->aggregate.value = NULL;
+      }
+#line 2295 "FLOPPY_parser.cpp" /* yacc.c:1661  */
+    break;
+
+  case 77:
+#line 579 "FLOPPY_parser.y" /* yacc.c:1661  */
+    {
+         (yyval.update_statement) = new FLOPPYUpdateStatement();
+         (yyval.update_statement)->tableName = (yyvsp[-6].sval);
+         (yyval.update_statement)->attributeName = (yyvsp[-4].sval);
+         (yyval.update_statement)->attributeExpression= (yyvsp[-2].node);
+         (yyval.update_statement)->whereExpression = (yyvsp[0].node);
+      }
+#line 2307 "FLOPPY_parser.cpp" /* yacc.c:1661  */
+    break;
+
+  case 78:
+#line 604 "FLOPPY_parser.y" /* yacc.c:1661  */
+    {
+         (yyval.select_statement) = new FLOPPYSelectStatement();
+         (yyval.select_statement)->distinct = (yyvsp[-7].bval);
+         (yyval.select_statement)->selectItems = (yyvsp[-6].select_item_vec);
+         (yyval.select_statement)->tableSpecs = (yyvsp[-4].table_spec_vec);
+         (yyval.select_statement)->whereCondition = (yyvsp[-3].node);
+         (yyval.select_statement)->groupBy = (yyvsp[-2].group_by);
+         (yyval.select_statement)->orderBys = (yyvsp[-1].str_vec);
+         (yyval.select_statement)->limit= (yyvsp[0].ival);
+      }
+#line 2322 "FLOPPY_parser.cpp" /* yacc.c:1661  */
+    break;
+
+  case 79:
+#line 617 "FLOPPY_parser.y" /* yacc.c:1661  */
+    {
+         (yyval.select_item_vec) = new std::vector<FLOPPYSelectItem *>();
+         (yyval.select_item_vec)->push_back(new FLOPPYSelectItem(FLOPPYSelectItemType::StarType));
+      }
+#line 2331 "FLOPPY_parser.cpp" /* yacc.c:1661  */
+    break;
+
+  case 80:
+#line 621 "FLOPPY_parser.y" /* yacc.c:1661  */
+    { (yyval.select_item_vec) = (yyvsp[0].select_item_vec); }
+#line 2337 "FLOPPY_parser.cpp" /* yacc.c:1661  */
+    break;
+
+  case 81:
+#line 624 "FLOPPY_parser.y" /* yacc.c:1661  */
+    {
+         (yyval.select_item_vec) = new std::vector<FLOPPYSelectItem *>(); 
+         (yyval.select_item_vec)->push_back((yyvsp[0].select_item));
+      }
+#line 2346 "FLOPPY_parser.cpp" /* yacc.c:1661  */
+    break;
+
+  case 82:
+#line 628 "FLOPPY_parser.y" /* yacc.c:1661  */
+    {
+         (yyval.select_item_vec) = (yyvsp[-2].select_item_vec);
+         (yyval.select_item_vec)->push_back((yyvsp[0].select_item));
+      }
+#line 2355 "FLOPPY_parser.cpp" /* yacc.c:1661  */
+    break;
+
+  case 83:
+#line 635 "FLOPPY_parser.y" /* yacc.c:1661  */
+    {
+         (yyval.select_item) = new FLOPPYSelectItem(FLOPPYSelectItemType::AttributeType);
+         (yyval.select_item)->attribute = (yyvsp[0].sval);
+      }
+#line 2364 "FLOPPY_parser.cpp" /* yacc.c:1661  */
+    break;
+
+  case 84:
+#line 639 "FLOPPY_parser.y" /* yacc.c:1661  */
+    {
+         (yyval.select_item) = new FLOPPYSelectItem(FLOPPYSelectItemType::TableAttributeType);
+         (yyval.select_item)->tableAttribute.tableName = (yyvsp[-2].sval);
+         (yyval.select_item)->tableAttribute.attribute = (yyvsp[0].sval);
+      }
+#line 2374 "FLOPPY_parser.cpp" /* yacc.c:1661  */
+    break;
+
+  case 85:
+#line 644 "FLOPPY_parser.y" /* yacc.c:1661  */
+    {
+         (yyval.select_item) = new FLOPPYSelectItem(FLOPPYSelectItemType::AggregateType);
+         (yyval.select_item)->aggregate.op = FLOPPYAggregateOperator::CountAggregate;
+         (yyval.select_item)->aggregate.value = new FLOPPYValue(ValueType::AttributeValue);
+         (yyval.select_item)->aggregate.value->sVal = (yyvsp[-1].sval);
+      }
+#line 2385 "FLOPPY_parser.cpp" /* yacc.c:1661  */
+    break;
+
+  case 86:
+#line 650 "FLOPPY_parser.y" /* yacc.c:1661  */
+    {
+         (yyval.select_item) = new FLOPPYSelectItem(FLOPPYSelectItemType::AggregateType);
+         (yyval.select_item)->aggregate.op = FLOPPYAggregateOperator::AverageAggregate;
+         (yyval.select_item)->aggregate.value = new FLOPPYValue(ValueType::AttributeValue);
+         (yyval.select_item)->aggregate.value->sVal = (yyvsp[-1].sval);
+      }
+#line 2396 "FLOPPY_parser.cpp" /* yacc.c:1661  */
+    break;
+
+  case 87:
+#line 656 "FLOPPY_parser.y" /* yacc.c:1661  */
+    {
+         (yyval.select_item) = new FLOPPYSelectItem(FLOPPYSelectItemType::AggregateType);
+         (yyval.select_item)->aggregate.op = FLOPPYAggregateOperator::MaxAggregate;
+         (yyval.select_item)->aggregate.value = new FLOPPYValue(ValueType::AttributeValue);
+         (yyval.select_item)->aggregate.value->sVal = (yyvsp[-1].sval);
+      }
+#line 2407 "FLOPPY_parser.cpp" /* yacc.c:1661  */
+    break;
+
+  case 88:
+#line 662 "FLOPPY_parser.y" /* yacc.c:1661  */
+    {
+         (yyval.select_item) = new FLOPPYSelectItem(FLOPPYSelectItemType::AggregateType);
+         (yyval.select_item)->aggregate.op = FLOPPYAggregateOperator::MinAggregate;
+         (yyval.select_item)->aggregate.value = new FLOPPYValue(ValueType::AttributeValue);
+         (yyval.select_item)->aggregate.value->sVal = (yyvsp[-1].sval);
+      }
+#line 2418 "FLOPPY_parser.cpp" /* yacc.c:1661  */
+    break;
+
+  case 89:
+#line 668 "FLOPPY_parser.y" /* yacc.c:1661  */
+    {
+         (yyval.select_item) = new FLOPPYSelectItem(FLOPPYSelectItemType::AggregateType);
+         (yyval.select_item)->aggregate.op = FLOPPYAggregateOperator::SumAggregate;
+         (yyval.select_item)->aggregate.value = new FLOPPYValue(ValueType::AttributeValue);
+         (yyval.select_item)->aggregate.value->sVal = (yyvsp[-1].sval);
+      }
+#line 2429 "FLOPPY_parser.cpp" /* yacc.c:1661  */
+    break;
+
+  case 90:
+#line 674 "FLOPPY_parser.y" /* yacc.c:1661  */
+    {
+         (yyval.select_item) = new FLOPPYSelectItem(FLOPPYSelectItemType::AggregateType);
+         (yyval.select_item)->aggregate.op = FLOPPYAggregateOperator::CountStarAggregate;
+         (yyval.select_item)->aggregate.value = NULL;
+      }
+#line 2439 "FLOPPY_parser.cpp" /* yacc.c:1661  */
+    break;
+
+  case 91:
+#line 682 "FLOPPY_parser.y" /* yacc.c:1661  */
+    {
+         (yyval.table_spec_vec) = new std::vector<FLOPPYTableSpec *>();
+         (yyval.table_spec_vec)->push_back((yyvsp[0].table_spec));
+      }
+#line 2448 "FLOPPY_parser.cpp" /* yacc.c:1661  */
+    break;
+
+  case 92:
+#line 686 "FLOPPY_parser.y" /* yacc.c:1661  */
+    {
+         (yyval.table_spec_vec) = (yyvsp[-2].table_spec_vec);
+         (yyval.table_spec_vec)->push_back((yyvsp[0].table_spec));
+      }
+#line 2457 "FLOPPY_parser.cpp" /* yacc.c:1661  */
+    break;
+
+  case 93:
+#line 693 "FLOPPY_parser.y" /* yacc.c:1661  */
+    {
+         (yyval.table_spec) = new FLOPPYTableSpec();
+         (yyval.table_spec)->tableName = (yyvsp[0].sval);
+         (yyval.table_spec)->alias = NULL;
+      }
+#line 2467 "FLOPPY_parser.cpp" /* yacc.c:1661  */
+    break;
+
+  case 94:
+#line 698 "FLOPPY_parser.y" /* yacc.c:1661  */
+    {
+         (yyval.table_spec) = new FLOPPYTableSpec();
+         (yyval.table_spec)->tableName = (yyvsp[-1].sval);
+         (yyval.table_spec)->alias = (yyvsp[0].sval);
+      }
+#line 2477 "FLOPPY_parser.cpp" /* yacc.c:1661  */
+    break;
+
+  case 95:
+#line 703 "FLOPPY_parser.y" /* yacc.c:1661  */
+    {
+         (yyval.table_spec) = new FLOPPYTableSpec();
+         (yyval.table_spec)->tableName = (yyvsp[-2].sval);
+         (yyval.table_spec)->alias = (yyvsp[0].sval);
+      }
+#line 2487 "FLOPPY_parser.cpp" /* yacc.c:1661  */
+    break;
+
+  case 96:
+#line 711 "FLOPPY_parser.y" /* yacc.c:1661  */
+    { (yyval.bval) = true; }
+#line 2493 "FLOPPY_parser.cpp" /* yacc.c:1661  */
+    break;
+
+  case 97:
+#line 712 "FLOPPY_parser.y" /* yacc.c:1661  */
+    { (yyval.bval) = false; }
+#line 2499 "FLOPPY_parser.cpp" /* yacc.c:1661  */
+    break;
+
+  case 98:
+#line 716 "FLOPPY_parser.y" /* yacc.c:1661  */
+    {
+         (yyval.node) = (yyvsp[0].node);
+      }
+#line 2507 "FLOPPY_parser.cpp" /* yacc.c:1661  */
+    break;
+
+  case 99:
+#line 719 "FLOPPY_parser.y" /* yacc.c:1661  */
+    {
+         (yyval.node) = NULL;
+      }
+#line 2515 "FLOPPY_parser.cpp" /* yacc.c:1661  */
+    break;
+
+  case 100:
+#line 726 "FLOPPY_parser.y" /* yacc.c:1661  */
+    {
+         (yyval.group_by) = new FLOPPYGroupBy();
+         (yyval.group_by)->groupByAttributes = (yyvsp[-1].str_vec);
+         (yyval.group_by)->havingCondition = (yyvsp[0].node);
+      }
+#line 2525 "FLOPPY_parser.cpp" /* yacc.c:1661  */
+    break;
+
+  case 101:
+#line 731 "FLOPPY_parser.y" /* yacc.c:1661  */
+    { 
+         (yyval.group_by) = NULL;
+      }
+#line 2533 "FLOPPY_parser.cpp" /* yacc.c:1661  */
+    break;
+
+  case 102:
+#line 737 "FLOPPY_parser.y" /* yacc.c:1661  */
+    {
+         (yyval.node) = (yyvsp[0].node);
+      }
+#line 2541 "FLOPPY_parser.cpp" /* yacc.c:1661  */
+    break;
+
+  case 103:
+#line 740 "FLOPPY_parser.y" /* yacc.c:1661  */
+    { 
+         (yyval.node) = NULL;
+      }
+#line 2549 "FLOPPY_parser.cpp" /* yacc.c:1661  */
+    break;
+
+  case 104:
+#line 746 "FLOPPY_parser.y" /* yacc.c:1661  */
+    {
+         (yyval.str_vec) = (yyvsp[0].str_vec);
+      }
+#line 2557 "FLOPPY_parser.cpp" /* yacc.c:1661  */
+    break;
+
+  case 105:
+#line 749 "FLOPPY_parser.y" /* yacc.c:1661  */
+    { 
+         (yyval.str_vec) = NULL;
+      }
+#line 2565 "FLOPPY_parser.cpp" /* yacc.c:1661  */
+    break;
+
+  case 106:
+#line 755 "FLOPPY_parser.y" /* yacc.c:1661  */
+    {
+         (yyval.ival) = (yyvsp[0].ival);
+      }
+#line 2573 "FLOPPY_parser.cpp" /* yacc.c:1661  */
+    break;
+
+  case 107:
+#line 758 "FLOPPY_parser.y" /* yacc.c:1661  */
+    { 
+         (yyval.ival) = -1;
+      }
+#line 2581 "FLOPPY_parser.cpp" /* yacc.c:1661  */
     break;
 
 
-#line 1593 "FLOPPY_parser.cpp" /* yacc.c:1661  */
+#line 2585 "FLOPPY_parser.cpp" /* yacc.c:1661  */
       default: break;
     }
   /* User semantic actions sometimes alter yychar, and that requires
@@ -1824,5 +2816,5 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 207 "FLOPPY_parser.y" /* yacc.c:1906  */
+#line 763 "FLOPPY_parser.y" /* yacc.c:1906  */
 

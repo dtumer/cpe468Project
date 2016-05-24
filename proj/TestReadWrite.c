@@ -5,7 +5,7 @@
 
 #include <stdio.h>
 #include "ReadWrite.h"
-#include "libs/smartalloc.h"
+//#include "libs/smartalloc.h"
 
 #define NUM_FILES 3
 

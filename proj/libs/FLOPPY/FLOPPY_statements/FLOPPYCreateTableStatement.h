@@ -8,6 +8,12 @@
 #include "FLOPPYForeignKey.h"
 #include "FLOPPYPrimaryKey.h"
 
+struct CreateTableAdditionalFunctionality {
+   bool volatileFlag;
+   bool indexOnlyFlag;
+   bool splitFlag;
+};
+
 class FLOPPYCreateColumn;
 
 class FLOPPYCreateTableStatement : public FLOPPYStatement {
@@ -17,7 +23,7 @@ class FLOPPYCreateTableStatement : public FLOPPYStatement {
 
       // Make all member fields public, because ez access.
       std::string tableName;
-      bool volatileFlag;
+      CreateTableAdditionalFunctionality *flags;
       std::vector<FLOPPYCreateColumn *> *columns;
       FLOPPYPrimaryKey *pk;
       std::vector<FLOPPYForeignKey *> *fk;

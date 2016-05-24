@@ -5,7 +5,14 @@
 
 typedef enum {
    ErrorStatement,
-   CreateTableStatement
+   CreateTableStatement,
+   DropTableStatement,
+   CreateIndexStatement,
+   DropIndexStatement,
+   InsertStatement,
+   DeleteStatement,
+   UpdateStatement,
+   SelectStatement 
 } StatementType;
 
 /**
