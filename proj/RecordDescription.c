@@ -10,20 +10,15 @@
 uint16_t calcSizeOfForeignKeys(foreignKeys *fKeys) {
 	uint16_t runningSize = 0;
 	foreignKeys *temp = fKeys;
-	uint8_t fKeyTableNameLen = 0, fKeyAttrNameLen = 0, fKeyAttrType;
+	uint8_t fKeyTableNameLen = 0, fKeyAttrNameLen = 0;
 	
-	//tableNameLen, tableName + 1, attrType, colLen(if applicable), attrNameLen, attrName + 1
+	//foreign keys are packed in the following way:
+	//tableName (null terminated), attrName (null terminated)
 	while (temp) {
 		fKeyTableNameLen = strlen(temp->tableName);
 		fKeyAttrNameLen = strlen(temp->key->attName);
-		fKeyAttrType = temp->key->attType;
 		
-		if (fKeyAttrType == VARCHAR || fKeyAttrType == CHAR) {
-			runningSize++;
-		}
-		
-		//tableNameLen, tableName + 1, attrType, attrNameLen, attrName + 1
-		runningSize += 1 + fKeyTableNameLen + 3 + fKeyAttrNameLen + 1;
+		runningSize +=  fKeyTableNameLen + 1 + fKeyAttrNameLen + 1;
 		temp = temp->next;
 	}
 	
@@ -34,17 +29,14 @@ uint16_t calcSizeOfForeignKeys(foreignKeys *fKeys) {
 uint16_t calcSizeOfPrimaryKeys(Attribute *pKeys) {
 	uint16_t runningSize = 0;
 	Attribute *temp = pKeys;
-	uint8_t pKeyNameLen = 0, pKeyAttrType;
+	uint8_t pKeyNameLen = 0;
 	
+	//primary key is pack as the following:
+	//attrName (null terminated)
 	while (temp) {
 		pKeyNameLen = strlen(temp->attName);
-		pKeyAttrType = temp->attType;
-		
-		if (pKeyAttrType == VARCHAR || pKeyAttrType == CHAR) {
-			runningSize++; //add extra byte for pkey col size
-		}
 			
-		runningSize += 2 + pKeyNameLen + 1;
+		runningSize += pKeyNameLen + 1;
 		temp = temp->next;
 	}
 	
@@ -57,11 +49,8 @@ uint16_t calcSizeOfAttributes(Attribute *attrs) {
 	Attribute *temp = attrs;
 	uint8_t attrNameLen = 0, attrType;
 	
-	//for each attribute in the attributes list
-	//1: Pack attribute type
-	//2: Pack col length n if varchar (if not of type int or float)
-	//3: Pack attribute name length
-	//4: Pack attribute name
+	//attributes are packed as the following:
+	//attrType (1 byte), colLen (1 byte if applicable), attrName (null terminated)
 	while (temp) {
 		attrNameLen = strlen(temp->attName);
 		attrType = temp->attType;
@@ -70,9 +59,7 @@ uint16_t calcSizeOfAttributes(Attribute *attrs) {
 			runningSize++;
 		}
 		
-		//add two bytes, one for each of the uint8's and then add the length of the
-		//name of the attribute + 1
-		runningSize += 2 + attrNameLen + 1;
+		runningSize += 1 + attrNameLen + 1;
 		temp = temp->next;
 	}
 	
@@ -90,11 +77,8 @@ void packAttributes(uint16_t attrOffset, Attribute *attrs, char *data) {
 	uint8_t attrType = 0, colLen = 0, attrNameLen = 0;
 	Attribute *temp = attrs;
 	
-	//for each attribute in the attributes list
-	//1: Pack attribute type
-	//2: Pack col length n if varchar (if not of type int or float)
-	//3: Pack attribute name length
-	//4: Pack attribute name
+	//attributes are packed as the following:
+	//attrType (1 byte), colLen (1 byte if applicable), attrName (null terminated)
 	while (temp) {
 		//pack attr type in one byte
 		attrType = temp->attType;
@@ -108,16 +92,11 @@ void packAttributes(uint16_t attrOffset, Attribute *attrs, char *data) {
 			currentOffset++;
 		}
 		
-		//pack name length into one byte
-		attrNameLen = strlen(temp->attName);
-		memcpy(data + currentOffset, &attrNameLen, sizeof(uint8_t));
-		currentOffset++;
-		
 		//pack name into attrNameLen+1 space
+		attrNameLen = strlen(temp->attName);
 		memcpy(data + currentOffset, temp->attName, attrNameLen + 1);
 		currentOffset += attrNameLen + 1;
 		
-		printf("ATTR: colType: %d, colLen: %d, colNameLen: %d\n", attrType, colLen, attrNameLen);		
 		temp = temp->next;
 	}
 }
@@ -125,29 +104,14 @@ void packAttributes(uint16_t attrOffset, Attribute *attrs, char *data) {
 //packs the primary keys into the data array
 void packPrimaryKeys(uint16_t pKeyOffset, Attribute *pKeys, char *data) {
 	uint16_t currentOffset = pKeyOffset;
-	uint8_t attrType = 0, colLen = 0, attrNameLen = 0;
+	uint8_t attrNameLen = 0;
 	Attribute *temp = pKeys;
 	
-	//Do same thing as attributes
-	//attrType, col length (if applicable), attrNameLen, attrName
+	//primary key is pack as the following:
+	//attrName (null terminated)
 	while (temp) {
-		attrType = temp->attType;
-		memcpy(data + currentOffset, &attrType, sizeof(uint8_t));
-		currentOffset++;
-		
-		//check for varchar and char types
-		if (attrType == VARCHAR || attrType == CHAR) {
-			colLen = temp->attSize;
-			memcpy(data + currentOffset, &colLen, sizeof(uint8_t));
-			currentOffset++;
-		}
-		
-		//pack name length
+		//pack attrName
 		attrNameLen = strlen(temp->attName);
-		memcpy(data + currentOffset, &attrNameLen, sizeof(uint8_t));
-		currentOffset++;
-		
-		//pack attr name
 		memcpy(data + currentOffset, temp->attName, attrNameLen + 1);
 		currentOffset += attrNameLen + 1;
 		
@@ -158,38 +122,19 @@ void packPrimaryKeys(uint16_t pKeyOffset, Attribute *pKeys, char *data) {
 //packs the foreign keys into the data array
 void packForeignKeys(uint16_t fKeyOffset, foreignKeys *fKeys, char *data) {
 	uint16_t currentOffset = fKeyOffset;
-	uint8_t fKeyTableNameLen = 0, fKeyAttrNameLen = 0, fKeyAttrType, colLen = 0;
+	uint8_t fKeyTableNameLen = 0, fKeyAttrNameLen = 0;
 	foreignKeys *temp = fKeys;
 	
-	//tableNameLen, tableName + 1, attrType, colLen(if applicable), attrNameLen, attrName + 1
+	//foreign keys are packed in the following way:
+	//tableName (null terminated), attrName (null terminated)
 	while (temp) {
-		//pack table name len
-		fKeyTableNameLen = strlen(temp->tableName);
-		memcpy(data + currentOffset, &fKeyTableNameLen, sizeof(uint8_t));
-		currentOffset++;
-		
 		//pack table name
+		fKeyTableNameLen = strlen(temp->tableName);
 		memcpy(data + currentOffset, temp->tableName, fKeyTableNameLen + 1);
 		currentOffset += fKeyTableNameLen + 1;
 		
-		//pack attrType
-		fKeyAttrType = temp->key->attType;
-		memcpy(data + currentOffset, &fKeyAttrType, sizeof(uint8_t));
-		currentOffset++;
-		
-		if (fKeyAttrType == VARCHAR || fKeyAttrType == CHAR) {
-			//pack colLen
-			colLen = temp->key->attSize;
-			memcpy(data + currentOffset, &colLen, sizeof(uint8_t));
-			currentOffset++;
-		}
-		
-		//pack att name length
+		//pack attr name
 		fKeyAttrNameLen = strlen(temp->key->attName);
-		memcpy(data + currentOffset, &fKeyAttrNameLen, sizeof(uint8_t));
-		currentOffset++;
-		
-		//pack att name
 		memcpy(data + currentOffset, temp->key->attName, fKeyAttrNameLen + 1);
 		currentOffset += fKeyAttrNameLen + 1;
 		
@@ -212,7 +157,7 @@ int packRecordDescription(tableDescription *desc, char *data) {
 		return -1;
 	}
 	
-	packMetaData(attrOffset, fKeyOffset, data);
+	packMetaData(pKeyOffset, fKeyOffset, data);
 	packAttributes(attrOffset, desc->attributeList, data);
 	packPrimaryKeys(pKeyOffset, desc->pKey, data);
 	packForeignKeys(fKeyOffset, desc->fKeys, data);
@@ -220,4 +165,116 @@ int packRecordDescription(tableDescription *desc, char *data) {
 	//printf("\nSIZES:\n Attributes: %d\n pKeys: %d\n  pKeyOffset: %d\n fKeys: %d\n  fKeyOffset: %d\n", attrSize, pKeySize, pKeyOffset, fKeySize, fKeyOffset);
 	
 	return totalSize;
+}
+
+//returns the size of the name and also stores the name into a string
+void buildColumnName(char *data, int nameLen, char *storedName) {
+	int i;
+	
+	for (i = 0; i < nameLen; i++) {
+		storedName[i] = data[i];
+	}
+}
+
+//gets the length of the column name in the binary data array
+int getColumnNameLen(char *data) {
+	char *temp = data;
+	int nameLen = 0;
+	
+	while (*temp) {
+		nameLen++;
+		temp++;
+	}
+	
+	return nameLen;
+}
+
+//get byte size of attribute types
+int getAttrTypeByteSize(ATT_TYPE attrType) {
+	if (attrType == INT) {
+		return 4;
+	}
+	else if (attrType == FLOAT) {
+		return 8;
+	}
+	else if (attrType == CHAR || attrType == VARCHAR) {
+		return 0;
+	}
+	else if (attrType == DATETIME) {
+		return 8;
+	}
+	else {
+		return -1;
+	}
+}
+
+//initializes attrDescription to some invalid type
+AttrDescription initAttrDescription() {
+	AttrDescription attrDesc;
+	
+	attrDesc.attrType = -1;
+	attrDesc.attrSize = -1;
+	
+	return attrDesc;
+}
+
+//given a column name grab all the attributes associated with that column
+AttrDescription getAttributeDescription(char *data, int dataSize, char *colName) {
+	AttrDescription attrDesc = initAttrDescription();
+	int cmp = -1, curOffset = 4, nameLen = 0;
+	char *attrName;
+	uint8_t attrType = 0, colLen = 0;
+	uint16_t pKeyOffset;
+	
+	//grab the primary key offset value
+	memcpy(&pKeyOffset, data, sizeof(uint16_t));
+	
+	//while we haven't found the column name yet
+	while (cmp && curOffset < pKeyOffset) {
+		//grab the attribute type
+		attrType = data[curOffset];
+		curOffset++;
+		
+		//grab colLen if there is one
+		if (attrType == VARCHAR || attrType == CHAR) {
+			colLen = data[curOffset];
+			curOffset++;
+		}
+		else {
+			colLen = getAttrTypeByteSize(attrType);
+		}
+
+		//get name length and build attrName data array		
+		nameLen = getColumnNameLen(data + curOffset);
+		attrName = calloc(nameLen + 1, sizeof(char));
+		buildColumnName(data + curOffset, nameLen, attrName);
+		
+		//compare the two names
+ 		cmp = strcmp(attrName, colName);
+		curOffset += nameLen + 1;
+		
+		free(attrName);
+	}
+	
+	//if we didnt find the column and the offset has exceeded the attributes
+	//return empty AttrDescription
+	if (cmp && curOffset >= pKeyOffset) {
+		return attrDesc;
+	}
+	
+	attrDesc.attrType = attrType;
+	attrDesc.attrSize = colLen;
+	
+	return attrDesc;
+}
+
+//prints the record description
+void printRecordDescription(char *data, int size) {
+	int i;
+	
+	for (i = 0; i < size; i++) {
+		printf("%02X ", data[i]);
+	}
+	
+	printf("\n");
 }
