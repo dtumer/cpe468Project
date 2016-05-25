@@ -43,7 +43,7 @@ TestReadWrite.out: TestReadWrite.c ReadWrite.o BufferManager.o $(LIBS)
 TestHeapFile.out: TestHeapFile.c HeapFile.o FileManager.o ReadWrite.o BufferManager.o $(LIBS)
 	$(CC) $(CFLAGS) -o $@ $^
 
-TestParser.out: TestParser.cpp $(ParserSRC) $(LIBS)
+TestParser.out: TestParser.cpp ParserDebug.cpp $(ParserSRC) $(LIBS)
 	$(CPP) $(CPPFLAGS) -o $@ $^
 
 runTestHarness: TestHarness.out
