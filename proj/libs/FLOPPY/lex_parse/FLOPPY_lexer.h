@@ -340,7 +340,7 @@ extern int yylex \
 #undef YY_DECL
 #endif
 
-#line 72 "FLOPPY_lexer.l"
+#line 131 "FLOPPY_lexer.l"
 
 
 #line 347 "FLOPPY_lexer.h"

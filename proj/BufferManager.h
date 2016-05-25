@@ -5,7 +5,7 @@
 #include "libs/TFS468/libTinyFS.h"
 #include "libs/TFS468/libDisk.h"
 #include "libs/hashmap.h"
-#include "libs/smartalloc.h"
+//#include "libs/smartalloc.h"
 
 #define MAX_BUFFER_SIZE 1024
 

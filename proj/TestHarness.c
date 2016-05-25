@@ -4,7 +4,7 @@
 #include <string.h>
 #include <stdio.h>
 
-#include "libs/smartalloc.h"
+//#include "libs/smartalloc.h"
 
 
 //function for running the buffer
