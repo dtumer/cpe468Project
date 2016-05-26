@@ -1,18 +1,13 @@
-#ifndef RecordDescription_h
-#define RecordDescription_h
-
-#include "StatementParser.h"
-
+#include "libs/FLOPPY/FLOPPYParser.h"
 #include <stdlib.h>
 
 typedef struct AttrDescription {
-	ATT_TYPE attrType;
+	int attrType;
 	int attrSize;
+	int offset;
 } AttrDescription;
 
-int packRecordDescription(tableDescription *desc, char *data);
-AttrDescription getAttributeDescription(char *data, int dataSize, char *colName);
+AttrDescription getAttributeDescription(char *data, char *colName);
+int packRecordDescription(FLOPPYCreateTableStatement *statement, char *data);
 void printRecordDescription(char *data, int size);
-int getAttrTypeByteSize(ATT_TYPE attrType);
-
-#endif
+int getRecordLength(char *data);
