@@ -43,6 +43,8 @@ int tfs_numPages(fileDescriptor FD);
 /* deletes a file and marks its blocks as free on disk. */
 int tfs_deleteFile(fileDescriptor FD);
 
+int tfs_deletePage(fileDescriptor FD, unsigned int page);
+
 /* reads one byte from the file and copies it to buffer, using the current file
  * pointer location and incrementing it by one upon success. If the file
  * pointer is already at the end of the file then tfs_readByte() should return
@@ -59,7 +61,6 @@ int tfs_rename(char* oldname, char* newname);
 
 /* Lists all files on the disk, and some information about each */
 int tfs_readDir(void);
-
 
 /* Displays the creation, last modification, and last access times of a file */
 int tfs_readFileInfo(fileDescriptor FD);

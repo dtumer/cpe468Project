@@ -20,11 +20,18 @@ Files in this directory:
 
 
 Latest updates:
+May 19, 2016:
+* minor changes to allow compilation with g++, libDisk.h has also changed
+* g++ versions of both object libraries now available "_g++" is appended to the names
 
-Apr. 7, 2016: 
+May 7, 2016:
+* fixed an issue about opening files correctly after a re-mount of disk
+* added explicit check for maximum disk size (about 32MB) and visual cues for mkfs() process
+
+Apr. 7, 2016:
 * object files recompiled under 32bit architecture (Unix3.csc)
 * tfs_deleteFile() example added to tests.c
-* readPage() issue fixed. 
+* readPage() issue fixed.
 * tfs_numPages() added
 * Makefile2, the wget enabled make added
 * readDir() and openFiles() display the number of blocks

@@ -34,6 +34,9 @@
 		CB42708D1CF3CE810038493C /* RecordDescription.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RecordDescription.h; sourceTree = "<group>"; };
 		CB4270901CF582040038493C /* ParserDebug.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ParserDebug.cpp; sourceTree = "<group>"; };
 		CB4270911CF582040038493C /* ParserDebug.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ParserDebug.h; sourceTree = "<group>"; };
+		CB4270971CF5893D0038493C /* DBMS.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = DBMS.cpp; sourceTree = "<group>"; };
+		CB4270981CF5893D0038493C /* DBMS.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DBMS.h; sourceTree = "<group>"; };
+		CB4270991CF58F3F0038493C /* TestDBMS.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = TestDBMS.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
@@ -63,6 +66,7 @@
 				CB1DD2C61CE1592500185A27 /* TestFileManager.c */,
 				CB1DD2C71CE1639200185A27 /* TestHeapFile.c */,
 				63B790A81CD96710000F782B /* TestParser.cpp */,
+				CB4270991CF58F3F0038493C /* TestDBMS.cpp */,
 			);
 			name = Tests;
 			sourceTree = "<group>";
@@ -72,6 +76,8 @@
 			children = (
 				CB4270901CF582040038493C /* ParserDebug.cpp */,
 				CB4270911CF582040038493C /* ParserDebug.h */,
+				CB4270971CF5893D0038493C /* DBMS.cpp */,
+				CB4270981CF5893D0038493C /* DBMS.h */,
 			);
 			name = paser;
 			sourceTree = "<group>";

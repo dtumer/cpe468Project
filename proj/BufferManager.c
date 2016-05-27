@@ -7,6 +7,7 @@
 
 #include "BufferManager.h"
 
+
 int lru_persistentEvict(Buffer *buf);
 int lru_volatileEvict(Buffer *buf);
 /* type for a replacement policy function 
@@ -220,7 +221,7 @@ int commence(char *database, Buffer *buf, int nPersistentBlocks, int nVolatileBl
     
     if (tfsErr != 0) {
         tfs_mkfs(database, DEFAULT_DISK_SIZE);
-        tfs_mount(database);
+        tfsErr = tfs_mount(database);
     }
     
     //copy database name over

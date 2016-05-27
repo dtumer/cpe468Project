@@ -2,6 +2,7 @@
 #define FileManager_h
 
 #include <stdint.h>
+#include <stdlib.h>
 
 #include "BufferManager.h"
 #include "ReadWrite.h"

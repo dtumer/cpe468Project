@@ -1,7 +1,7 @@
 CPP = g++
 CC = gcc
-CFLAGS = -Wall -g
-CPPFLAGS=-fPIC -O3 -std=c++0x
+CFLAGS = -Wall -g -fPIC
+CPPFLAGS=-O3 -std=c++0x -Wno-deprecated-register
 LIBS  = libs/hashmap.c libs/TFS468/libDisk.o libs/TFS468/libTinyFS.o
 ParserSRC= libs/FLOPPY/FLOPPY_statements/FLOPPYCreateTableStatement.cpp libs/FLOPPY/FLOPPY_statements/FLOPPYCreateColumn.cpp libs/FLOPPY/FLOPPY_statements/FLOPPYPrimaryKey.cpp libs/FLOPPY/FLOPPY_statements/FLOPPYForeignKey.cpp libs/FLOPPY/FLOPPY_statements/FLOPPYDropTableStatement.cpp libs/FLOPPY/FLOPPY_statements/FLOPPYCreateIndexStatement.cpp libs/FLOPPY/FLOPPY_statements/FLOPPYDropIndexStatement.cpp libs/FLOPPY/FLOPPY_statements/FLOPPYInsertStatement.cpp libs/FLOPPY/FLOPPY_statements/FLOPPYValue.cpp libs/FLOPPY/FLOPPY_statements/FLOPPYDeleteStatement.cpp libs/FLOPPY/FLOPPY_statements/FLOPPYNode.cpp libs/FLOPPY/FLOPPY_statements/FLOPPYUpdateStatement.cpp libs/FLOPPY/FLOPPY_statements/FLOPPYTableSpec.cpp libs/FLOPPY/FLOPPY_statements/FLOPPYSelectItem.cpp libs/FLOPPY/FLOPPY_statements/FLOPPYSelectStatement.cpp libs/FLOPPY/lex_parse/FLOPPY_parser.cpp libs/FLOPPY/lex_parse/FLOPPY_lexer.cpp libs/FLOPPY/FLOPPYParser.cpp libs/FLOPPY/FLOPPYOutput.cpp
 
@@ -33,6 +33,8 @@ HeapFile.o: HeapFile.c
 FileManager.o: FileManager.c
 	$(CC) $(CFLAGS) -c -o $@ $^
 
+DBMS.o: DBMS.cpp
+	$(CPP) $(CPPFLAGS) -c -o $@ $^
 
 TestHarness.out: TestHarness.c BufferManager.o $(LIBS)
 	$(CC) $(CFLAGS) -o $@ $^
@@ -46,6 +48,9 @@ TestHeapFile.out: TestHeapFile.c HeapFile.o FileManager.o ReadWrite.o BufferMana
 TestParser.out: TestParser.cpp ParserDebug.cpp $(ParserSRC) $(LIBS)
 	$(CPP) $(CPPFLAGS) -o $@ $^
 
+TestDBMS.out: TestDBMS.cpp BufferManager.o DBMS.o $(ParserSRC) $(LIBS)
+	$(CPP) $(CPPFLAGS) -o $@ $^
+
 runTestHarness: TestHarness.out
 	-@rm *.disk
 	./TestHarness.out ./test_files/TestHarness1.txt
@@ -57,6 +62,9 @@ runTestHeapFile: TestHeapFile.out
 runTestParser: TestParser.out
 	./TestParser.out
 
+runTestDBMS: TestDBMS.out
+	-@rm *.disk
+	./TestDBMS.out
 
 handin:
 	handin dekhtyar 468-lab3 *.c *.h Makefile README

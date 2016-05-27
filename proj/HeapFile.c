@@ -45,7 +45,7 @@ int heap_writePageHeader(Buffer *buf, DiskAddress page, HeapPageHeader *heapPage
 
 void heap_createNewPage(Buffer *buf, fileDescriptor fd, HeapFileHeader *heapFileHeader) {
     FileHeader *fileHeader = file_getHeader(buf, fd);
-    HeapPageHeader *heapPageHeader = malloc(sizeof(HeapPageHeader));
+    HeapPageHeader *heapPageHeader = (HeapPageHeader*) malloc(sizeof(HeapPageHeader));
     DiskAddress dAdd;
     
     //open file
@@ -73,7 +73,7 @@ void heap_createNewPage(Buffer *buf, fileDescriptor fd, HeapFileHeader *heapFile
     heapPageHeader->nextPage = heapFileHeader->firstPage;
     heapFileHeader->firstPage = dAdd.pageId;
     
-    char *bitmap = calloc(heapFileHeader->bitmapSize, sizeof(uint8_t));
+    char *bitmap = (char*) calloc(heapFileHeader->bitmapSize, sizeof(uint8_t));
     
     //write new page
     
@@ -89,8 +89,8 @@ void heap_createNewPage(Buffer *buf, fileDescriptor fd, HeapFileHeader *heapFile
 /* file-level functions */
 
 fileDescriptor heap_createFile(Buffer *buf, char *tableName, tableDescription *tableDesc, int volatileFlag) {
-    FileHeader *fileHeader = malloc(sizeof(FileHeader));
-    HeapFileHeader *heapFileHeader = malloc(sizeof(HeapFileHeader));
+    FileHeader *fileHeader = (FileHeader*) malloc(sizeof(FileHeader));
+    HeapFileHeader *heapFileHeader = (HeapFileHeader*) malloc(sizeof(HeapFileHeader));
     DiskAddress headerPage;
     
     //FileHeader
@@ -150,7 +150,7 @@ int deleteHeapFile(char * tableName) {
 // Get the table name from a given header page
 int heap_headerGetTableName(Buffer *buf, fileDescriptor fd, char *name) {
     HeapFileHeader *header = heap_getFileHeader(buf, fd);
-    name = calloc(strlen(header->tableName), sizeof(char));
+    name = (char*) calloc(strlen(header->tableName), sizeof(char));
     
     strcpy(name, header->tableName);
     
@@ -211,7 +211,7 @@ int heap_insertRecord(Buffer *buf, char * tableName, char * record) {
     uint8_t *bitmap;
     DiskAddress dAdd;
     
-    char *fileName = calloc(FILE_NAME_SIZE, sizeof(char));
+    char *fileName = (char*) calloc(FILE_NAME_SIZE, sizeof(char));
     heap_getFileName(tableName, fileName);
     fileDescriptor fd = getFileDescriptor(buf, fileName);
     free(fileName);
