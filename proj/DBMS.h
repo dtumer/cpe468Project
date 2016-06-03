@@ -7,6 +7,7 @@
 #include <string.h>
 
 #include "libs/FLOPPY/FLOPPYParser.h"
+#include "ParserDebug.h"
 #include "BufferManager.h"
 
 #ifdef __cplusplus
@@ -22,7 +23,9 @@ extern "C" {
 class DBMS {
     Buffer *buf;
 public:
-    DBMS (std::string diskName, int nPersistentBlocks, int nVolatileBlocks);
+    DBMS(std::string diskName, int nPersistentBlocks, int nVolatileBlocks); //constructor
+    void execute(std::string sql);
+    ~DBMS(); //destructor
     
 };
 

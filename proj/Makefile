@@ -48,7 +48,7 @@ TestHeapFile.out: TestHeapFile.c HeapFile.o FileManager.o ReadWrite.o BufferMana
 TestParser.out: TestParser.cpp ParserDebug.cpp $(ParserSRC) $(LIBS)
 	$(CPP) $(CPPFLAGS) -o $@ $^
 
-TestDBMS.out: TestDBMS.cpp BufferManager.o DBMS.o $(ParserSRC) $(LIBS)
+FLOPPY_CLI.out: FLOPPY_CLI.cpp ParserDebug.cpp BufferManager.o DBMS.o $(ParserSRC) $(LIBS)
 	$(CPP) $(CPPFLAGS) -o $@ $^
 
 runTestHarness: TestHarness.out
@@ -62,9 +62,9 @@ runTestHeapFile: TestHeapFile.out
 runTestParser: TestParser.out
 	./TestParser.out
 
-runTestDBMS: TestDBMS.out
+runFLOPPY_CLI: FLOPPY_CLI.out
 	-@rm *.disk
-	./TestDBMS.out
+	./FLOPPY_CLI.out
 
 handin:
 	handin dekhtyar 468-lab3 *.c *.h Makefile README
