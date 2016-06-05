@@ -111,5 +111,5 @@ FLOPPYResult* FLOPPY_DBMS::execute(std::string sql) {
 
 
 FLOPPY_DBMS::~FLOPPY_DBMS() {
-    int ret = squash(buf);
+    delete buf;
 }

@@ -43,6 +43,8 @@ int main(int argc, char *argv[]) {
     cout << "Opened database disk \"" << input << "\".\n";
     cout << "To close FLOPPY enter the command \"exit\"\n\n";
     
+    getline(cin, input);
+    
     while(!exit) {
     	cout << "FLOPPY> ";
         query = "";

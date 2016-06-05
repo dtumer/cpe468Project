@@ -65,7 +65,7 @@ int main(int argc, char *argv[]) {
 	
 	//cleanup
     free(record);
-    squash(buf);
+    delete buf;
 
 	return 0;
 }

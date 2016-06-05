@@ -31,7 +31,7 @@ public:
     FLOPPYResult * execute(std::string sql);
     
     
-    FLOPPYResult* FLOPPY_DBMS:: createTable(FLOPPYCreateTableStatement *statement);
+    //FLOPPYResult * createTable(FLOPPYCreateTableStatement *statement);
     
 };
 
