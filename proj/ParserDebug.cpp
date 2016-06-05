@@ -143,12 +143,15 @@ void printCreateTableStatement(FLOPPYCreateTableStatement *statement) {
     }
     
     printf("\t Foreign Key(s):\n");
-    for (unsigned i=0; i<statement->fk->size(); i++) {
-        FLOPPYForeignKey *fk = statement->fk->at(i);
-        printf("\t\tReference Table: %s\n", fk->refTableName);
-        for (unsigned j=0; j<fk->attributes->size(); j++) {
-            printf("\t\t\t%s\n", fk->attributes->at(j));
+    if(statement->fk) {
+    	for (unsigned i=0; i<statement->fk->size(); i++) {
+        	FLOPPYForeignKey *fk = statement->fk->at(i);
+        	printf("\t\tReference Table: %s\n", fk->refTableName);
+        	for (unsigned j=0; j<fk->attributes->size(); j++) {
+        	    printf("\t\t\t%s\n", fk->attributes->at(j));
+        	}
         }
+        printf("\t\tNone\n");
     }
 }
 

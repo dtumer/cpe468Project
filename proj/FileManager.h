@@ -1,6 +1,10 @@
 #ifndef FileManager_h
 #define FileManager_h
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include <stdint.h>
 #include <stdlib.h>
 
@@ -40,4 +44,8 @@ void setBitmapRecordFull(uint8_t *bitmap, int recordNum);
 void printFileHeader(Buffer *buf, fileDescriptor fd);
 void printBitmap(uint8_t *bitmap, int numRecords);
 
+#ifdef __cplusplus
+}
+#endif
+    
 #endif

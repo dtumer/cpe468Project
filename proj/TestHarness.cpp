@@ -1,42 +1,44 @@
-#include "BufferManager.h"
+#include "FLOPPYBufferManager.h"
 
 #include <stdlib.h>
-#include <string.h>
+#include <string>
 #include <stdio.h>
+#include <string.h>
+#include <iostream>
 
 //#include "libs/smartalloc.h"
 
 
 //function for running the buffer
 void runBuffer(FILE *fp) {
-	Buffer *buf = (Buffer *)calloc(1, sizeof(Buffer));
+	FLOPPYBufferManager *buf;
 	char command[10], diskName[1024], fileName[1024];
 	int num1, num2, i;
 	fileDescriptor FD;
 	DiskAddress dAdd;
 	
 	while (fscanf(fp, "%s", command) == 1) {
-		//start command
+        //start command
 		if (!strcmp(command, "start")) {
 			if (fscanf(fp, "%s", diskName) == 1 && fscanf(fp, "%d", &num1) == 1) {
 				printf("START: %s, %d\n", diskName, num1);
-				commence(diskName, buf, num1, num1);
+                buf = new FLOPPYBufferManager(diskName, num1, num1);
 			}
 		}
 		//end command
 		else if (!strcmp(command, "end")) {
 			printf("END\n");
-			squash(buf);
+			delete buf;
 		}
 		//read command
 		else if (!strcmp(command, "read")) {
 			if (fscanf(fp, "%s %d", fileName, &num1) == 2) {
 				printf("READ: %s %d\n", fileName, num1);
 				
-				FD = getFileDescriptor(buf, fileName);
+				FD = buf->getFileDescriptor(fileName);
 				dAdd.FD = FD;
 				dAdd.pageId = num1;
- 				loadPersistentPage(buf, dAdd);
+ 				buf->loadPersistentPage(dAdd);
 			}
 		}
 		//write command
@@ -44,11 +46,11 @@ void runBuffer(FILE *fp) {
 			if (fscanf(fp, "%s %d", fileName, &num1) == 2) {
 				printf("WRITE: %s %d\n", fileName, num1);
 				
-				FD = getFileDescriptor(buf, fileName);
+				FD = buf->getFileDescriptor(fileName);
 				dAdd.FD = FD;
 				dAdd.pageId = num1;
 				
- 				writePage(buf, dAdd);
+ 				buf->writePage(dAdd);
 			}
 		}
 		//flush command
@@ -56,11 +58,11 @@ void runBuffer(FILE *fp) {
 			if (fscanf(fp, "%s %d", fileName, &num1) == 2) {
 				printf("FLUSH: %s %d\n", fileName, num1);
 				
-				FD = getFileDescriptor(buf, fileName);
+				FD = buf->getFileDescriptor(fileName);
 				dAdd.FD = FD;
 				dAdd.pageId = num1;
 				
- 				flushPage(buf, dAdd);
+ 				buf->flushPage(dAdd);
 			}
 		}
 		//pin command
@@ -68,11 +70,11 @@ void runBuffer(FILE *fp) {
 			if (fscanf(fp, "%s %d", fileName, &num1) == 2) {
 				printf("PIN: %s %d\n", fileName, num1);
 				
-				FD = getFileDescriptor(buf, fileName);
+				FD = buf->getFileDescriptor(fileName);
 				dAdd.FD = FD;
 				dAdd.pageId = num1;
 				
- 				pinPage(buf, dAdd);
+ 				buf->pinPage(dAdd);
 			}
 		}
 		//unpin command
@@ -80,11 +82,11 @@ void runBuffer(FILE *fp) {
 			if (fscanf(fp, "%s %d", fileName, &num1) == 2) {
 				printf("UNPIN: %s %d\n", fileName, num1);
 				
-				FD = getFileDescriptor(buf, fileName);
+				FD = buf->getFileDescriptor(fileName);
 				dAdd.FD = FD;
 				dAdd.pageId = num1;
 				
- 				unPinPage(buf, dAdd);
+ 				buf->unPinPage(dAdd);
 			}
 		}
 		//new command
@@ -93,7 +95,7 @@ void runBuffer(FILE *fp) {
 				printf("NEW: %s %d %d\n", fileName, num1, num2);
 				
 				//get file
-				FD = getFileDescriptor(buf, fileName);
+				FD = buf->getFileDescriptor(fileName);
                 printf("FD: %d\n", FD);
 				dAdd.FD = FD;
 				
@@ -101,7 +103,7 @@ void runBuffer(FILE *fp) {
 				for (i = num1; i <= num2; i++) {
 					dAdd.pageId = i;
 					
-					newPage(buf, dAdd);	
+					buf->newPage(dAdd);
 				}
 			}
 		}
@@ -111,11 +113,11 @@ void runBuffer(FILE *fp) {
 				printf("NEW CACHE: %s %d\n", fileName, num1);
 				
 				//get file
-				FD = getFileDescriptor(buf, fileName);
+				FD = buf->getFileDescriptor(fileName);
 				dAdd.FD = FD;
                 dAdd.pageId = num1;
 				
-                allocateCachePage(buf, dAdd);
+                buf->allocateCachePage(dAdd);
 			}
 		}
         //remove cache page
@@ -124,17 +126,17 @@ void runBuffer(FILE *fp) {
 				printf("REMOVE CACHE: %s %d\n", fileName, num1);
 				
 				//get file
-				FD = getFileDescriptor(buf, fileName);
+				FD = buf->getFileDescriptor(fileName);
 				dAdd.FD = FD;
                 dAdd.pageId = num1;
 				
-                removeCachePage(buf, dAdd);
+                buf->removeCachePage(dAdd);
 			}
 		}
 		//check command
 		else if (!strcmp(command, "check")) {
 			printf("CHECK\n");
-            checkpoint(buf);
+            buf->checkpoint();
 		}
 		else {
 			printf("No command by the name: %s\n", command);

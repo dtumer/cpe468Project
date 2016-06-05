@@ -21,11 +21,8 @@ handinPostConfig: TFS468
 	mv hashmap.* ./libs
 	mv smartalloc.* ./libs
 
-BufferManager.o: BufferManager.c
-	$(CC) $(CFLAGS) -c -o $@ $^
-
-ReadWrite.o: ReadWrite.c
-	$(CC) $(CFLAGS) -c -o $@ $^
+FLOPPYBufferManager.o: FLOPPYBufferManager.cpp
+	$(CPP) $(CPPFLAGS) -c -o $@ $^
 
 HeapFile.o: HeapFile.c
 	$(CC) $(CFLAGS) -c -o $@ $^
@@ -36,19 +33,16 @@ FileManager.o: FileManager.c
 FLOPPY_DBMS.o: FLOPPY_DBMS.cpp
 	$(CPP) $(CPPFLAGS) -c -o $@ $^
 
-TestHarness.out: TestHarness.c BufferManager.o $(LIBS)
-	$(CC) $(CFLAGS) -o $@ $^
+TestHarness.out: TestHarness.cpp FLOPPYBufferManager.o $(LIBS)
+	$(CPP) $(CPPFLAGS) -o $@ $^
 
-TestReadWrite.out: TestReadWrite.c ReadWrite.o BufferManager.o $(LIBS)
-	$(CC) $(CFLAGS) -o $@ $^
-
-TestHeapFile.out: TestHeapFile.c HeapFile.o FileManager.o ReadWrite.o BufferManager.o $(LIBS)
-	$(CC) $(CFLAGS) -o $@ $^
+TestHeapFile.out: TestHeapFile.cpp FLOPPYHeapFile.cpp FileManager.o FLOPPYBufferManager.cpp $(LIBS)
+	$(CPP) $(CPPFLAGS) -o $@ $^
 
 TestParser.out: TestParser.cpp ParserDebug.cpp $(ParserSRC) $(LIBS)
 	$(CPP) $(CPPFLAGS) -o $@ $^
 
-FLOPPY_CLI.out: FLOPPY_CLI.cpp ParserDebug.cpp FLOPPYResult.cpp BufferManager.o FLOPPY_DBMS.o $(ParserSRC) $(LIBS)
+FLOPPY_CLI.out: FLOPPY_CLI.cpp ParserDebug.cpp FLOPPYResult.cpp FLOPPYBufferManager.o FLOPPY_DBMS.o $(ParserSRC) $(LIBS)
 	$(CPP) $(CPPFLAGS) -o $@ $^
 
 runTestHarness: TestHarness.out

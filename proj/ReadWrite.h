@@ -6,6 +6,10 @@
 #ifndef ReadWrite_h
 #define ReadWrite_h
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include "BufferManager.h"
 
 #define PAGE_SIZE 1024
@@ -19,5 +23,8 @@ int buf_write(Buffer * buf, DiskAddress page, int startOffset, int nBytes, char 
 unsigned char * readVolatile(Buffer * buf, DiskAddress page, int startOffset, int nBytes);
 int writeVolatile(Buffer* buf, DiskAddress page, int startOffset, int nBytes, char * data);
 
+#ifdef __cplusplus
+}
+#endif
 
 #endif

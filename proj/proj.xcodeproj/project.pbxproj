@@ -11,21 +11,19 @@
 		638E34D21CB823C5006530E0 /* BufferManager.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = BufferManager.c; sourceTree = "<group>"; };
 		638E34D31CB823C5006530E0 /* BufferManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BufferManager.h; sourceTree = "<group>"; };
 		638E34D81CB823C5006530E0 /* README */ = {isa = PBXFileReference; lastKnownFileType = text; path = README; sourceTree = "<group>"; };
-		638E34D91CB823C5006530E0 /* TestHarness.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = TestHarness.c; sourceTree = "<group>"; };
+		638E34D91CB823C5006530E0 /* TestHarness.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = TestHarness.cpp; sourceTree = "<group>"; };
 		63B790A61CD96629000F782B /* StatementParser.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = StatementParser.c; sourceTree = "<group>"; };
 		63B790A71CD96629000F782B /* StatementParser.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = StatementParser.h; sourceTree = "<group>"; };
 		63B790A81CD96710000F782B /* TestParser.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = TestParser.cpp; sourceTree = "<group>"; };
 		CB1739A51CD1945200405878 /* libs */ = {isa = PBXFileReference; lastKnownFileType = folder; path = libs; sourceTree = "<group>"; };
 		CB1739A91CD19F3100405878 /* ReadWrite.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = ReadWrite.c; sourceTree = "<group>"; };
 		CB1739AA1CD19F3100405878 /* ReadWrite.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ReadWrite.h; sourceTree = "<group>"; };
-		CB1739AB1CD1B73800405878 /* TestReadWrite.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = TestReadWrite.c; sourceTree = "<group>"; };
 		CB1DD2BF1CDC2A1900185A27 /* FileManager.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = FileManager.c; sourceTree = "<group>"; };
 		CB1DD2C01CDC2A1900185A27 /* FileManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FileManager.h; sourceTree = "<group>"; };
 		CB1DD2C11CDC36DD00185A27 /* HeapFile.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = HeapFile.c; sourceTree = "<group>"; };
 		CB1DD2C21CDC36DD00185A27 /* HeapFile.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = HeapFile.h; sourceTree = "<group>"; };
 		CB1DD2C51CE1486300185A27 /* test_files */ = {isa = PBXFileReference; lastKnownFileType = folder; path = test_files; sourceTree = "<group>"; };
-		CB1DD2C61CE1592500185A27 /* TestFileManager.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = TestFileManager.c; sourceTree = "<group>"; };
-		CB1DD2C71CE1639200185A27 /* TestHeapFile.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = TestHeapFile.c; sourceTree = "<group>"; };
+		CB1DD2C71CE1639200185A27 /* TestHeapFile.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = TestHeapFile.cpp; sourceTree = "<group>"; };
 		CB4270881CED2D150038493C /* BplusTree.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = BplusTree.c; sourceTree = "<group>"; };
 		CB4270891CED2D150038493C /* BplusTree.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BplusTree.h; sourceTree = "<group>"; };
 		CB42708A1CED2D280038493C /* SeqFile.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = SeqFile.c; sourceTree = "<group>"; };
@@ -40,6 +38,10 @@
 		CB42709D1D03E5F10038493C /* FLOPPY_DBMS.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = FLOPPY_DBMS.cpp; sourceTree = "<group>"; };
 		CB42709E1D03E5F70038493C /* FLOPPY_DBMS.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FLOPPY_DBMS.h; sourceTree = "<group>"; };
 		CB42709F1D03E6E90038493C /* FLOPPY_CLI.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FLOPPY_CLI.h; sourceTree = "<group>"; };
+		CB4270A01D0412AE0038493C /* FLOPPYHeapFile.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = FLOPPYHeapFile.cpp; sourceTree = "<group>"; };
+		CB4270A11D0412AE0038493C /* FLOPPYHeapFile.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FLOPPYHeapFile.h; sourceTree = "<group>"; };
+		CB4270A21D04258A0038493C /* FLOPPYBufferManager.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = FLOPPYBufferManager.cpp; sourceTree = "<group>"; };
+		CB4270A31D04258A0038493C /* FLOPPYBufferManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FLOPPYBufferManager.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
@@ -58,16 +60,15 @@
 				638E34D81CB823C5006530E0 /* README */,
 				CB1DD2C81CE1639800185A27 /* Tests */,
 				0FB6CEC51CB5E5E2007B9F6E /* Makefile */,
+				CB4270A61D04B74C0038493C /* old */,
 			);
 			sourceTree = "<group>";
 		};
 		CB1DD2C81CE1639800185A27 /* Tests */ = {
 			isa = PBXGroup;
 			children = (
-				638E34D91CB823C5006530E0 /* TestHarness.c */,
-				CB1739AB1CD1B73800405878 /* TestReadWrite.c */,
-				CB1DD2C61CE1592500185A27 /* TestFileManager.c */,
-				CB1DD2C71CE1639200185A27 /* TestHeapFile.c */,
+				638E34D91CB823C5006530E0 /* TestHarness.cpp */,
+				CB1DD2C71CE1639200185A27 /* TestHeapFile.cpp */,
 				63B790A81CD96710000F782B /* TestParser.cpp */,
 			);
 			name = Tests;
@@ -91,10 +92,8 @@
 		CB4270931CF582DE0038493C /* Read/Write */ = {
 			isa = PBXGroup;
 			children = (
-				638E34D21CB823C5006530E0 /* BufferManager.c */,
-				638E34D31CB823C5006530E0 /* BufferManager.h */,
-				CB1739A91CD19F3100405878 /* ReadWrite.c */,
-				CB1739AA1CD19F3100405878 /* ReadWrite.h */,
+				CB4270A21D04258A0038493C /* FLOPPYBufferManager.cpp */,
+				CB4270A31D04258A0038493C /* FLOPPYBufferManager.h */,
 			);
 			name = Read/Write;
 			sourceTree = "<group>";
@@ -110,8 +109,21 @@
 				CB42708B1CED2D280038493C /* SeqFile.h */,
 				CB4270881CED2D150038493C /* BplusTree.c */,
 				CB4270891CED2D150038493C /* BplusTree.h */,
+				CB4270A01D0412AE0038493C /* FLOPPYHeapFile.cpp */,
+				CB4270A11D0412AE0038493C /* FLOPPYHeapFile.h */,
 			);
 			name = "file level";
+			sourceTree = "<group>";
+		};
+		CB4270A61D04B74C0038493C /* old */ = {
+			isa = PBXGroup;
+			children = (
+				CB1739A91CD19F3100405878 /* ReadWrite.c */,
+				CB1739AA1CD19F3100405878 /* ReadWrite.h */,
+				638E34D21CB823C5006530E0 /* BufferManager.c */,
+				638E34D31CB823C5006530E0 /* BufferManager.h */,
+			);
+			name = old;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */

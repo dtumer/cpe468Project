@@ -9,7 +9,7 @@
 #include "libs/FLOPPY/FLOPPYParser.h"
 #include "FLOPPYResult.h"
 #include "ParserDebug.h"
-#include "BufferManager.h"
+#include "FLOPPYBufferManager.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -22,11 +22,16 @@ extern "C" {
 
 
 class FLOPPY_DBMS {
-    Buffer *buf;
+    FLOPPYBufferManager *buf;
 public:
     FLOPPY_DBMS(std::string diskName, int nPersistentBlocks, int nVolatileBlocks); //constructor
-    FLOPPYResult * execute(std::string sql);
     ~FLOPPY_DBMS(); //destructor
+    
+    
+    FLOPPYResult * execute(std::string sql);
+    
+    
+    FLOPPYResult* FLOPPY_DBMS:: createTable(FLOPPYCreateTableStatement *statement);
     
 };
 
