@@ -1,5 +1,5 @@
-#ifndef DBMS_h
-#define DBMS_h
+#ifndef FLOPPY_DBMS_h
+#define FLOPPY_DBMS_h
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -7,6 +7,7 @@
 #include <string.h>
 
 #include "libs/FLOPPY/FLOPPYParser.h"
+#include "FLOPPYResult.h"
 #include "ParserDebug.h"
 #include "BufferManager.h"
 
@@ -20,12 +21,12 @@ extern "C" {
 #endif
 
 
-class DBMS {
+class FLOPPY_DBMS {
     Buffer *buf;
 public:
-    DBMS(std::string diskName, int nPersistentBlocks, int nVolatileBlocks); //constructor
-    void execute(std::string sql);
-    ~DBMS(); //destructor
+    FLOPPY_DBMS(std::string diskName, int nPersistentBlocks, int nVolatileBlocks); //constructor
+    FLOPPYResult * execute(std::string sql);
+    ~FLOPPY_DBMS(); //destructor
     
 };
 

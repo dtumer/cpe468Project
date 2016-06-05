@@ -33,7 +33,7 @@ HeapFile.o: HeapFile.c
 FileManager.o: FileManager.c
 	$(CC) $(CFLAGS) -c -o $@ $^
 
-DBMS.o: DBMS.cpp
+FLOPPY_DBMS.o: FLOPPY_DBMS.cpp
 	$(CPP) $(CPPFLAGS) -c -o $@ $^
 
 TestHarness.out: TestHarness.c BufferManager.o $(LIBS)
@@ -48,7 +48,7 @@ TestHeapFile.out: TestHeapFile.c HeapFile.o FileManager.o ReadWrite.o BufferMana
 TestParser.out: TestParser.cpp ParserDebug.cpp $(ParserSRC) $(LIBS)
 	$(CPP) $(CPPFLAGS) -o $@ $^
 
-FLOPPY_CLI.out: FLOPPY_CLI.cpp ParserDebug.cpp BufferManager.o DBMS.o $(ParserSRC) $(LIBS)
+FLOPPY_CLI.out: FLOPPY_CLI.cpp ParserDebug.cpp FLOPPYResult.cpp BufferManager.o FLOPPY_DBMS.o $(ParserSRC) $(LIBS)
 	$(CPP) $(CPPFLAGS) -o $@ $^
 
 runTestHarness: TestHarness.out

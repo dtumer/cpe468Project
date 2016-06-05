@@ -33,10 +33,13 @@
 		CB42708D1CF3CE810038493C /* RecordDescription.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RecordDescription.h; sourceTree = "<group>"; };
 		CB4270901CF582040038493C /* ParserDebug.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ParserDebug.cpp; sourceTree = "<group>"; };
 		CB4270911CF582040038493C /* ParserDebug.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ParserDebug.h; sourceTree = "<group>"; };
-		CB4270971CF5893D0038493C /* DBMS.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = DBMS.cpp; sourceTree = "<group>"; };
-		CB4270981CF5893D0038493C /* DBMS.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DBMS.h; sourceTree = "<group>"; };
 		CB4270991CF58F3F0038493C /* FLOPPY_CLI.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = FLOPPY_CLI.cpp; sourceTree = "<group>"; };
 		CB42709A1D0143030038493C /* RecordDescription.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = RecordDescription.cpp; sourceTree = "<group>"; };
+		CB42709B1D03D8710038493C /* FLOPPYResult.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = FLOPPYResult.cpp; sourceTree = "<group>"; };
+		CB42709C1D03D8710038493C /* FLOPPYResult.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FLOPPYResult.h; sourceTree = "<group>"; };
+		CB42709D1D03E5F10038493C /* FLOPPY_DBMS.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = FLOPPY_DBMS.cpp; sourceTree = "<group>"; };
+		CB42709E1D03E5F70038493C /* FLOPPY_DBMS.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FLOPPY_DBMS.h; sourceTree = "<group>"; };
+		CB42709F1D03E6E90038493C /* FLOPPY_CLI.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FLOPPY_CLI.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
@@ -53,7 +56,6 @@
 				CB42709A1D0143030038493C /* RecordDescription.cpp */,
 				CB42708D1CF3CE810038493C /* RecordDescription.h */,
 				638E34D81CB823C5006530E0 /* README */,
-				CB4270991CF58F3F0038493C /* FLOPPY_CLI.cpp */,
 				CB1DD2C81CE1639800185A27 /* Tests */,
 				0FB6CEC51CB5E5E2007B9F6E /* Makefile */,
 			);
@@ -76,8 +78,12 @@
 			children = (
 				CB4270901CF582040038493C /* ParserDebug.cpp */,
 				CB4270911CF582040038493C /* ParserDebug.h */,
-				CB4270971CF5893D0038493C /* DBMS.cpp */,
-				CB4270981CF5893D0038493C /* DBMS.h */,
+				CB42709B1D03D8710038493C /* FLOPPYResult.cpp */,
+				CB42709C1D03D8710038493C /* FLOPPYResult.h */,
+				CB42709D1D03E5F10038493C /* FLOPPY_DBMS.cpp */,
+				CB42709E1D03E5F70038493C /* FLOPPY_DBMS.h */,
+				CB4270991CF58F3F0038493C /* FLOPPY_CLI.cpp */,
+				CB42709F1D03E6E90038493C /* FLOPPY_CLI.h */,
 			);
 			name = paser;
 			sourceTree = "<group>";
