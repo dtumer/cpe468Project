@@ -2,7 +2,7 @@
 #include <string>
 #include <iostream>
 
-#include "libs/FLOPPY/FLOPPYParser.h"
+#include "libs/FLOPPYParser/FLOPPYParser.h"
 #include "ParserDebug.h"
 
 int main(int argc, char *argv[]) {

@@ -6,7 +6,7 @@
 #include <string>
 #include <string.h>
 
-#include "libs/FLOPPY/FLOPPYParser.h"
+#include "libs/FLOPPYParser/FLOPPYParser.h"
 #include "FLOPPYResult.h"
 #include "ParserDebug.h"
 #include "FLOPPYBufferManager.h"

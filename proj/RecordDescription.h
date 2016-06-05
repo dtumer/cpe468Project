@@ -1,4 +1,4 @@
-#include "libs/FLOPPY/FLOPPYParser.h"
+#include "libs/FLOPPYParser/FLOPPYParser.h"
 #include <stdlib.h>
 
 typedef struct AttrDescription {

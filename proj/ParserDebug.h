@@ -3,7 +3,7 @@
 
 #include <stdio.h>
 
-#include "libs/FLOPPY/FLOPPYParser.h"
+#include "libs/FLOPPYParser/FLOPPYParser.h"
 
 void printFLOPPYValue(FLOPPYValue *val);
 
