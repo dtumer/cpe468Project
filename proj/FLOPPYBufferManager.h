@@ -65,8 +65,8 @@ public:
     unsigned char * getPage(DiskAddress page);
     int putPage(DiskAddress page, char * data);
     
-    unsigned char * buf_read(DiskAddress page, int startOffset, int nBytes);
-    int buf_write(DiskAddress page, int startOffset, int nBytes, char * data);
+    unsigned char * read(DiskAddress page, int startOffset, int nBytes);
+    int write(DiskAddress page, int startOffset, int nBytes, char * data);
     
     unsigned char * readVolatile(DiskAddress page, int startOffset, int nBytes);
     int writeVolatile(DiskAddress page, int startOffset, int nBytes, char * data);

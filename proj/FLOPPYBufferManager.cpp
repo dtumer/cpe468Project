@@ -601,16 +601,16 @@ int FLOPPYBufferManager::loadVolatilePage(DiskAddress diskPage) {
 
 //return the byte array with the contents of entire page
 unsigned char * FLOPPYBufferManager::getPage(DiskAddress page) {
-    return buf_read(page, 0, BLOCKSIZE);
+    return read(page, 0, BLOCKSIZE);
 }
 
 //make data the contents of a disk page
 int FLOPPYBufferManager::putPage(DiskAddress page, char * data) {
-    return buf_write(page, 0, BLOCKSIZE, data);
+    return write(page, 0, BLOCKSIZE, data);
 }
 
 //return a portion of the disk page
-unsigned char* FLOPPYBufferManager::buf_read(DiskAddress page, int startOffset, int nBytes)
+unsigned char* FLOPPYBufferManager::read(DiskAddress page, int startOffset, int nBytes)
 {
     int index;
     unsigned char *ptr = NULL, *data = NULL;
@@ -654,7 +654,7 @@ unsigned char* FLOPPYBufferManager::buf_read(DiskAddress page, int startOffset, 
 }
 
 //write data to disk page
-int FLOPPYBufferManager::buf_write(DiskAddress page, int startOffset, int nBytes, char * data) {
+int FLOPPYBufferManager::write(DiskAddress page, int startOffset, int nBytes, char * data) {
     if(startOffset - 1 + nBytes > BLOCKSIZE) {
         return 1;
     }
