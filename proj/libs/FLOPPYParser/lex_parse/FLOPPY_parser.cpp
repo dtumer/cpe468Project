@@ -1874,7 +1874,7 @@ yyreduce:
   case 34:
 #line 298 "FLOPPY_parser.y" /* yacc.c:1661  */
     { 
-         (yyval.ival) = (yyvsp[0].ival);
+         (yyval.ival) = (yyvsp[0].ival); 
       }
 #line 1880 "FLOPPY_parser.cpp" /* yacc.c:1661  */
     break;
