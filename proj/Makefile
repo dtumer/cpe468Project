@@ -43,7 +43,7 @@ TestHeapFile.out: TestHeapFile.cpp FLOPPYHeapFile.cpp FLOPPYFileManager.o FLOPPY
 TestParser.out: TestParser.cpp ParserDebug.cpp $(ParserSRC) $(LIBS)
 	$(CPP) $(CPPFLAGS) -o $@ $^
 
-FLOPPY_CLI.out: FLOPPY_CLI.cpp ParserDebug.cpp FLOPPYResult.cpp FLOPPYBufferManager.o FLOPPY_DBMS.o $(ParserSRC) $(LIBS)
+FLOPPY_CLI.out: FLOPPY_CLI.cpp ParserDebug.cpp FLOPPYResult.cpp FLOPPY_DBMS.o FLOPPYHeapFile.cpp FLOPPYFileManager.o FLOPPYBufferManager.cpp FLOPPYBitmap.o RecordDescription.o $(ParserSRC) $(LIBS)
 	$(CPP) $(CPPFLAGS) -o $@ $^
 
 runTestHarness: TestHarness.out

@@ -10,6 +10,7 @@
 #include "FLOPPYResult.h"
 #include "ParserDebug.h"
 #include "FLOPPYBufferManager.h"
+#include "FLOPPYHeapFile.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -31,7 +32,7 @@ public:
     FLOPPYResult * execute(std::string sql);
     
     
-    //FLOPPYResult * createTable(FLOPPYCreateTableStatement *statement);
+    FLOPPYResult * createTable(FLOPPYCreateTableStatement *statement);
     
 };
 

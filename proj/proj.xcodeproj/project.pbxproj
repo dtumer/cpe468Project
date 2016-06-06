@@ -52,6 +52,7 @@
 				638E34D81CB823C5006530E0 /* README */,
 				CB1DD2C81CE1639800185A27 /* Tests */,
 				0FB6CEC51CB5E5E2007B9F6E /* Makefile */,
+				CB4270AF1D0516CF0038493C /* old */,
 			);
 			sourceTree = "<group>";
 		};
@@ -94,16 +95,23 @@
 			children = (
 				CB4270AB1D04CCBF0038493C /* FLOPPYFileManager.cpp */,
 				CB4270AC1D04CCBF0038493C /* FLOPPYFileManager.h */,
-				CB42708A1CED2D280038493C /* SeqFile.c */,
-				CB42708B1CED2D280038493C /* SeqFile.h */,
-				CB4270881CED2D150038493C /* BplusTree.c */,
-				CB4270891CED2D150038493C /* BplusTree.h */,
 				CB4270A01D0412AE0038493C /* FLOPPYHeapFile.cpp */,
 				CB4270A11D0412AE0038493C /* FLOPPYHeapFile.h */,
 				CB4270AD1D04D0130038493C /* FLOPPYBitmap.cpp */,
 				CB4270AE1D04D0130038493C /* FLOPPYBitmap.h */,
 			);
 			name = "file level";
+			sourceTree = "<group>";
+		};
+		CB4270AF1D0516CF0038493C /* old */ = {
+			isa = PBXGroup;
+			children = (
+				CB42708A1CED2D280038493C /* SeqFile.c */,
+				CB42708B1CED2D280038493C /* SeqFile.h */,
+				CB4270881CED2D150038493C /* BplusTree.c */,
+				CB4270891CED2D150038493C /* BplusTree.h */,
+			);
+			name = old;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */

@@ -23,13 +23,10 @@ int main(int argc, char *argv[]) {
     char *record = (char*) calloc(48, sizeof(char));
     strcpy(record, "1234567890;1234567890;1234567890;1234567890;aaa");
     
-    
-    
     //add data till almost full
     printf("\nadd data till almost full\n");
     for(ndx=0; ndx<16; ndx++) {
     	heap->insertRecord(record);
-        printf("\n");
     }
     
     heap->printFileInfo();

@@ -11,7 +11,8 @@ typedef enum {
     ErrorType,
     SelectType,
     UpdateType,
-    InsertType
+    InsertType,
+    MessageType
 } FLOPPYResultType;
 
 class FLOPPYResult {
@@ -24,7 +25,7 @@ public:
     }
     
     union {
-        const char *errorMsg;
+        const char *msg;
     };
     
     FLOPPYResultType _type;

@@ -17,13 +17,16 @@ void FLOPPY_CLI::executeCLI(string query) {
     
     switch (result->type()) {
         case FLOPPYResultType::ErrorType:
-            cout << "ERROR - " << result->errorMsg << "\n";
+            cout << "ERROR - " << result->msg << "\n";
             break;
         case FLOPPYResultType::SelectType:
             break;
         case FLOPPYResultType::UpdateType:
             break;
         case FLOPPYResultType::InsertType:
+            break;
+        case FLOPPYResultType::MessageType:
+            cout << result->msg << "\n";
             break;
     }
 }
