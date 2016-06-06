@@ -72,6 +72,7 @@ public:
     /* Test Functions */
     void printFileInfo();
     void printPageInfo(int pageId);
+    void getAllRecords(int pageId);
     
 private:
     static void getFileName(std::string tableName, char *fileName);

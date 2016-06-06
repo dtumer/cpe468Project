@@ -347,3 +347,18 @@ void FLOPPYHeapFile::printPageInfo(int pageId) {
     free(heapFileHeader);
     free(bitmapData);
 }
+
+// testing function for printing all recordIds
+void FLOPPYHeapFile::getAllRecords(int pageId) {
+    DiskAddress page = getDiskAddress(pageId);
+	HeapPageHeader *heapPageHeader = getPageHeader(pageId);
+	HeapFileHeader *heapFileHeader = getHeapFileHeader();
+	uint8_t *bitmapData = (uint8_t *) buf->read(page, sizeof(HeapPageHeader), heapFileHeader->bitmapSize);
+    FLOPPYBitmap *bitmap = new FLOPPYBitmap(bitmapData, heapFileHeader->numRecordsPerPage);
+    int recordId = 0;
+    
+    while (recordId >= 0) {
+    	recordId = bitmap->nextRecord();
+    	printf("RECORD: %d\n", recordId);
+    }
+}

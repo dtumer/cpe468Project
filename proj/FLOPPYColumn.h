@@ -15,8 +15,14 @@ typedef enum {
 
 class FLOPPYColumn {
 public:
+	/* Constructors */
     FLOPPYColumn();
+    FLOPPYColumn(char *name, ColumnType type, int size, int offset);
+    
+    /* Descructor */
     virtual ~FLOPPYColumn();
+    
+    /* Instance Variables */
     char *name;
     ColumnType type;
     int size;

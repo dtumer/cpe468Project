@@ -9,6 +9,42 @@ FLOPPYBitmap::FLOPPYBitmap(uint8_t *bitmap, int numRecords) : bitmap(bitmap), nu
     
 }
 
+int FLOPPYBitmap::nextRecord() {
+	uint8_t curRecord = 0;
+		
+	if (curBitmapByte == NULL) { //make sure curBitmap is set to original byte
+		curBitmapByte = bitmap;
+	}
+	
+	//check to see if there are any more occupied records in the bitmap
+	if (numRecords - curRecordOffset > 0) {
+		curRecord = 1 << (7 - curBit) & *curBitmapByte;
+		
+		//if we've looked through the whole byte
+		if (curBit == 7) {
+			curBit = 0;
+			curBitmapByte++;
+		}
+		else {
+			curBit++;
+		}
+		
+		//if we're looking at a bit that is empty call nextRecord() again
+		if (curRecord == 0) {	
+			curRecordOffset++;
+			nextRecord();
+		}
+		else {
+			return curRecordOffset++;
+		}
+	}
+	else { //reset current bitmap byte to the beginning of the bitmap
+		curBitmapByte = bitmap;
+		curRecordOffset = 0;
+		return -1;
+	}
+}
+
 int FLOPPYBitmap::getFirstFreeRecord() {
     FLOPPYBitmap::getFirstFreeRecordHelper(bitmap, numRecords);
 }
@@ -94,8 +130,6 @@ int FLOPPYBitmap::calcBitmapSize(int recordSize, int pageSize, int headerSize, i
         return FLOPPYBitmap::calcBitmapSize(recordSize, pageSize, headerSize, newBitmapSize);
     }
 }
-
-
 
 /* Test Functions */
 void FLOPPYBitmap::print() {

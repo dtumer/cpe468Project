@@ -19,6 +19,7 @@ public:
     
     /* Test Functions */
     void print();
+    int nextRecord();
     
     static int calcBitmapSize(int recordSize, int pageSize, int headerSize, int curBitmapSize);
     
@@ -26,6 +27,11 @@ public:
 private:
     uint8_t *bitmap;
     int numRecords;
+    
+    /* instance variables for accessing the current and next  */
+    uint8_t *curBitmapByte;
+    int curBit;
+    int curRecordOffset;
     
     static int getFirstFreeRecordHelper(uint8_t *bitmap, int numRecords);
     static void printHelper(uint8_t *bitmap, int numRecords);

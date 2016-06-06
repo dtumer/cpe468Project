@@ -5,6 +5,8 @@
 #ifndef FLOPPYRecordDescription_h
 #define FLOPPYRecordDescription_h
 
+#include <vector>
+
 #include "FLOPPYColumn.h"
 
 class FLOPPYRecordDescription {
