@@ -18,6 +18,9 @@ int FLOPPYBitmap::getFirstFreeRecordHelper(uint8_t *bitmap, int numRecords) {
     uint16_t mask = 128;
     uint8_t *temp;
     
+    printf(" ");
+    printf(" ");
+    
     if (numRecords <= 0)
         return -1;
     
@@ -30,6 +33,9 @@ int FLOPPYBitmap::getFirstFreeRecordHelper(uint8_t *bitmap, int numRecords) {
             return result + 8;
     }
     
+    printf(" ");
+    printf(" ");
+    
     temp = bitmap;
     while (mask & *temp) {
         mask >>= 1;
@@ -39,6 +45,7 @@ int FLOPPYBitmap::getFirstFreeRecordHelper(uint8_t *bitmap, int numRecords) {
     if(counter >= numRecords)
         return -1;
     
+    printf(" ");
     return counter;
 }
 
