@@ -5,13 +5,15 @@
 #ifndef FLOPPYColumn_h
 #define FLOPPYColumn_h
 
-typedef enum {
+#include "libs/FLOPPYParser/FLOPPY_statements/FLOPPYCreateColumn.h"
+
+/*typedef enum {
     INT,
     FLOAT,
     DATETIME,
     VARCHAR,
     BOOLEAN
-} ColumnType;
+} ColumnType;*/
 
 class FLOPPYColumn {
 public:
