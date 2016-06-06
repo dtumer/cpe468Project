@@ -125,8 +125,9 @@ FLOPPYHeapFile * FLOPPYHeapFile::createFile(FLOPPYBufferManager *buf, FLOPPYCrea
     heapFileHeader->numPages = 0;
     heapFileHeader->isVolatile = statement->flags->volatileFlag;
     
+    packRecordDescription(statement, heapFileHeader->recordDescription);
+    heapFileHeader->recordSize = getRecordLength(heapFileHeader->recordDescription);
     
-    heapFileHeader->recordSize = packRecordDescription(statement, heapFileHeader->recordDescription);
     //heapFileHeader->recordSize = 48;
     //heapFileHeader->recordDescription[600];
     heapFileHeader->bitmapSize = FLOPPYBitmap::calcBitmapSize(heapFileHeader->recordSize, BLOCKSIZE, sizeof(HeapPageHeader), 0);
