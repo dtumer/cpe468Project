@@ -12,6 +12,10 @@ FLOPPYFileManager::FLOPPYFileManager(FLOPPYBufferManager *buf, fileDescriptor fd
     
 }
 
+FLOPPYFileManager::FLOPPYFileManager(FLOPPYBufferManager *buf) : buf(buf) {
+    
+}
+
 FileHeader * FLOPPYFileManager::getFileHeader() {
     DiskAddress page;
     unsigned char *data;

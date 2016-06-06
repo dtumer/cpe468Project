@@ -40,45 +40,45 @@ typedef struct HeapPageHeader {
 class FLOPPYHeapFile : public FLOPPYFileManager {
 public:
     FLOPPYHeapFile(FLOPPYBufferManager *buf, fileDescriptor fd); // constructor
+    FLOPPYHeapFile(FLOPPYBufferManager *buf, char * tableName); // constructor
     
     /* file-level functions */
-    fileDescriptor createFile(char *tableName, tableDescription *tableDesc, int volatileFlag);
-    int deleteFile(char *tableName);
+    static FLOPPYHeapFile * createFile(FLOPPYBufferManager *buf, char *tableName, tableDescription *tableDesc, int volatileFlag);
+    static int deleteFile(char *tableName);
     
     /* File Header functions */
     // Get the table name from a given header page
-    int headerGetTableName(fileDescriptor fd, char *name);
+    int headerGetTableName(char *name);
     // Get the file descriptor structure
-    uint16_t headerGetRecordDesc(fileDescriptor fd, tableDescription *desc);
+    uint16_t headerGetRecordDesc(tableDescription *desc);
     // Return the address of the next page in the pagelist list
-    DiskAddress headerGetNextPage(fileDescriptor fd);
+    DiskAddress headerGetNextPage();
     // Return the address of the next page in the freespace list
-    int headerGetFreeSpace(fileDescriptor fd, DiskAddress *page);
+    //int headerGetFreeSpace(DiskAddress *page);
     
     /* Data Page functions */
     //given a page id and a location on the page (represented by id) retrieve the contents of the record into output array
-    unsigned char * getRecord(DiskAddress page, uint16_t dataOffset, uint16_t recordSize, int recordId);
+    unsigned char * getRecord(int pageId, uint16_t dataOffset, uint16_t recordSize, int recordId);
     //given a page id and a location on the page, place the given record onto the appropriate slot of the page
-    int putRecord(DiskAddress page, uint16_t dataOffset, uint16_t recordSize, int recordId, char *data);
-    
-    int pHGetRecSize(DiskAddress page);
-    int pHGetMaxRecords(DiskAddress page);
+    int putRecord(int pageId, uint16_t dataOffset, uint16_t recordSize, int recordId, char *data);
     
     /* Heap File CRUD operations */
-    int insertRecord(char * tableName, char * record);
-    int deleteRecord(DiskAddress page, int recordId);
-    int updateRecord(DiskAddress page, int recordId, char * record);
+    int insertRecord(char * record);
+    int deleteRecord(int pageId, int recordId);
+    int updateRecord(int pageId, int recordId, char * record);
     
     /* Test Functions */
-    void printFileInfo(fileDescriptor fd);
-    void printPageInfo(fileDescriptor fd, int pageId);
+    void printFileInfo();
+    void printPageInfo(int pageId);
     
 private:
-    void getFileName(char *tableName, char *fileName);
+    static void getFileName(char *tableName, char *fileName);
     HeapFileHeader * getHeapFileHeader();
     int writeHeapFileHeader(HeapFileHeader *heapFileHeader);
-    HeapPageHeader * getPageHeader(DiskAddress page);
-    int writePageHeader(DiskAddress page, HeapPageHeader *heapPageHeader);
-    void createNewPage(fileDescriptor fd, HeapFileHeader *heapFileHeader);
+    HeapPageHeader * getPageHeader(int pageId);
+    int writePageHeader(int pageId, HeapPageHeader *heapPageHeader);
+    void createNewPage(HeapFileHeader *heapFileHeader);
+    
+    DiskAddress getDiskAddress(int pageId);
 };
 #endif /* FLOPPYHeapFile_h */

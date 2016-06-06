@@ -24,7 +24,7 @@ class FLOPPYFileManager {
 protected:
     FLOPPYBufferManager *buf;
 public:
-    //FLOPPYFileManager(FLOPPYBufferManager *buf); // constructor
+    FLOPPYFileManager(FLOPPYBufferManager *buf); // constructor
     FLOPPYFileManager(FLOPPYBufferManager *buf, fileDescriptor fd); // constructor
     fileDescriptor fd;
     
