@@ -6,9 +6,11 @@
 #define FLOPPYHeapFile_h
 
 #include "FLOPPYBufferManager.h"
-#include "StatementParser.h"
 #include "FLOPPYFileManager.h"
 #include "FLOPPYBitmap.h"
+#include "RecordDescription.h"
+#include "libs/FLOPPYParser/FLOPPYParser.h"
+
 
 #include <stdio.h>
 
@@ -40,17 +42,17 @@ typedef struct HeapPageHeader {
 class FLOPPYHeapFile : public FLOPPYFileManager {
 public:
     FLOPPYHeapFile(FLOPPYBufferManager *buf, fileDescriptor fd); // constructor
-    FLOPPYHeapFile(FLOPPYBufferManager *buf, char * tableName); // constructor
+    FLOPPYHeapFile(FLOPPYBufferManager *buf, std::string tableName); // constructor
     
     /* file-level functions */
-    static FLOPPYHeapFile * createFile(FLOPPYBufferManager *buf, char *tableName, tableDescription *tableDesc, int volatileFlag);
-    static int deleteFile(char *tableName);
+    static FLOPPYHeapFile * createFile(FLOPPYBufferManager *buf, FLOPPYCreateTableStatement *statement);
+    static int deleteFile(std::string tableName);
     
     /* File Header functions */
     // Get the table name from a given header page
     int headerGetTableName(char *name);
     // Get the file descriptor structure
-    uint16_t headerGetRecordDesc(tableDescription *desc);
+    //uint16_t headerGetRecordDesc(tableDescription *desc);
     // Return the address of the next page in the pagelist list
     DiskAddress headerGetNextPage();
     // Return the address of the next page in the freespace list
@@ -72,7 +74,7 @@ public:
     void printPageInfo(int pageId);
     
 private:
-    static void getFileName(char *tableName, char *fileName);
+    static void getFileName(std::string tableName, char *fileName);
     HeapFileHeader * getHeapFileHeader();
     int writeHeapFileHeader(HeapFileHeader *heapFileHeader);
     HeapPageHeader * getPageHeader(int pageId);

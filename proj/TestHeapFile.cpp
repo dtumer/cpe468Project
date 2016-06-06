@@ -6,20 +6,13 @@
 
 int main(int argc, char *argv[]) {
     int ndx;
-    DiskAddress dAdd;
     char diskName[] = "Foo.disk";
     char tableName[] = "people";
-    FLOPPYHeapFile *heap;
-    
-	tableDescription *table = (tableDescription *)calloc(1, sizeof(tableDescription)); //description of table (after parsing)
-    
     FLOPPYBufferManager *buf = new FLOPPYBufferManager(diskName, 5, 5);
     
-    heap = FLOPPYHeapFile::createFile(buf, tableName, table, 1);
+    FLOPPYOutput *result = FLOPPYParser::parseFLOPPYString("CREATE TABLE Availability VOLATILE (NodeId  VARCHAR(20), DistroId  INT, FileId  INT, BlockID  INT, TimeStamp DATETIME, PRIMARY KEY(FileId, BlockId, NodeId), FOREIGN KEY(NodeId) REFERENCES Nodes, FOREIGN KEY (DistroId) REFERENCES Distros, FOREIGN KEY (FileId) REFERENCES Files);");
     
-    dAdd.FD = heap->fd;
-    
-    fileDescriptor fd = heap->fd;
+    FLOPPYHeapFile *heap = FLOPPYHeapFile::createFile(buf, (FLOPPYCreateTableStatement*) result->statement);
     
     //print before adding data
     printf("\nEmpty heap file\n");
@@ -30,15 +23,19 @@ int main(int argc, char *argv[]) {
     char *record = (char*) calloc(48, sizeof(char));
     strcpy(record, "1234567890;1234567890;1234567890;1234567890;aaa");
     
+    
+    
     //add data till almost full
     printf("\nadd data till almost full\n");
-    for(ndx=0; ndx<41; ndx++) {
+    for(ndx=0; ndx<16; ndx++) {
     	heap->insertRecord(record);
+        printf("\n");
     }
     
     heap->printFileInfo();
     heap->printPageInfo(1);
     
+    /*
     //fill page
     printf("\nfill page\n");
     heap->insertRecord(record);
@@ -63,7 +60,7 @@ int main(int argc, char *argv[]) {
     heap->printPageInfo(1);
     heap->printPageInfo(2);
     
-	
+	*/
 	//cleanup
     free(record);
     delete buf;

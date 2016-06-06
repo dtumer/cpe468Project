@@ -10,8 +10,6 @@
 		0FB6CEC51CB5E5E2007B9F6E /* Makefile */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.make; path = Makefile; sourceTree = "<group>"; };
 		638E34D81CB823C5006530E0 /* README */ = {isa = PBXFileReference; lastKnownFileType = text; path = README; sourceTree = "<group>"; };
 		638E34D91CB823C5006530E0 /* TestHarness.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = TestHarness.cpp; sourceTree = "<group>"; };
-		63B790A61CD96629000F782B /* StatementParser.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = StatementParser.c; sourceTree = "<group>"; };
-		63B790A71CD96629000F782B /* StatementParser.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = StatementParser.h; sourceTree = "<group>"; };
 		63B790A81CD96710000F782B /* TestParser.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = TestParser.cpp; sourceTree = "<group>"; };
 		CB1739A51CD1945200405878 /* libs */ = {isa = PBXFileReference; lastKnownFileType = folder; path = libs; sourceTree = "<group>"; };
 		CB1DD2C51CE1486300185A27 /* test_files */ = {isa = PBXFileReference; lastKnownFileType = folder; path = test_files; sourceTree = "<group>"; };
@@ -49,8 +47,6 @@
 				CB4270921CF582C20038493C /* paser */,
 				CB4270931CF582DE0038493C /* Read/Write */,
 				CB4270941CF583130038493C /* file level */,
-				63B790A61CD96629000F782B /* StatementParser.c */,
-				63B790A71CD96629000F782B /* StatementParser.h */,
 				CB42709A1D0143030038493C /* RecordDescription.cpp */,
 				CB42708D1CF3CE810038493C /* RecordDescription.h */,
 				638E34D81CB823C5006530E0 /* README */,

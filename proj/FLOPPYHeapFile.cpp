@@ -8,7 +8,7 @@ FLOPPYHeapFile::FLOPPYHeapFile(FLOPPYBufferManager *buf, fileDescriptor fd) : FL
     
 }
 
-FLOPPYHeapFile::FLOPPYHeapFile(FLOPPYBufferManager *buf, char * tableName) : FLOPPYFileManager(buf) {
+FLOPPYHeapFile::FLOPPYHeapFile(FLOPPYBufferManager *buf, std::string tableName) : FLOPPYFileManager(buf) {
     char *fileName = (char*) calloc(FILE_NAME_SIZE, sizeof(char));
     getFileName(tableName, fileName);
     fd = buf->getFileDescriptor(fileName);
@@ -17,9 +17,9 @@ FLOPPYHeapFile::FLOPPYHeapFile(FLOPPYBufferManager *buf, char * tableName) : FLO
 
 /* Helper functions */
 
-void FLOPPYHeapFile::getFileName(char *tableName, char *fileName) {
+void FLOPPYHeapFile::getFileName(std::string tableName, char *fileName) {
     strcpy(fileName, "T_");
-    strncpy(&fileName[2], tableName, FILE_NAME_SIZE-3);
+    strncpy(&fileName[2], tableName.c_str(), FILE_NAME_SIZE-3);
     fileName[FILE_NAME_SIZE-1] = '\0';
     return;
 }
@@ -97,7 +97,7 @@ DiskAddress FLOPPYHeapFile::getDiskAddress(int pageId) {
 
 /* file-level functions */
 
-FLOPPYHeapFile * FLOPPYHeapFile::createFile(FLOPPYBufferManager *buf, char *tableName, tableDescription *tableDesc, int volatileFlag) {
+FLOPPYHeapFile * FLOPPYHeapFile::createFile(FLOPPYBufferManager *buf, FLOPPYCreateTableStatement *statement) {
     FLOPPYHeapFile *heapFile;
     FileHeader *fileHeader = (FileHeader*) malloc(sizeof(FileHeader));
     HeapFileHeader *heapFileHeader = (HeapFileHeader*) malloc(sizeof(HeapFileHeader));
@@ -105,29 +105,29 @@ FLOPPYHeapFile * FLOPPYHeapFile::createFile(FLOPPYBufferManager *buf, char *tabl
     //FileHeader
     fileHeader->fileType = HEAP_FILE_TYPE;
     
-    FLOPPYHeapFile::getFileName(tableName, fileHeader->fileName);
+    FLOPPYHeapFile::getFileName(statement->tableName, fileHeader->fileName);
     
     //open file
     heapFile = new FLOPPYHeapFile(buf, buf->getFileDescriptor(fileHeader->fileName));
     DiskAddress headerPage = heapFile->getDiskAddress(0);
     
     //create files
-    if(volatileFlag) {
+    if(statement->flags->volatileFlag) {
         buf->allocateCachePage(headerPage);
     } else {
         buf->newPage(headerPage);
     }
     
     //HeapFileHeader
-    strncpy(heapFileHeader->tableName, tableName, 10);
+    strncpy(heapFileHeader->tableName, statement->tableName.c_str(), 10);
     heapFileHeader->firstPage = 0;
     heapFileHeader->firstFreeSlotPage = 0;
     heapFileHeader->numPages = 0;
-    heapFileHeader->isVolatile = volatileFlag;
+    heapFileHeader->isVolatile = statement->flags->volatileFlag;
     
     
-    //heapFileHeader->recordSize;
-    heapFileHeader->recordSize = 48;
+    heapFileHeader->recordSize = packRecordDescription(statement, heapFileHeader->recordDescription);
+    //heapFileHeader->recordSize = 48;
     //heapFileHeader->recordDescription[600];
     heapFileHeader->bitmapSize = FLOPPYBitmap::calcBitmapSize(heapFileHeader->recordSize, BLOCKSIZE, sizeof(HeapPageHeader), 0);
     
@@ -149,7 +149,7 @@ FLOPPYHeapFile * FLOPPYHeapFile::createFile(FLOPPYBufferManager *buf, char *tabl
     return heapFile;
 }
 
-int FLOPPYHeapFile::deleteFile(char * tableName) {
+int FLOPPYHeapFile::deleteFile(std::string tableName) {
     return 0;
 }
 
@@ -167,13 +167,10 @@ int FLOPPYHeapFile::headerGetTableName(char *name) {
 }
 
 // Get the file descriptor structure
-uint16_t FLOPPYHeapFile::headerGetRecordDesc(tableDescription *desc) {
-    HeapFileHeader *header = getHeapFileHeader();
-    uint16_t recordSize = header->recordSize;
+/*uint16_t FLOPPYHeapFile::headerGetRecordDesc(tableDescription *desc) {
     
-    free(header);
-    return recordSize;
-}
+    return 0;
+}*/
 
 // Return the address of the next page in the pagelist list
 DiskAddress FLOPPYHeapFile::headerGetNextPage() {
@@ -229,7 +226,7 @@ int FLOPPYHeapFile::insertRecord(char * record) {
     
     //update bitmap
     bitmap->setRecordFull(recordId);
-    buf->write(page, sizeof(HeapPageHeader), heapFileHeader->bitmapSize, (char *) bitmap);
+    buf->write(page, sizeof(HeapPageHeader), heapFileHeader->bitmapSize, (char *) bitmapData);
     
     if(bitmap->getFirstFreeRecord() == -1) {
         //page is full
@@ -300,7 +297,6 @@ int FLOPPYHeapFile::updateRecord(int pageId, int recordId, char * record) {
     free(heapFileHeader);
     return 0;
 }
-
 
 /* Test Functions */
 
