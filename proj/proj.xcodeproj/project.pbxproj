@@ -8,20 +8,12 @@
 
 /* Begin PBXFileReference section */
 		0FB6CEC51CB5E5E2007B9F6E /* Makefile */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.make; path = Makefile; sourceTree = "<group>"; };
-		638E34D21CB823C5006530E0 /* BufferManager.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = BufferManager.c; sourceTree = "<group>"; };
-		638E34D31CB823C5006530E0 /* BufferManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BufferManager.h; sourceTree = "<group>"; };
 		638E34D81CB823C5006530E0 /* README */ = {isa = PBXFileReference; lastKnownFileType = text; path = README; sourceTree = "<group>"; };
 		638E34D91CB823C5006530E0 /* TestHarness.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = TestHarness.cpp; sourceTree = "<group>"; };
 		63B790A61CD96629000F782B /* StatementParser.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = StatementParser.c; sourceTree = "<group>"; };
 		63B790A71CD96629000F782B /* StatementParser.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = StatementParser.h; sourceTree = "<group>"; };
 		63B790A81CD96710000F782B /* TestParser.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = TestParser.cpp; sourceTree = "<group>"; };
 		CB1739A51CD1945200405878 /* libs */ = {isa = PBXFileReference; lastKnownFileType = folder; path = libs; sourceTree = "<group>"; };
-		CB1739A91CD19F3100405878 /* ReadWrite.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = ReadWrite.c; sourceTree = "<group>"; };
-		CB1739AA1CD19F3100405878 /* ReadWrite.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ReadWrite.h; sourceTree = "<group>"; };
-		CB1DD2BF1CDC2A1900185A27 /* FileManager.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = FileManager.c; sourceTree = "<group>"; };
-		CB1DD2C01CDC2A1900185A27 /* FileManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FileManager.h; sourceTree = "<group>"; };
-		CB1DD2C11CDC36DD00185A27 /* HeapFile.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = HeapFile.c; sourceTree = "<group>"; };
-		CB1DD2C21CDC36DD00185A27 /* HeapFile.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = HeapFile.h; sourceTree = "<group>"; };
 		CB1DD2C51CE1486300185A27 /* test_files */ = {isa = PBXFileReference; lastKnownFileType = folder; path = test_files; sourceTree = "<group>"; };
 		CB1DD2C71CE1639200185A27 /* TestHeapFile.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = TestHeapFile.cpp; sourceTree = "<group>"; };
 		CB4270881CED2D150038493C /* BplusTree.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = BplusTree.c; sourceTree = "<group>"; };
@@ -44,6 +36,8 @@
 		CB4270A31D04258A0038493C /* FLOPPYBufferManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FLOPPYBufferManager.h; sourceTree = "<group>"; };
 		CB4270AB1D04CCBF0038493C /* FLOPPYFileManager.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = FLOPPYFileManager.cpp; sourceTree = "<group>"; };
 		CB4270AC1D04CCBF0038493C /* FLOPPYFileManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FLOPPYFileManager.h; sourceTree = "<group>"; };
+		CB4270AD1D04D0130038493C /* FLOPPYBitmap.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = FLOPPYBitmap.cpp; sourceTree = "<group>"; };
+		CB4270AE1D04D0130038493C /* FLOPPYBitmap.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FLOPPYBitmap.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
@@ -62,7 +56,6 @@
 				638E34D81CB823C5006530E0 /* README */,
 				CB1DD2C81CE1639800185A27 /* Tests */,
 				0FB6CEC51CB5E5E2007B9F6E /* Makefile */,
-				CB4270A61D04B74C0038493C /* old */,
 			);
 			sourceTree = "<group>";
 		};
@@ -103,10 +96,6 @@
 		CB4270941CF583130038493C /* file level */ = {
 			isa = PBXGroup;
 			children = (
-				CB1DD2BF1CDC2A1900185A27 /* FileManager.c */,
-				CB1DD2C01CDC2A1900185A27 /* FileManager.h */,
-				CB1DD2C11CDC36DD00185A27 /* HeapFile.c */,
-				CB1DD2C21CDC36DD00185A27 /* HeapFile.h */,
 				CB4270AB1D04CCBF0038493C /* FLOPPYFileManager.cpp */,
 				CB4270AC1D04CCBF0038493C /* FLOPPYFileManager.h */,
 				CB42708A1CED2D280038493C /* SeqFile.c */,
@@ -115,19 +104,10 @@
 				CB4270891CED2D150038493C /* BplusTree.h */,
 				CB4270A01D0412AE0038493C /* FLOPPYHeapFile.cpp */,
 				CB4270A11D0412AE0038493C /* FLOPPYHeapFile.h */,
+				CB4270AD1D04D0130038493C /* FLOPPYBitmap.cpp */,
+				CB4270AE1D04D0130038493C /* FLOPPYBitmap.h */,
 			);
 			name = "file level";
-			sourceTree = "<group>";
-		};
-		CB4270A61D04B74C0038493C /* old */ = {
-			isa = PBXGroup;
-			children = (
-				CB1739A91CD19F3100405878 /* ReadWrite.c */,
-				CB1739AA1CD19F3100405878 /* ReadWrite.h */,
-				638E34D21CB823C5006530E0 /* BufferManager.c */,
-				638E34D31CB823C5006530E0 /* BufferManager.h */,
-			);
-			name = old;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
