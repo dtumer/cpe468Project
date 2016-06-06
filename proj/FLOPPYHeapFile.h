@@ -8,6 +8,7 @@
 #include "FLOPPYBufferManager.h"
 #include "StatementParser.h"
 #include "FileManager.h"
+#include "FLOPPYBitmap.h"
 
 #include <stdio.h>
 
