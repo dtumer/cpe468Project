@@ -7,7 +7,7 @@
 
 #include "FLOPPYBufferManager.h"
 #include "StatementParser.h"
-#include "FileManager.h"
+#include "FLOPPYFileManager.h"
 #include "FLOPPYBitmap.h"
 
 #include <stdio.h>
@@ -37,9 +37,9 @@ typedef struct HeapPageHeader {
 }__attribute__((packed)) HeapPageHeader;
 
 
-class FLOPPYHeapFile {
+class FLOPPYHeapFile : public FLOPPYFileManager {
 public:
-    FLOPPYHeapFile(FLOPPYBufferManager *buf); // constructor
+    FLOPPYHeapFile(FLOPPYBufferManager *buf, fileDescriptor fd); // constructor
     
     /* file-level functions */
     fileDescriptor createFile(char *tableName, tableDescription *tableDesc, int volatileFlag);
@@ -74,10 +74,9 @@ public:
     void printPageInfo(fileDescriptor fd, int pageId);
     
 private:
-    FLOPPYBufferManager *buf;
     void getFileName(char *tableName, char *fileName);
-    HeapFileHeader * getFileHeader(fileDescriptor fd);
-    int writeFileHeader(fileDescriptor fd, HeapFileHeader *heapFileHeader);
+    HeapFileHeader * getHeapFileHeader();
+    int writeHeapFileHeader(HeapFileHeader *heapFileHeader);
     HeapPageHeader * getPageHeader(DiskAddress page);
     int writePageHeader(DiskAddress page, HeapPageHeader *heapPageHeader);
     void createNewPage(fileDescriptor fd, HeapFileHeader *heapFileHeader);

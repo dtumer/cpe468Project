@@ -21,7 +21,7 @@ int main(int argc, char *argv[]) {
     
     //print before adding data
     printf("\nEmpty heap file\n");
-    printFileHeader(buf, fd);
+    heap->printFileHeader();
     heap->printFileInfo(fd);
     heap->printPageInfo(fd, 1);
     

@@ -42,6 +42,8 @@
 		CB4270A11D0412AE0038493C /* FLOPPYHeapFile.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FLOPPYHeapFile.h; sourceTree = "<group>"; };
 		CB4270A21D04258A0038493C /* FLOPPYBufferManager.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = FLOPPYBufferManager.cpp; sourceTree = "<group>"; };
 		CB4270A31D04258A0038493C /* FLOPPYBufferManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FLOPPYBufferManager.h; sourceTree = "<group>"; };
+		CB4270AB1D04CCBF0038493C /* FLOPPYFileManager.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = FLOPPYFileManager.cpp; sourceTree = "<group>"; };
+		CB4270AC1D04CCBF0038493C /* FLOPPYFileManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FLOPPYFileManager.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
@@ -105,6 +107,8 @@
 				CB1DD2C01CDC2A1900185A27 /* FileManager.h */,
 				CB1DD2C11CDC36DD00185A27 /* HeapFile.c */,
 				CB1DD2C21CDC36DD00185A27 /* HeapFile.h */,
+				CB4270AB1D04CCBF0038493C /* FLOPPYFileManager.cpp */,
+				CB4270AC1D04CCBF0038493C /* FLOPPYFileManager.h */,
 				CB42708A1CED2D280038493C /* SeqFile.c */,
 				CB42708B1CED2D280038493C /* SeqFile.h */,
 				CB4270881CED2D150038493C /* BplusTree.c */,

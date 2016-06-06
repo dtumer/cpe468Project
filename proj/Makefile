@@ -37,7 +37,7 @@ FileManager.o: FileManager.c
 TestHarness.out: TestHarness.cpp FLOPPYBufferManager.o $(LIBS)
 	$(CPP) $(CPPFLAGS) -o $@ $^
 
-TestHeapFile.out: TestHeapFile.cpp FLOPPYHeapFile.cpp FileManager.o FLOPPYBufferManager.cpp $(LIBS)
+TestHeapFile.out: TestHeapFile.cpp FLOPPYHeapFile.cpp FLOPPYFileManager.o FLOPPYBufferManager.cpp FLOPPYBitmap.o $(LIBS)
 	$(CPP) $(CPPFLAGS) -o $@ $^
 
 TestParser.out: TestParser.cpp ParserDebug.cpp $(ParserSRC) $(LIBS)
