@@ -346,3 +346,55 @@ int getRecordLength(char *data) {
 	
 	return recLen;
 }
+
+
+
+
+
+//grabs the record length of a record on a data page of this type of data
+int getAttributes(char *data) {
+    int recLen = 0, pkOffset, curOffset = 4, attrType, colLen;
+    
+    //grab primary key offset
+    memcpy(&pkOffset, data, sizeof(uint16_t));
+    
+    while (curOffset < pkOffset) {
+        //get attribute type
+        attrType = data[curOffset++];
+        
+        //grab col length of the attribut type
+        if (attrType == VARCHAR) {
+            colLen = data[curOffset++];
+        }
+        else {
+            colLen = getAttrTypeByteSize((ColumnType)attrType);
+        }
+        
+        //make sure the rec length isn't zero. If it isn't
+        //make sure to add padding if necessary
+        if (recLen != 0) {
+            //add padding if prev attr was int
+            if (attrType == INT) {
+                recLen += recLen % 4;
+            }
+            //add padding if prev attr was float or datetime
+            else if (attrType == FLOAT || attrType == DATETIME) {
+                recLen += recLen % 8;
+            }
+        }
+        
+        recLen += colLen;
+        
+        //skip through the name of the attribute cause we're not using it
+        while (data[curOffset] != 0) {
+            curOffset++;
+        }
+        
+        //skip null terminator
+        curOffset++;
+    }
+    
+    recLen += recLen % 8;
+    
+    return recLen;
+}

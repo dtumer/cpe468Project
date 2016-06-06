@@ -36,6 +36,12 @@
 		CB4270AC1D04CCBF0038493C /* FLOPPYFileManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FLOPPYFileManager.h; sourceTree = "<group>"; };
 		CB4270AD1D04D0130038493C /* FLOPPYBitmap.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = FLOPPYBitmap.cpp; sourceTree = "<group>"; };
 		CB4270AE1D04D0130038493C /* FLOPPYBitmap.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FLOPPYBitmap.h; sourceTree = "<group>"; };
+		CB4270B31D0533C80038493C /* FLOPPYRecord.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = FLOPPYRecord.cpp; sourceTree = "<group>"; };
+		CB4270B41D0533C80038493C /* FLOPPYRecord.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FLOPPYRecord.h; sourceTree = "<group>"; };
+		CB4270B51D0543F60038493C /* FLOPPYColumn.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = FLOPPYColumn.cpp; sourceTree = "<group>"; };
+		CB4270B61D0543F60038493C /* FLOPPYColumn.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FLOPPYColumn.h; sourceTree = "<group>"; };
+		CB4270B71D0545330038493C /* FLOPPYRecordDescription.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = FLOPPYRecordDescription.cpp; sourceTree = "<group>"; };
+		CB4270B81D0545330038493C /* FLOPPYRecordDescription.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FLOPPYRecordDescription.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
@@ -47,6 +53,7 @@
 				CB4270921CF582C20038493C /* paser */,
 				CB4270931CF582DE0038493C /* Read/Write */,
 				CB4270941CF583130038493C /* file level */,
+				CB4270B21D05329D0038493C /* record level */,
 				CB42709A1D0143030038493C /* RecordDescription.cpp */,
 				CB42708D1CF3CE810038493C /* RecordDescription.h */,
 				638E34D81CB823C5006530E0 /* README */,
@@ -112,6 +119,19 @@
 				CB4270891CED2D150038493C /* BplusTree.h */,
 			);
 			name = old;
+			sourceTree = "<group>";
+		};
+		CB4270B21D05329D0038493C /* record level */ = {
+			isa = PBXGroup;
+			children = (
+				CB4270B71D0545330038493C /* FLOPPYRecordDescription.cpp */,
+				CB4270B81D0545330038493C /* FLOPPYRecordDescription.h */,
+				CB4270B51D0543F60038493C /* FLOPPYColumn.cpp */,
+				CB4270B61D0543F60038493C /* FLOPPYColumn.h */,
+				CB4270B31D0533C80038493C /* FLOPPYRecord.cpp */,
+				CB4270B41D0533C80038493C /* FLOPPYRecord.h */,
+			);
+			name = "record level";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
