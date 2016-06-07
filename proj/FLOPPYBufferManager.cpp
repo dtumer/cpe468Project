@@ -336,9 +336,9 @@ int FLOPPYBufferManager::placePageInBuffer(Block *newBlock) {
 int FLOPPYBufferManager::loadPersistentPage(DiskAddress diskPage) {
     int result = BFMG_OK;
     Block *newBlock;
-    int existingIndex = getIndex(persistentMap, diskPage);
+    int ndx = getIndex(persistentMap, diskPage);
     
-    if (existingIndex == -1) {
+    if (ndx == -1) {
         newBlock = (Block *)malloc(sizeof(Block));
         newBlock->diskAddress = diskPage;
         
@@ -346,14 +346,15 @@ int FLOPPYBufferManager::loadPersistentPage(DiskAddress diskPage) {
                               newBlock->block);
         if (result != 0) {
             fprintf(stderr, "tfs_readPage returned %d\n", result);
+            return result;
         }
         
-        result = placePageInBuffer(newBlock);
+        ndx = placePageInBuffer(newBlock);
     } else {
         persistentTimestamp[existingIndex] = ops++;
     }
     
-    return result;
+    return ndx;
 }
 
 /**
