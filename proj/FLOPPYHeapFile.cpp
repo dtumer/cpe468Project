@@ -100,7 +100,7 @@ DiskAddress FLOPPYHeapFile::getDiskAddress(int pageId) {
 FLOPPYHeapFile * FLOPPYHeapFile::createFile(FLOPPYBufferManager *buf, FLOPPYCreateTableStatement *statement) {
     FLOPPYHeapFile *heapFile;
     FileHeader *fileHeader = (FileHeader*) malloc(sizeof(FileHeader));
-    HeapFileHeader *heapFileHeader = (HeapFileHeader*) malloc(sizeof(HeapFileHeader));
+    HeapFileHeader *heapFileHeader = (HeapFileHeader*) calloc(1, sizeof(HeapFileHeader));
     
     //FileHeader
     fileHeader->fileType = HEAP_FILE_TYPE;
@@ -126,8 +126,7 @@ FLOPPYHeapFile * FLOPPYHeapFile::createFile(FLOPPYBufferManager *buf, FLOPPYCrea
     heapFileHeader->isVolatile = statement->flags->volatileFlag;
     
     //record description
-    packRecordDescription(statement, heapFileHeader->recordDescription);
-    heapFileHeader->recordSize = getRecordLength(heapFileHeader->recordDescription);
+    heapFileHeader->recordSize = FLOPPYRecordDescription::packRecordDescription(statement, heapFileHeader->recordDescription);
     
     //bitmap
     heapFileHeader->bitmapSize = FLOPPYBitmap::calcBitmapSize(heapFileHeader->recordSize, BLOCKSIZE, sizeof(HeapPageHeader), 0);
@@ -359,4 +358,13 @@ void FLOPPYHeapFile::getAllRecords(int pageId) {
     	recordId = bitmap->nextRecord();
     	printf("RECORD: %d\n", recordId);
     }
+}
+
+void FLOPPYHeapFile::printRecordDescription() {
+	HeapFileHeader *heapFileHeader = getHeapFileHeader();
+	FLOPPYRecordDescription *desc = new FLOPPYRecordDescription(heapFileHeader->recordDescription);
+    
+    desc->print();
+    
+    free(heapFileHeader);
 }

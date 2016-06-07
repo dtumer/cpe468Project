@@ -37,13 +37,13 @@ FileManager.o: FileManager.c
 TestHarness.out: TestHarness.cpp FLOPPYBufferManager.o $(LIBS)
 	$(CPP) $(CPPFLAGS) -o $@ $^
 
-TestHeapFile.out: TestHeapFile.cpp FLOPPYHeapFile.cpp FLOPPYFileManager.o FLOPPYBufferManager.cpp FLOPPYBitmap.o RecordDescription.o FLOPPYColumn.o FLOPPYRecordDescription.o FLOPPYRecord.o $(ParserSRC) $(LIBS)
+TestHeapFile.out: TestHeapFile.cpp FLOPPYHeapFile.cpp FLOPPYFileManager.o FLOPPYBufferManager.cpp FLOPPYBitmap.o FLOPPYColumn.o FLOPPYRecordDescription.o FLOPPYRecord.o $(ParserSRC) $(LIBS)
 	$(CPP) $(CPPFLAGS) -o $@ $^
 
 TestParser.out: TestParser.cpp ParserDebug.cpp $(ParserSRC) $(LIBS)
 	$(CPP) $(CPPFLAGS) -o $@ $^
 
-FLOPPY_CLI.out: FLOPPY_CLI.cpp ParserDebug.cpp FLOPPYResult.cpp FLOPPY_DBMS.o FLOPPYHeapFile.cpp FLOPPYFileManager.o FLOPPYBufferManager.cpp FLOPPYBitmap.o RecordDescription.o FLOPPYColumn.o FLOPPYRecordDescription.o FLOPPYRecord.o $(ParserSRC) $(LIBS)
+FLOPPY_CLI.out: FLOPPY_CLI.cpp ParserDebug.cpp FLOPPYResult.cpp FLOPPY_DBMS.o FLOPPYHeapFile.cpp FLOPPYFileManager.o FLOPPYBufferManager.cpp FLOPPYBitmap.o FLOPPYColumn.o FLOPPYRecordDescription.o FLOPPYRecord.o $(ParserSRC) $(LIBS)
 	$(CPP) $(CPPFLAGS) -o $@ $^
 
 runTestHarness: TestHarness.out

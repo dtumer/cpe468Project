@@ -8,7 +8,7 @@
 #include "FLOPPYBufferManager.h"
 #include "FLOPPYFileManager.h"
 #include "FLOPPYBitmap.h"
-#include "RecordDescription.h"
+#include "FLOPPYRecordDescription.h"
 #include "libs/FLOPPYParser/FLOPPYParser.h"
 
 
@@ -73,6 +73,7 @@ public:
     void printFileInfo();
     void printPageInfo(int pageId);
     void getAllRecords(int pageId);
+    void printRecordDescription();
     
 private:
     static void getFileName(std::string tableName, char *fileName);
