@@ -2,6 +2,7 @@
 #include "FLOPPYSelectItem.h"
 #include "FLOPPYTableSpec.h"
 #include "FLOPPYNode.h"
+#include "FLOPPYTableAttribute.h"
 
 FLOPPYSelectStatement::FLOPPYSelectStatement() : FLOPPYStatement(SelectStatement) {}
 FLOPPYSelectStatement::~FLOPPYSelectStatement() {

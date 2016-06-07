@@ -1666,7 +1666,7 @@ case 60:
 YY_RULE_SETUP
 #line 108 "FLOPPY_lexer.l"
 {
-                           yylval->sval = (char *) calloc(strlen(yytext + 1) - 1, sizeof(char));
+                           yylval->sval = (char *) calloc(strlen(yytext + 1), sizeof(char));
                            memcpy(yylval->sval, yytext + 1, strlen(yytext + 1) - 1);
                            return FLOPPY_STRING;
                         }
@@ -1677,7 +1677,7 @@ YY_RULE_SETUP
 #line 114 "FLOPPY_lexer.l"
 {
                            yylval->sval = (char *) calloc(strlen(yytext + 1) - 1, sizeof(char));
-                           memcpy(yylval->sval, yytext + 1, strlen(yytext + 1) - 1);
+                           memcpy(yylval->sval, yytext + 1, strlen(yytext + 1));
                            return FLOPPY_STRING;
                         }
 	YY_BREAK

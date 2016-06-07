@@ -7,6 +7,12 @@
 void printFLOPPYValue(FLOPPYValue *val) {
     if(val->type() == ValueType::AttributeValue)
         printf("ATTRIBUTE \"%s\"", val->sVal);
+    else if(val->type() == ValueType::TableAttributeValue) {
+        if(val->tableAttribute->tableName)
+        	printf("TABLE ATTRIBUTE \"%s.%s\"", val->tableAttribute->tableName, val->tableAttribute->attribute);
+        else
+            printf("TABLE ATTRIBUTE \"%s\"", val->tableAttribute->attribute);
+    }
     else if(val->type() == ValueType::StringValue)
         printf("STRING \"%s\"", val->sVal);
     else if(val->type() == ValueType::IntValue)
@@ -192,7 +198,10 @@ void printSelectStatement(FLOPPYSelectStatement *statement) {
             printf("\n\t\t%s", spec->attribute);
         }
         else if(spec->_type == FLOPPYSelectItemType::TableAttributeType) {
-            printf("\n\t\t%s.%s", spec->tableAttribute.tableName, spec->tableAttribute.attribute);
+            if(spec->tableAttribute->tableName)
+            	printf("\n\t\t%s.%s", spec->tableAttribute->tableName, spec->tableAttribute->attribute);
+            else
+                printf("\n\t\t%s", spec->tableAttribute->attribute);
         }
         else if(spec->_type == FLOPPYSelectItemType::AggregateType) {
             printf("\n\t\tAggregate ");
@@ -222,7 +231,11 @@ void printSelectStatement(FLOPPYSelectStatement *statement) {
     if(statement->groupBy) {
         printf("\tGROUP BY:\n");
         for (unsigned i=0; i<statement->groupBy->groupByAttributes->size(); i++) {
-            printf("\t\t%s\n", statement->groupBy->groupByAttributes->at(i));
+            FLOPPYTableAttribute *tableAttribute = statement->groupBy->groupByAttributes->at(i);
+            if(tableAttribute->tableName)
+            	printf("\t\t%s.%s\n", tableAttribute->tableName, tableAttribute->attribute);
+            else
+                printf("\t\t%s\n", tableAttribute->attribute);
         }
         
         if(statement->groupBy->havingCondition) {
@@ -234,7 +247,11 @@ void printSelectStatement(FLOPPYSelectStatement *statement) {
     
     printf("\tORDER BY:\n");
     for (unsigned i=0; i<statement->orderBys->size(); i++) {
-        printf("\t\t%s\n", statement->orderBys->at(i));
+        FLOPPYTableAttribute *tableAttribute = statement->orderBys->at(i);
+        if(tableAttribute->tableName)
+            printf("\t\t%s.%s\n", tableAttribute->tableName, tableAttribute->attribute);
+        else
+            printf("\t\t%s\n", tableAttribute->attribute);
     }
     
     if(statement->limit != 1) {
