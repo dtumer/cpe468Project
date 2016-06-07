@@ -168,5 +168,7 @@ int main(int argv, char *argc[]) {
 	
 	runBuffer(fp);
 	
+    fclose(fp);
+    
 	return 0;
 }

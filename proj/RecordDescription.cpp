@@ -301,7 +301,7 @@ AttrDescription getAttributeDescription(char *data, char *colName) {
 
 //grabs the record length of a record on a data page of this type of data
 int getRecordLength(char *data) {
-	int recLen = 0, pkOffset, curOffset = 4, attrType, colLen;
+	int recLen = 0, pkOffset=0, curOffset = 4, attrType, colLen;
 	
 	//grab primary key offset
 	memcpy(&pkOffset, data, sizeof(uint16_t));

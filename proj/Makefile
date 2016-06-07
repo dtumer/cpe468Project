@@ -1,7 +1,7 @@
 CPP = g++
 CC = gcc
 CFLAGS = -Wall -g -fPIC
-CPPFLAGS=-O3 -std=c++0x -Wno-deprecated-register
+CPPFLAGS=-O3 -std=c++0x -Wno-deprecated-register -ggdb
 
 #Directories
 FLOPPY_PARSER_DIR = libs/FLOPPYParser

@@ -245,16 +245,18 @@ void printSelectStatement(FLOPPYSelectStatement *statement) {
         }
     }
     
-    printf("\tORDER BY:\n");
-    for (unsigned i=0; i<statement->orderBys->size(); i++) {
-        FLOPPYTableAttribute *tableAttribute = statement->orderBys->at(i);
-        if(tableAttribute->tableName)
-            printf("\t\t%s.%s\n", tableAttribute->tableName, tableAttribute->attribute);
-        else
-            printf("\t\t%s\n", tableAttribute->attribute);
+    if(statement->orderBys) {
+    	printf("\tORDER BY:\n");
+    	for (unsigned i=0; i<statement->orderBys->size(); i++) {
+    	    FLOPPYTableAttribute *tableAttribute = statement->orderBys->at(i);
+    	    if(tableAttribute->tableName)
+    	        printf("\t\t%s.%s\n", tableAttribute->tableName, tableAttribute->attribute);
+    	    else
+    	        printf("\t\t%s\n", tableAttribute->attribute);
+    	}
     }
     
-    if(statement->limit != 1) {
+    if(statement->limit > 0) {
         printf("\tLIMIT: %d\n", statement->limit);
     }
 }
@@ -314,4 +316,5 @@ void TestSQLStatement(const char* sql) {
     } else {
         printf("Invalid FLOPPY!\n");
     }
+    delete result;
 }
