@@ -52,7 +52,7 @@ int main(int argc, char *argv[]) {
     
     heap->getAllRecords(1);
     heap->getAllRecords(2);
-    /*
+    
     //re-fill page
     printf("\nre-fill page\n");
     heap->insertRecord(record);
@@ -60,10 +60,14 @@ int main(int argc, char *argv[]) {
     heap->printFileInfo();
     heap->printPageInfo(1);
     heap->printPageInfo(2);
-    */
+    
+    
+    heap->printRecordDescription();
     
 	//cleanup
     free(record);
+    delete heap;
+    delete result;
     delete buf;
 
 	return 0;
