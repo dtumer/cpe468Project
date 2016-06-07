@@ -3,6 +3,7 @@
 //
 
 #include "FLOPPYColumn.h"
+#include <stdlib.h>
 
 FLOPPYColumn::FLOPPYColumn() {}
 
@@ -11,5 +12,5 @@ FLOPPYColumn::FLOPPYColumn(char *name, ColumnType type, int size, int offset) : 
 }
 
 FLOPPYColumn::~FLOPPYColumn() {
-    delete this->name;
+    free(name);
 }

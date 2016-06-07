@@ -18,7 +18,7 @@ class FLOPPYRecordDescription {
 public:
     FLOPPYRecordDescription();
     FLOPPYRecordDescription(char *recordDescription); //parses data and returns list of columns
-    ~FLOPPYRecordDescription();
+    virtual ~FLOPPYRecordDescription();
     
     /* Statement packing method */
     static int packRecordDescription(FLOPPYCreateTableStatement *statement, char *data); //look into seeing if function can return size of a single record

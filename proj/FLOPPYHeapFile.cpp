@@ -366,5 +366,6 @@ void FLOPPYHeapFile::printRecordDescription() {
     
     desc->print();
     
+    delete desc;
     free(heapFileHeader);
 }
