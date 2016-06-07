@@ -18,11 +18,9 @@
 		CB4270891CED2D150038493C /* BplusTree.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BplusTree.h; sourceTree = "<group>"; };
 		CB42708A1CED2D280038493C /* SeqFile.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = SeqFile.c; sourceTree = "<group>"; };
 		CB42708B1CED2D280038493C /* SeqFile.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SeqFile.h; sourceTree = "<group>"; };
-		CB42708D1CF3CE810038493C /* RecordDescription.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RecordDescription.h; sourceTree = "<group>"; };
 		CB4270901CF582040038493C /* ParserDebug.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ParserDebug.cpp; sourceTree = "<group>"; };
 		CB4270911CF582040038493C /* ParserDebug.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ParserDebug.h; sourceTree = "<group>"; };
 		CB4270991CF58F3F0038493C /* FLOPPY_CLI.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = FLOPPY_CLI.cpp; sourceTree = "<group>"; };
-		CB42709A1D0143030038493C /* RecordDescription.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = RecordDescription.cpp; sourceTree = "<group>"; };
 		CB42709B1D03D8710038493C /* FLOPPYResult.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = FLOPPYResult.cpp; sourceTree = "<group>"; };
 		CB42709C1D03D8710038493C /* FLOPPYResult.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FLOPPYResult.h; sourceTree = "<group>"; };
 		CB42709D1D03E5F10038493C /* FLOPPY_DBMS.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = FLOPPY_DBMS.cpp; sourceTree = "<group>"; };
@@ -54,8 +52,6 @@
 				CB4270931CF582DE0038493C /* Read/Write */,
 				CB4270941CF583130038493C /* file level */,
 				CB4270B21D05329D0038493C /* record level */,
-				CB42709A1D0143030038493C /* RecordDescription.cpp */,
-				CB42708D1CF3CE810038493C /* RecordDescription.h */,
 				638E34D81CB823C5006530E0 /* README */,
 				CB1DD2C81CE1639800185A27 /* Tests */,
 				0FB6CEC51CB5E5E2007B9F6E /* Makefile */,
