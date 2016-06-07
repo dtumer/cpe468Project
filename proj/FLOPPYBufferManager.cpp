@@ -36,8 +36,9 @@ FLOPPYBufferManager::FLOPPYBufferManager(std::string database, int nPersistentBl
     int tfsErr;
     
     //open disks
-    char *diskNameC = new char[database.length() + 1];
+    char *diskNameC = new char[database.length() + 1]();
     strcpy(diskNameC, database.c_str());
+    diskNameC[database.length()] = '\0';
     
     tfsErr = tfs_mount(diskNameC);
     
@@ -45,7 +46,7 @@ FLOPPYBufferManager::FLOPPYBufferManager(std::string database, int nPersistentBl
         tfs_mkfs(diskNameC, DEFAULT_DISK_SIZE);
         tfsErr = tfs_mount(diskNameC);
     }
-    delete diskNameC;
+    delete[] diskNameC;
     
     //copy database name over
     this->database = database;
