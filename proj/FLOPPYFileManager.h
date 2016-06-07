@@ -12,7 +12,8 @@
 #define SEQ_FILE_TYPE 2
 #define HASH_FILE_TYPE 3
 
-#define FILE_NAME_SIZE 16
+#define FILE_NAME_SIZE 8
+#define TABLE_NAME_SIZE 20
 
 typedef struct FileHeader {
     uint32_t fileType; //1: Heap, 2: Sequential, 3: Hash

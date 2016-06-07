@@ -53,7 +53,7 @@ void FLOPPYFileManager::printFileHeader() {
     else
         printf("\t File Type: Unkown\n");
     
-    printf("\t File Name: %s;\n", header->fileName);
+    printf("\t File Name: %.*s;\n", FILE_NAME_SIZE, header->fileName);
     
     free(header);
 }

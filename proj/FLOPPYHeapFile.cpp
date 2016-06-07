@@ -119,7 +119,7 @@ FLOPPYHeapFile * FLOPPYHeapFile::createFile(FLOPPYBufferManager *buf, FLOPPYCrea
     }
     
     //HeapFileHeader
-    strncpy(heapFileHeader->tableName, statement->tableName.c_str(), 10);
+    strncpy(heapFileHeader->tableName, statement->tableName.c_str(), TABLE_NAME_SIZE);
     heapFileHeader->firstPage = 0;
     heapFileHeader->firstFreeSlotPage = 0;
     heapFileHeader->numPages = 0;
@@ -306,8 +306,8 @@ void FLOPPYHeapFile::printFileInfo() {
     FileHeader *fileHeader = getFileHeader();
     
     printf("Heap File Info:\n");
-    printf("\t fileName: %s\n", fileHeader->fileName);
-    printf("\t tableName: %s\n", heapFileHeader->tableName);
+    printf("\t fileName: %.*s\n", FILE_NAME_SIZE, fileHeader->fileName);
+    printf("\t tableName: %.*s\n", TABLE_NAME_SIZE, heapFileHeader->tableName);
     printf("\t recordSize: %d\n", heapFileHeader->recordSize);
     printf("\t numRecordsPerPage: %d\n", heapFileHeader->numRecordsPerPage);
     printf("\t numPages: %d\n", heapFileHeader->numPages);
@@ -329,7 +329,7 @@ void FLOPPYHeapFile::printPageInfo(int pageId) {
     HeapFileHeader *heapFileHeader = getHeapFileHeader();
     
     printf("Heap Page %d Info:\n", heapPageHeader->pageId);
-    printf("\t fileName: %s;\n", heapPageHeader->fileName);
+    printf("\t fileName: %.*s;\n", FILE_NAME_SIZE, heapPageHeader->fileName);
     printf("\t pageId: %d\n", heapPageHeader->pageId);
     printf("\t nextFreeSlotPage: %d\n", heapPageHeader->nextFreeSlotPage);
     printf("\t nextPage: %d\n", heapPageHeader->nextPage);
