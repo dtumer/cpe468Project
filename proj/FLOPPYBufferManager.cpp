@@ -351,7 +351,7 @@ int FLOPPYBufferManager::loadPersistentPage(DiskAddress diskPage) {
         
         ndx = placePageInBuffer(newBlock);
     } else {
-        persistentTimestamp[existingIndex] = ops++;
+        persistentTimestamp[ndx] = ops++;
     }
     
     return ndx;
