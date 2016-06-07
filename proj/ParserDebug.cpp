@@ -232,9 +232,11 @@ void printSelectStatement(FLOPPYSelectStatement *statement) {
         }
     }
     
-    printf("\tORDER BY:\n");
-    for (unsigned i=0; i<statement->orderBys->size(); i++) {
-        printf("\t\t%s\n", statement->orderBys->at(i));
+    if (statement->orderBys) {
+       printf("\tORDER BY:\n");
+   	   for (unsigned i=0; i<statement->orderBys->size(); i++) {
+    	  printf("\t\t%s\n", statement->orderBys->at(i));
+       } 
     }
     
     if(statement->limit != 1) {
