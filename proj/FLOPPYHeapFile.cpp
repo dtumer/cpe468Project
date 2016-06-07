@@ -119,7 +119,7 @@ FLOPPYHeapFile * FLOPPYHeapFile::createFile(FLOPPYBufferManager *buf, FLOPPYCrea
     }
     
     //HeapFileHeader
-    strncpy(heapFileHeader->tableName, statement->tableName.c_str(), TABLE_NAME_SIZE);
+    strncpy(heapFileHeader->tableName, statement->tableName, TABLE_NAME_SIZE);
     heapFileHeader->firstPage = 0;
     heapFileHeader->firstFreeSlotPage = 0;
     heapFileHeader->numPages = 0;

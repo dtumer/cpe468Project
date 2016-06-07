@@ -122,7 +122,7 @@ void printFLOPPYNode(int tabLvl, FLOPPYNode *node) {
 }
 
 void printCreateTableStatement(FLOPPYCreateTableStatement *statement) {
-    printf("\tTableName: %s\n", statement->tableName.c_str());
+    printf("\tTableName: %s\n", statement->tableName);
     printf("\tvolatileFlag: %d\n", statement->flags->volatileFlag);
     printf("\tindexOnlyFlag: %d\n", statement->flags->indexOnlyFlag);
     printf("\tsplitFlag: %d\n", statement->flags->splitFlag);
