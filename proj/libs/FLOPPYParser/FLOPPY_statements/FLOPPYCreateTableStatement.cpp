@@ -1,3 +1,5 @@
+
+#include <stdlib.h>
 #include "FLOPPYCreateTableStatement.h"
 #include "FLOPPYForeignKey.h"
 #include "FLOPPYCreateColumn.h"
@@ -9,6 +11,8 @@ FLOPPYCreateTableStatement::FLOPPYCreateTableStatement() :
 }
 
 FLOPPYCreateTableStatement::~FLOPPYCreateTableStatement() {
+   free(tableName);
+
    delete flags;
    
    for (auto itr = this->columns->begin() ; itr != this->columns->end(); itr++) {

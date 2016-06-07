@@ -1685,13 +1685,14 @@ case 62:
 YY_RULE_SETUP
 #line 121 "FLOPPY_lexer.l"
 {
-                           yylval->sval = strdup(yytext);
+                           yylval->sval = (char *) calloc(strlen(yytext) + 1, sizeof(char));
+                           memcpy(yylval->sval, yytext, strlen(yytext));
                            return FLOPPY_ID;
                         }
 	YY_BREAK
 case 63:
 YY_RULE_SETUP
-#line 127 "FLOPPY_lexer.l"
+#line 128 "FLOPPY_lexer.l"
 { 
                            fprintf(stderr, "FLOPPY Lex Error Unknown Token: %c\n", yytext[0]); 
                            return 0;
@@ -1699,10 +1700,10 @@ YY_RULE_SETUP
 	YY_BREAK
 case 64:
 YY_RULE_SETUP
-#line 131 "FLOPPY_lexer.l"
+#line 132 "FLOPPY_lexer.l"
 ECHO;
 	YY_BREAK
-#line 1706 "FLOPPY_lexer.cpp"
+#line 1707 "FLOPPY_lexer.cpp"
 case YY_STATE_EOF(INITIAL):
 case YY_STATE_EOF(COMMENT):
 case YY_STATE_EOF(BLOCKCOMMENT):
@@ -2841,7 +2842,7 @@ void yyfree (void * ptr , yyscan_t yyscanner)
 
 #define YYTABLES_NAME "yytables"
 
-#line 131 "FLOPPY_lexer.l"
+#line 132 "FLOPPY_lexer.l"
 
 
 int yyerror(const char *errmsg) {

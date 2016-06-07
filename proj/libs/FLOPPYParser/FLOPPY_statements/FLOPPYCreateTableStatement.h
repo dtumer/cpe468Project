@@ -24,7 +24,7 @@ class FLOPPYCreateTableStatement : public FLOPPYStatement {
       virtual ~FLOPPYCreateTableStatement();
 
       // Make all member fields public, because ez access.
-      std::string tableName;
+      char *tableName;
       CreateTableAdditionalFunctionality *flags;
       std::vector<FLOPPYCreateColumn *> *columns;
       FLOPPYPrimaryKey *pk;

@@ -119,7 +119,8 @@ FALSE                   { return FLOPPY_FALSE; }
 
 
 [A-Za-z][A-Za-z0-9_]*   {
-                           yylval->sval = strdup(yytext);
+                           yylval->sval = (char *) calloc(strlen(yytext) + 1, sizeof(char));
+                           memcpy(yylval->sval, yytext, strlen(yytext));
                            return FLOPPY_ID;
                         }
 
