@@ -1,6 +1,7 @@
 #ifndef __FLOPPY_VALUE_H__
 #define __FLOPPY_VALUE_H__
 #include <stdint.h>
+#include "FLOPPYTableAttribute.h"
 
 class FLOPPYTableAttribute;
 

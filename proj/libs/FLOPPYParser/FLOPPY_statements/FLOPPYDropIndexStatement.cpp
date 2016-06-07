@@ -1,9 +1,10 @@
 #include "FLOPPYDropIndexStatement.h"
+#include <stdlib.h>
 
 FLOPPYDropIndexStatement::FLOPPYDropIndexStatement() : FLOPPYStatement(DropIndexStatement) {
 
 }
 FLOPPYDropIndexStatement::~FLOPPYDropIndexStatement() {
-   delete indexName;
-   delete tableName;
+   free(indexName);
+   free(tableName);
 }

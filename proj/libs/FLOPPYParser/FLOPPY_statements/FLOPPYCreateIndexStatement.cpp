@@ -1,14 +1,15 @@
 #include "FLOPPYCreateIndexStatement.h"
+#include <stdlib.h>
 
 FLOPPYCreateIndexStatement::FLOPPYCreateIndexStatement() : FLOPPYStatement(CreateIndexStatement) {
 
 }
 
 FLOPPYCreateIndexStatement::~FLOPPYCreateIndexStatement() {
-   delete this->name;
-   delete this->tableReference;
+   free(name);
+   free(tableReference);
    for (auto itr = this->attributes->begin() ; itr != this->attributes->end(); itr++) {
-      delete (*itr);
+      free(*itr);
    }
    delete this->attributes;
 }

@@ -112,8 +112,8 @@ FALSE                   { return FLOPPY_FALSE; }
                         }
 
 '[^']*'                 {
-                           yylval->sval = (char *) calloc(strlen(yytext + 1) - 1, sizeof(char));
-                           memcpy(yylval->sval, yytext + 1, strlen(yytext + 1));
+                           yylval->sval = (char *) calloc(strlen(yytext + 1), sizeof(char));
+                           memcpy(yylval->sval, yytext + 1, strlen(yytext + 1) - 1);
                            return FLOPPY_STRING;
                         }
 

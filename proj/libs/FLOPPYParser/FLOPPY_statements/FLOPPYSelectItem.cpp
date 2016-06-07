@@ -8,7 +8,7 @@ FLOPPYSelectItem::~FLOPPYSelectItem() {
       delete aggregate.value;
    } else if (_type == TableAttributeType) {
       delete tableAttribute;
-   } else {
+   } else if (_type == AttributeType) {
       delete attribute;
    }
 }

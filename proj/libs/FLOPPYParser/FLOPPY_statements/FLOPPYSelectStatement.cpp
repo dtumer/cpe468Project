@@ -27,6 +27,12 @@ FLOPPYSelectStatement::~FLOPPYSelectStatement() {
    }
 
    if (groupBy) {
+       for (auto itr = this->groupBy->groupByAttributes->begin() ; itr != this->groupBy->groupByAttributes->end(); itr++) {
+           delete (*itr);
+       }
+       delete groupBy->groupByAttributes;
+       delete groupBy->havingCondition;
+       
       delete groupBy;
    }
    

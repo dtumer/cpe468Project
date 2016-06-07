@@ -1,12 +1,13 @@
 #include "FLOPPYForeignKey.h"
+#include <stdlib.h>
 
 FLOPPYForeignKey::FLOPPYForeignKey() {}
 FLOPPYForeignKey::~FLOPPYForeignKey() {
    for (auto itr = this->attributes->begin() ; itr != this->attributes->end(); itr++) {
-      delete (*itr);
+      free(*itr);
    }
 
    delete attributes;
 
-   delete refTableName;
+   free(refTableName);
 }

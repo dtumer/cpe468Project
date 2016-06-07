@@ -1,7 +1,8 @@
 #include "FLOPPYTableSpec.h"
+#include <stdlib.h>
 
 FLOPPYTableSpec::FLOPPYTableSpec() {}
 FLOPPYTableSpec::~FLOPPYTableSpec() {
-   delete tableName;
-   delete alias;
+   free(tableName);
+   free(alias);
 }
