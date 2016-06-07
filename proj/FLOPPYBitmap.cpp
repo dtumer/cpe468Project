@@ -6,7 +6,9 @@
 
 //constructor
 FLOPPYBitmap::FLOPPYBitmap(uint8_t *bitmap, int numRecords) : bitmap(bitmap), numRecords(numRecords) {
-    
+    curBitmapByte = NULL;
+    curBit = 0;
+    curRecordOffset = 0;
 }
 
 int FLOPPYBitmap::nextRecord() {
