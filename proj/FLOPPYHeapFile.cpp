@@ -342,7 +342,7 @@ FLOPPYRecordSet * FLOPPYHeapFile::getAllRecords() {
                 }
                 else if(tblCol->type == ColumnType::VARCHAR) {
                     recCol->val = new FLOPPYValue(StringValue);
-                    recCol->val->sVal = (char*)calloc(sizeof(char), tblCol->size);
+                    recCol->val->sVal = (char*)calloc(sizeof(char), tblCol->size + 1);
                     memcpy(recCol->val->sVal, ptr, tblCol->size);
                 }
                 else if(tblCol->type == ColumnType::BOOLEAN) {
@@ -392,8 +392,10 @@ int FLOPPYHeapFile::insertStatement(FLOPPYInsertStatement *statement) {
             
             ptr = data + tblCol->offset;
 
-            if(val->type() == ValueType::StringValue)
-                memcpy(ptr, &(val->sVal), tblCol->size);
+            if(val->type() == ValueType::StringValue) {
+                //val->sVal = (char*)calloc(sizeof(char), tblCol->size + 1);
+                memcpy(ptr, val->sVal, tblCol->size + 1);
+            }
             else if(val->type() == ValueType::IntValue)
                 memcpy(ptr, &(val->iVal), tblCol->size);
             else if(val->type() == ValueType::FloatValue)

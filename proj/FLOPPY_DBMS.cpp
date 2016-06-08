@@ -24,9 +24,25 @@ FLOPPYResult* FLOPPY_DBMS::execute(std::string sql) {
             case StatementType::CreateTableStatement:
                 result = createTable((FLOPPYCreateTableStatement*) parsedCommand->statement);
                 break;
+            case StatementType::InsertStatement:
+                result = insertRecord((FLOPPYInsertStatement*) parsedCommand->statement);
+                break;
+            case StatementType::SelectStatement:
+                result = selectRecords((FLOPPYSelectStatement*) parsedCommand->statement);
+                break;
+            
+            /*
             case StatementType::DropTableStatement:
                 printf("DROP TABLE\n");
                 printDropTableStatement((FLOPPYDropTableStatement*) parsedCommand->statement);
+                break;
+            case StatementType::UpdateStatement:
+                printf("UPDATE\n");
+                printUpdateStatement((FLOPPYUpdateStatement*) parsedCommand->statement);
+                break;
+            case StatementType::DeleteStatement:
+                printf("DELETE\n");
+                printDeleteStatement((FLOPPYDeleteStatement*) parsedCommand->statement);
                 break;
             case StatementType::CreateIndexStatement:
                 printf("CREATE INDEX\n");
@@ -36,23 +52,14 @@ FLOPPYResult* FLOPPY_DBMS::execute(std::string sql) {
                 printf("DROP INDEX\n");
                 printDropIndexStatement((FLOPPYDropIndexStatement*) parsedCommand->statement);
                 break;
-            case StatementType::InsertStatement:
-                result = insertRecord((FLOPPYInsertStatement*) parsedCommand->statement);
-                break;
-            case StatementType::DeleteStatement:
-                printf("DELETE\n");
-                printDeleteStatement((FLOPPYDeleteStatement*) parsedCommand->statement);
-                break;
-            case StatementType::UpdateStatement:
-                printf("UPDATE\n");
-                printUpdateStatement((FLOPPYUpdateStatement*) parsedCommand->statement);
-                break;
-            case StatementType::SelectStatement:
-                result = selectRecords((FLOPPYSelectStatement*) parsedCommand->statement);
-                break;
+             */
+            default:
+                result = new FLOPPYResult(ErrorType);
+                result->msg = "Unhandled FLOPPY SQL command";
+                
         }
     } else {
-        result =  new FLOPPYResult(ErrorType);
+        result = new FLOPPYResult(ErrorType);
         result->msg = "Unable to parse FLOPPY SQL";
     }
     

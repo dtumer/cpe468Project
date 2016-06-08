@@ -13,4 +13,5 @@ FLOPPYRecordAttribute::~FLOPPYRecordAttribute() {
     if(tableName)
         free(tableName);
     free(name);
+    delete val;
 }

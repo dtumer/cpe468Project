@@ -10,7 +10,10 @@ FLOPPYRecordSet::FLOPPYRecordSet() {
 }
 
 FLOPPYRecordSet::~FLOPPYRecordSet() {
-    
+    for (auto itr = this->records->begin() ; itr != this->records->end(); itr++) {
+        delete (*itr);
+    }
+    delete records;
 }
 
 void FLOPPYRecordSet::print() {
@@ -29,7 +32,7 @@ void FLOPPYRecordSet::print() {
             printf("%s (",col->name);
             
             if(col->val->type() == ValueType::StringValue)
-                printf("STRING \"%s\"", &(col->val->sVal));
+                printf("STRING \"%s\"", col->val->sVal);
             else if(col->val->type() == ValueType::IntValue)
                 printf("INT %ld", col->val->iVal);
             else if(col->val->type() == ValueType::FloatValue)

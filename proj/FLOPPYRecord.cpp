@@ -10,5 +10,8 @@ FLOPPYRecord::FLOPPYRecord() {
 }
 
 FLOPPYRecord::~FLOPPYRecord() {
-    
+    for (auto itr = this->columns->begin() ; itr != this->columns->end(); itr++) {
+        delete (*itr);
+    }
+    delete columns;
 }
