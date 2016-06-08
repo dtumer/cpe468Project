@@ -242,6 +242,7 @@ int FLOPPYHeapFile::insertRecord(char * record) {
     
     //write and free heapPageHeader
     writePageHeader(pageId, heapPageHeader);
+    delete bitmap;
     free(bitmapData);
     free(heapPageHeader);
     free(heapFileHeader);
@@ -278,6 +279,7 @@ int FLOPPYHeapFile::deleteRecord(int pageId, int recordId) {
     
     //write and free heapPageHeader
     writePageHeader(pageId, heapPageHeader);
+    delete bitmap;
     free(bitmapData);
     free(heapPageHeader);
     free(heapFileHeader);
@@ -342,6 +344,7 @@ void FLOPPYHeapFile::printPageInfo(int pageId) {
     
     free(heapPageHeader);
     free(heapFileHeader);
+    delete bitmap;
     free(bitmapData);
 }
 
@@ -358,6 +361,11 @@ void FLOPPYHeapFile::getAllRecords(int pageId) {
     	recordId = bitmap->nextRecord();
     	printf("RECORD: %d\n", recordId);
     }
+    
+    free(heapPageHeader);
+    free(bitmapData);
+    free(bitmap);
+    free(heapFileHeader);
 }
 
 void FLOPPYHeapFile::printRecordDescription() {
