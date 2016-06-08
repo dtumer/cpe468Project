@@ -34,7 +34,7 @@ int main(int argc, char *argv[]) {
     TestSQLStatement("SELECT DISTINCT NodeId, COUNT(BlockID) FROM Availability, files WHERE FileId=10 GROUP BY NodeId HAVING BlockID>2 ORDER BY BlockID LIMIT 10;");
     TestSQLStatement("DROP INDEX ndx2 on Availability;");
     TestSQLStatement("DROP TABLE Availability;");
-    dbms.execute("SELECT NodeId, FileId, FROM Availability WHERE x = 5;");
+    dbms.execute("SELECT NodeId, FileId FROM Availability WHERE x = 5;");
     
     
     //TestSQLStatement("CREATE TABLE list( LastName VARCHAR(16), FirstName VARCHAR(16), grade INT, classroom INT,  PRIMARY KEY(FirstName,LastName));");

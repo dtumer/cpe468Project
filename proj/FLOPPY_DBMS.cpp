@@ -46,7 +46,7 @@ FLOPPYResult* FLOPPY_DBMS::execute(std::string sql) {
                 //printCreateIndexStatement((FLOPPYCreateIndexStatement*) parsedCommand->statement);
                 break;
             case StatementType::SelectStatement:
-                printf("SELECT\n");
+                printf("SELECT DBMS\n");
                 printSelectStatement((FLOPPYSelectStatement*) parsedCommand->statement);
                 FLOPPYQueryPlan *queryPlan = new FLOPPYQueryPlan(parsedCommand->statement);
                 break;
