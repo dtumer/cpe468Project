@@ -13,6 +13,7 @@ void ProjectionNode::printColumns() {
     std::cout << "in PrintColumns()\n";
     for (std::vector<Column>::const_iterator i = columns.begin(); i != columns.end(); ++i)
         std::cout << (*i).tableName << ' ' << (*i).colName << ", ";
+    std::cout << '\n';
 }
 
 ProjectionNode::~ProjectionNode() {

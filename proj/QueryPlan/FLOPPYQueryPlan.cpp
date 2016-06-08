@@ -3,13 +3,15 @@
 
 #include "FLOPPYQueryPlan.h"
 #include "ProjectionNode.h"
+#include "SelectionNode.h"
 
 /**
 * Create a FLOPPY query plan based on the statement 
 */
 FLOPPYQueryPlan::FLOPPYQueryPlan(FLOPPYStatement *statement) {
-    FLOPPYResult *result; 
+    //FLOPPYResult *result; 
     ProjectionNode projectionTest;
+    SelectionNode selectionTest;
    switch (statement->type()) {
             case StatementType::ErrorStatement:
                 break;
@@ -43,10 +45,16 @@ FLOPPYQueryPlan::FLOPPYQueryPlan(FLOPPYStatement *statement) {
             case StatementType::SelectStatement:
                 printf("SELECTQueryPlan\n");
                 //root = new SelectionNode();
-                printSelectStatement((FLOPPYSelectStatement*) statement);
+                FLOPPYSelectStatement *theStatement = (FLOPPYSelectStatement *)statement;
+                printSelectStatement(theStatement);
+                printf("Testing Projection: \n");
                 projectionTest.addToProjection("hello", "world");
                 projectionTest.addToProjection("test", "ing");
                 projectionTest.printColumns();
+
+                printf("Testing Selection: ");
+                selectionTest.setCondition(theStatement->whereCondition);
+                selectionTest.printCondition();
                 break;
         }
 }

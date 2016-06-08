@@ -16,6 +16,7 @@ FLOPPY_DBMS::FLOPPY_DBMS (std::string diskName, int nPersistentBlocks, int nVola
 FLOPPYResult* FLOPPY_DBMS::execute(std::string sql) {
     FLOPPYOutput *parsedCommand = FLOPPYParser::parseFLOPPYString(sql);
     FLOPPYResult *result;
+    FLOPPYQueryPlan *queryPlan;
     
     if (parsedCommand->isValid) { // Use isValid flag to detect is parser parsed correctly.
         
@@ -31,6 +32,7 @@ FLOPPYResult* FLOPPY_DBMS::execute(std::string sql) {
                 break;
             case StatementType::SelectStatement:
                 result = selectRecords((FLOPPYSelectStatement*) parsedCommand->statement);
+                queryPlan = new FLOPPYQueryPlan(parsedCommand->statement);
                 break;
             /*
             case StatementType::UpdateStatement:

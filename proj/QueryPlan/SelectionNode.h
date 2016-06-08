@@ -1,18 +1,18 @@
-#ifndef FLOPPYQueryPlanNode_h
-#define FLOPPYQueryPlanNode_h
+#ifndef SelectionNode_h
+#define SelectionNode_h
 
 #include "FLOPPYQueryPlanNode.h"
+#include "../libs/FLOPPYParser/FLOPPYParser.h"
+#include "../ParserDebug.h"
 
-typedef struct {
-   char *tableAlias;
-   char *colName;
-} Column
 
-class SelectionNode extends FLOPPYQueryPlanNode {
+class SelectionNode : public FLOPPYQueryPlanNode {
+private:
+    FLOPPYNode *condition;
 public:
 	SelectionNode();
-	
-private:
-	
+	~SelectionNode();
+    void setCondition(FLOPPYNode *node);
+    void printCondition();
 };
 #endif
