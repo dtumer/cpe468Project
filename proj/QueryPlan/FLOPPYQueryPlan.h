@@ -8,8 +8,6 @@
 #include "../FLOPPYResult.h"
 #include "../ParserDebug.h"
 
-
-
 class FLOPPYQueryPlan {
 public:
 	/* Constructors */
