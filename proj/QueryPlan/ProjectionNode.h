@@ -3,6 +3,7 @@
 
 #include <string>
 #include <vector>
+#include <iostream>
 #include "FLOPPYQueryPlanNode.h"
 
 typedef struct {
@@ -15,6 +16,7 @@ public:
     ProjectionNode(); 
     ~ProjectionNode(); 
     void addToProjection(std::string tableName, std::string colName);
+    void printColumns();
     std::vector<Column> columns;
 };
 
