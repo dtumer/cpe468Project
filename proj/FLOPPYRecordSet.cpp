@@ -29,7 +29,7 @@ void FLOPPYRecordSet::print() {
             printf("%s (",col->name);
             
             if(col->val->type() == ValueType::StringValue)
-                printf("STRING \"%s\"", col->val->sVal);
+                printf("STRING \"%s\"", &(col->val->sVal));
             else if(col->val->type() == ValueType::IntValue)
                 printf("INT %ld", col->val->iVal);
             else if(col->val->type() == ValueType::FloatValue)
@@ -40,12 +40,8 @@ void FLOPPYRecordSet::print() {
                 printf("NULL");
             
             printf(")");
-            
         }
         
-        
         printf("\n");
-        
     }
-    
 }
