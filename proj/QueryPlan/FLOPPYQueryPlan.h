@@ -4,7 +4,9 @@
 #define FLOPPYQueryPlan_h
 
 #include "FLOPPYQueryPlanNode.h"
-#include "libs/FLOPPYParser/FLOPPYParser.h"
+#include "../libs/FLOPPYParser/FLOPPYParser.h"
+#include "../FLOPPYResult.h"
+#include "../ParserDebug.h"
 
 
 
