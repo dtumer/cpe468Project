@@ -43,7 +43,7 @@ FLOPPYBufferManager::FLOPPYBufferManager(std::string database, int nPersistentBl
     tfsErr = tfs_mount(diskNameC);
     
     if (tfsErr != 0) {
-        tfs_mkfs(diskNameC, DEFAULT_DISK_SIZE);
+        tfsErr = tfs_mkfs(diskNameC, DEFAULT_DISK_SIZE);
         tfsErr = tfs_mount(diskNameC);
     }
     delete[] diskNameC;

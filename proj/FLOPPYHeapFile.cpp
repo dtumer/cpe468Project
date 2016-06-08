@@ -266,7 +266,7 @@ int FLOPPYHeapFile::deleteRecord(int pageId, int recordId) {
     return 0;
 }
 
-int FLOPPYHeapFile::updateRecord(int pageId, int recordId, char * record) {
+int FLOPPYHeapFile::updateRecord(int pageId, int recordId, char *record) {
     HeapFileHeader *heapFileHeader = getHeapFileHeader();
     DiskAddress page = getDiskAddress(pageId);
     
@@ -311,11 +311,11 @@ FLOPPYRecordSet * FLOPPYHeapFile::getAllRecords() {
                 FLOPPYRecordAttribute *recCol = new FLOPPYRecordAttribute();
                 
                 //table name
-                recCol->tableName = (char*)calloc(sizeof(char*), strlen(heapFileHeader->tableName)+1);
+                recCol->tableName = (char*)calloc(sizeof(char), strlen(heapFileHeader->tableName)+1);
                 strcpy(recCol->tableName, heapFileHeader->tableName);
                 
                 //attribute name
-                recCol->name = (char*)calloc(sizeof(char*), strlen(tblCol->name)+1);
+                recCol->name = (char*)calloc(sizeof(char), strlen(tblCol->name)+1);
                 strcpy(recCol->name, tblCol->name);
                 
                 
@@ -336,7 +336,7 @@ FLOPPYRecordSet * FLOPPYHeapFile::getAllRecords() {
                 }
                 else if(tblCol->type == ColumnType::VARCHAR) {
                     recCol->val = new FLOPPYValue(StringValue);
-                    recCol->val->sVal = (char*)calloc(sizeof(char*), tblCol->size);
+                    recCol->val->sVal = (char*)calloc(sizeof(char), tblCol->size);
                     memcpy(recCol->val->sVal, ptr, tblCol->size);
                 }
                 else if(tblCol->type == ColumnType::BOOLEAN) {
@@ -351,6 +351,8 @@ FLOPPYRecordSet * FLOPPYHeapFile::getAllRecords() {
             
             //printf("\tRECORD: %d %d\n", pageId, recordId);
             recordId = bitmap->nextRecord();
+            
+            free(data);
         }
         
         //get next page

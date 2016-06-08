@@ -14,21 +14,8 @@ FLOPPY_CLI::FLOPPY_CLI(std::string diskName, int nPersistentBlocks, int nVolatil
 
 void FLOPPY_CLI::executeCLI(string query) {
     FLOPPYResult *result = this->execute(query);
-    
-    switch (result->type()) {
-        case FLOPPYResultType::ErrorType:
-            cout << "ERROR - " << result->msg << "\n";
-            break;
-        case FLOPPYResultType::SelectType:
-            break;
-        case FLOPPYResultType::UpdateType:
-            break;
-        case FLOPPYResultType::InsertType:
-            break;
-        case FLOPPYResultType::MessageType:
-            cout << result->msg << "\n";
-            break;
-    }
+    result->print();
+    delete result;
 }
 
 int main(int argc, char *argv[]) {

@@ -6,6 +6,8 @@
 #define FLOPPYResult_h
 
 #include <string>
+#include <stdio.h>
+#include <iostream>
 
 typedef enum {
     ErrorType,
@@ -18,14 +20,14 @@ typedef enum {
 class FLOPPYResult {
 public:
     FLOPPYResult(FLOPPYResultType type);
-    virtual ~FLOPPYResult();
+    ~FLOPPYResult();
     
     virtual FLOPPYResultType type() {
         return _type;
     }
     
     union {
-        const char *msg;
+        char *msg;
     };
     
     FLOPPYResultType _type;

@@ -31,7 +31,7 @@ void FLOPPYRecordSet::print() {
             if(col->val->type() == ValueType::StringValue)
                 printf("STRING \"%s\"", col->val->sVal);
             else if(col->val->type() == ValueType::IntValue)
-                printf("INT %d", col->val->iVal);
+                printf("INT %ld", col->val->iVal);
             else if(col->val->type() == ValueType::FloatValue)
                 printf("FLOAT %f", col->val->fVal);
             else if(col->val->type() == ValueType::BooleanValue)

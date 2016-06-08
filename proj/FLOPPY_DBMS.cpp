@@ -13,7 +13,7 @@ FLOPPY_DBMS::FLOPPY_DBMS (std::string diskName, int nPersistentBlocks, int nVola
 }
 
 FLOPPYResult* FLOPPY_DBMS::execute(std::string sql) {
-    FLOPPYOutput *parsedCommand = FLOPPYParser::parseFLOPPYString(sql.c_str());
+    FLOPPYOutput *parsedCommand = FLOPPYParser::parseFLOPPYString(sql);
     FLOPPYResult *result;
     
     if (parsedCommand->isValid) { // Use isValid flag to detect is parser parsed correctly.
@@ -59,19 +59,20 @@ FLOPPYResult* FLOPPY_DBMS::execute(std::string sql) {
         result->msg = "Unable to parse FLOPPY SQL";
     }
     
+    delete parsedCommand;
+    
     return result;
 }
 
-FLOPPYResult* FLOPPY_DBMS::createTable(FLOPPYCreateTableStatement *statement) {
-    FLOPPYHeapFile *heap = FLOPPYHeapFile::createFile(buf, (FLOPPYCreateTableStatement*) statement);
+FLOPPYResult * FLOPPY_DBMS::createTable(FLOPPYCreateTableStatement *statement) {
+    FLOPPYHeapFile *heap = FLOPPYHeapFile::createFile(buf, statement);
     
-    std::string msg = "Created the table `";
-    msg += statement->tableName;
-    msg += "` successfully.";
-    
+    char *msg = (char*)calloc(sizeof(char), 100);
+    sprintf(msg, "Created the table `%s` successfully.", statement->tableName);
     
     FLOPPYResult *result = new FLOPPYResult(MessageType);
-    result->msg = msg.c_str();
+    result->msg = msg;
+    
     delete heap;
     
     return result;

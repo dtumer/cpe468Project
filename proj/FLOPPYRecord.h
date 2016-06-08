@@ -14,7 +14,6 @@ public:
     FLOPPYRecord();
     ~FLOPPYRecord();
     
-    
     int pageId;
     int recordId;
     

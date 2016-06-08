@@ -16,7 +16,7 @@ void printFLOPPYValue(FLOPPYValue *val) {
     else if(val->type() == ValueType::StringValue)
         printf("STRING \"%s\"", val->sVal);
     else if(val->type() == ValueType::IntValue)
-        printf("INT %d", val->iVal);
+        printf("INT %ld", val->iVal);
     else if(val->type() == ValueType::FloatValue)
         printf("FLOAT %f", val->fVal);
     else if(val->type() == ValueType::BooleanValue)
@@ -70,7 +70,7 @@ void printFLOPPYNode(int tabLvl, FLOPPYNode *node) {
             printf("\n%s", std::string(tabLvl, '\t').c_str());
         }
         else if(node->node.op == FLOPPYNodeOperator::NotOperator) {
-            printf("NOT ", std::string(tabLvl, '\t').c_str());
+            printf("NOT ");
             printFLOPPYNode(tabLvl+1, node->node.left);
             printf("\n%s", std::string(tabLvl, '\t').c_str());
         }
