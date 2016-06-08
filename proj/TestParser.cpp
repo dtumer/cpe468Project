@@ -4,10 +4,12 @@
 
 #include "libs/FLOPPYParser/FLOPPYParser.h"
 #include "ParserDebug.h"
+#include "FLOPPY_DBMS.h"
 
 int main(int argc, char *argv[]) {
     //TestSQLStatement("CREATE TABLE NodeStats (IPAddress VARCHAR(20), BlocksUploaded  INT,BlocksDownloaded INT,RequestsReceived INT,RequestsSent INT,RequestsServed INT,RequestsFailed INT,DistrosUploaded  INT,DistrosDownloaded INT,PRIMARY KEY (IPAddress));");
-    
+    std::string diskN = std::string("test");
+    FLOPPY_DBMS dbms(diskN, 5, 5);
    
     TestSQLStatement("CREATE TABLE Availability VOLATILE (NodeId  VARCHAR(20), DistroId  INT, FileId  INT, BlockID  INT, TimeStamp DATETIME, PRIMARY KEY(FileId, BlockId, NodeId), FOREIGN KEY(NodeId) REFERENCES Nodes, FOREIGN KEY (DistroId) REFERENCES Distros, FOREIGN KEY (FileId) REFERENCES Files);");
     TestSQLStatement("INSERT INTO Availability VALUES ('test', 2, 10, 20);");
@@ -21,6 +23,7 @@ int main(int argc, char *argv[]) {
     TestSQLStatement("SELECT DISTINCT NodeId, COUNT(BlockID) FROM Availability WHERE FileId=10 GROUP BY NodeId HAVING BlockID>2 ORDER BY BlockID LIMIT 10;");
     TestSQLStatement("DROP INDEX ndx2 on Availability;");
     TestSQLStatement("DROP TABLE Availability;");
+    dbms.execute("SELECT NodeId, FileId, FROM Availability WHERE x = 5;");
     
     return 0;
 }

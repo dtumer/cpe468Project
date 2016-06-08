@@ -1,5 +1,6 @@
 #include "FLOPPY_DBMS.h"
 #include "FLOPPYResult.h"
+#include "QueryPlan/FLOPPYQueryPlan.h"
 
 FLOPPY_DBMS::FLOPPY_DBMS (std::string diskName, int nPersistentBlocks, int nVolatileBlocks) {
     //create temp char*
@@ -51,6 +52,7 @@ FLOPPYResult* FLOPPY_DBMS::execute(std::string sql) {
             case StatementType::SelectStatement:
                 printf("SELECT\n");
                 printSelectStatement((FLOPPYSelectStatement*) parsedCommand->statement);
+                FLOPPYQueryPlan *queryPlan = new FLOPPYQueryPlan(parsedCommand->statement);
                 break;
         }
         

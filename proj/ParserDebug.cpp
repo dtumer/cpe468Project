@@ -263,11 +263,11 @@ void TestSQLStatement(const char* sql) {
                 break;
             case StatementType::CreateTableStatement:
                 printf("CREATE TABLE\n");
-                printCreateTableStatement((FLOPPYCreateTableStatement*) result->statement);
+                //printCreateTableStatement((FLOPPYCreateTableStatement*) result->statement);
                 break;
             case StatementType::DropTableStatement:
                 printf("DROP TABLE\n");
-                printDropTableStatement((FLOPPYDropTableStatement*) result->statement);
+                //printDropTableStatement((FLOPPYDropTableStatement*) result->statement);
                 break;
             case StatementType::CreateIndexStatement:
                 printf("CREATE INDEX\n");
@@ -275,23 +275,23 @@ void TestSQLStatement(const char* sql) {
                 break;
             case StatementType::DropIndexStatement:
                 printf("DROP INDEX\n");
-                printDropIndexStatement((FLOPPYDropIndexStatement*) result->statement);
+                //printDropIndexStatement((FLOPPYDropIndexStatement*) result->statement);
                 break;
             case StatementType::InsertStatement:
                 printf("INSERT\n");
-                printInsertStatement((FLOPPYInsertStatement*) result->statement);
+                //printInsertStatement((FLOPPYInsertStatement*) result->statement);
                 break;
             case StatementType::DeleteStatement:
                 printf("DELETE\n");
-                printDeleteStatement((FLOPPYDeleteStatement*) result->statement);
+                //printDeleteStatement((FLOPPYDeleteStatement*) result->statement);
                 break;
             case StatementType::UpdateStatement:
                 printf("UPDATE\n");
-                printUpdateStatement((FLOPPYUpdateStatement*) result->statement);
+                //printUpdateStatement((FLOPPYUpdateStatement*) result->statement);
                 break;
             case StatementType::SelectStatement:
                 printf("SELECT\n");
-                printSelectStatement((FLOPPYSelectStatement*) result->statement);
+                //printSelectStatement((FLOPPYSelectStatement*) result->statement);
                 break;
         }
         
