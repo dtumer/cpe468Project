@@ -17,7 +17,12 @@ public:
     int pageId;
     int recordId;
     
+    FLOPPYValue *filter(FLOPPYNode *node);
+    
     std::vector<FLOPPYRecordAttribute *> *columns;
+    
+private:
+    std::vector<FLOPPYValue *> *tempNodes;
 };
 
 #endif /* FLOPPYRecord_h */

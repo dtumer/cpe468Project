@@ -99,9 +99,15 @@ FLOPPYResult * FLOPPY_DBMS::insertRecord(FLOPPYInsertStatement *statement) {
  */
 FLOPPYResult * FLOPPY_DBMS::selectRecords(FLOPPYSelectStatement *statement) {
     FLOPPYHeapFile *heap = new FLOPPYHeapFile(buf, statement->tableSpecs->at(0)->tableName);
-    
     FLOPPYResult *result = new FLOPPYResult(SelectType);
     result->recordSet = heap->getAllRecords();
+    
+    printSelectStatement(statement);
+    
+    printFLOPPYValue(result->recordSet->records->at(0)->filter(statement->whereCondition));
+    
+    
+    printf("\n\n;");
     
     delete heap;
     

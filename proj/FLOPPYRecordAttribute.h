@@ -8,6 +8,7 @@
 #include <stdio.h>
 #include "libs/FLOPPYParser/FLOPPY_statements/FLOPPYCreateColumn.h"
 #include "libs/FLOPPYParser/FLOPPY_statements/FLOPPYValue.h"
+#include "libs/FLOPPYParser/FLOPPY_statements/FLOPPYNode.h"
 
 
 class FLOPPYRecordAttribute {

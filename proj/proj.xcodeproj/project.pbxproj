@@ -132,10 +132,10 @@
 			children = (
 				CB4270BD1D075FFB0038493C /* FLOPPYRecordSet.cpp */,
 				CB4270BE1D075FFB0038493C /* FLOPPYRecordSet.h */,
-				CB79794F1D07A7F40052CDCE /* FLOPPYRecordAttribute.cpp */,
-				CB7979501D07A7F40052CDCE /* FLOPPYRecordAttribute.h */,
 				CB4270B31D0533C80038493C /* FLOPPYRecord.cpp */,
 				CB4270B41D0533C80038493C /* FLOPPYRecord.h */,
+				CB79794F1D07A7F40052CDCE /* FLOPPYRecordAttribute.cpp */,
+				CB7979501D07A7F40052CDCE /* FLOPPYRecordAttribute.h */,
 			);
 			name = "record level";
 			sourceTree = "<group>";
