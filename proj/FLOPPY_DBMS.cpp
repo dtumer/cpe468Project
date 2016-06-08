@@ -48,12 +48,9 @@ FLOPPYResult* FLOPPY_DBMS::execute(std::string sql) {
                 printUpdateStatement((FLOPPYUpdateStatement*) parsedCommand->statement);
                 break;
             case StatementType::SelectStatement:
-                printf("SELECT\n");
-                printSelectStatement((FLOPPYSelectStatement*) parsedCommand->statement);
+                result = selectRecords((FLOPPYSelectStatement*) parsedCommand->statement);
                 break;
         }
-        
-        
     } else {
         result =  new FLOPPYResult(ErrorType);
         result->msg = "Unable to parse FLOPPY SQL";
@@ -94,6 +91,16 @@ FLOPPYResult * FLOPPY_DBMS::insertRecord(FLOPPYInsertStatement *statement) {
     return result;
 }
 
+FLOPPYResult * FLOPPY_DBMS::selectRecords(FLOPPYSelectStatement *statement) {
+    FLOPPYHeapFile *heap = new FLOPPYHeapFile(buf, "teachers");
+    
+    FLOPPYResult *result = new FLOPPYResult(SelectType);
+    result->recordSet = heap->getAllRecords();
+    
+    delete heap;
+    
+    return result;
+}
 
 
 

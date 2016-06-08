@@ -44,6 +44,7 @@
 		CB4270BE1D075FFB0038493C /* FLOPPYRecordSet.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FLOPPYRecordSet.h; sourceTree = "<group>"; };
 		CB79794F1D07A7F40052CDCE /* FLOPPYRecordAttribute.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = FLOPPYRecordAttribute.cpp; sourceTree = "<group>"; };
 		CB7979501D07A7F40052CDCE /* FLOPPYRecordAttribute.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FLOPPYRecordAttribute.h; sourceTree = "<group>"; };
+		CB7979511D07C7170052CDCE /* TestDBMS.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = TestDBMS.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
@@ -69,6 +70,7 @@
 				638E34D91CB823C5006530E0 /* TestHarness.cpp */,
 				CB1DD2C71CE1639200185A27 /* TestHeapFile.cpp */,
 				63B790A81CD96710000F782B /* TestParser.cpp */,
+				CB7979511D07C7170052CDCE /* TestDBMS.cpp */,
 			);
 			name = Tests;
 			sourceTree = "<group>";

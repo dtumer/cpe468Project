@@ -34,6 +34,7 @@ public:
     
     FLOPPYResult * createTable(FLOPPYCreateTableStatement *statement);
     FLOPPYResult * insertRecord(FLOPPYInsertStatement *statement);
+    FLOPPYResult * selectRecords(FLOPPYSelectStatement *statement);
     
 };
 

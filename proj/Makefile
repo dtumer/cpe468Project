@@ -1,7 +1,7 @@
 CPP = g++
 CC = gcc
 CFLAGS = -Wall -g -fPIC
-CPPFLAGS=-O3 -std=c++0x -Wno-deprecated-register -ggdb
+CPPFLAGS=-O3 -std=c++0x -ggdb -Wall
 
 #Directories
 FLOPPY_PARSER_DIR = libs/FLOPPYParser
@@ -41,6 +41,9 @@ TestParser.out: TestParser.cpp ParserDebug.cpp $(ParserSRC) $(LIBS)
 FLOPPY_CLI.out: FLOPPY_CLI.cpp ParserDebug.cpp FLOPPYResult.cpp FLOPPY_DBMS.o $(BASE_FILES) $(ParserSRC) $(LIBS)
 	$(CPP) $(CPPFLAGS) -o $@ $^
 
+TestDBMS.out: TestDBMS.cpp ParserDebug.cpp FLOPPYResult.cpp FLOPPY_DBMS.o $(BASE_FILES) $(ParserSRC) $(LIBS)
+	$(CPP) $(CPPFLAGS) -o $@ $^
+
 runTestHarness: TestHarness.out
 	-@rm *.disk
 	./TestHarness.out ./test_files/TestHarness1.txt
@@ -56,6 +59,9 @@ runFLOPPY_CLI: FLOPPY_CLI.out
 	-@rm *.disk
 	./FLOPPY_CLI.out
 
+runTestDBMS: TestDBMS.out
+	-@rm *.disk
+	./TestDBMS.out
 clean:
 	rm -f *.out
 	rm -f *.o

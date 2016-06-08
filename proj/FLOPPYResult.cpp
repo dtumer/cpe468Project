@@ -4,11 +4,15 @@
 
 #include "FLOPPYResult.h"
 
+using namespace std;
+
 FLOPPYResult::FLOPPYResult(FLOPPYResultType type) : _type(type) {
     msg = NULL;
 }
 FLOPPYResult::~FLOPPYResult() {
-    if(msg)
+    if(_type == FLOPPYResultType::SelectType)
+        delete recordSet;
+    else
     	free(msg);
 }
 

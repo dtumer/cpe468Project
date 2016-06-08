@@ -5,6 +5,7 @@
 #ifndef FLOPPYResult_h
 #define FLOPPYResult_h
 
+#include "FLOPPYRecordSet.h"
 #include <string>
 #include <stdio.h>
 #include <iostream>
@@ -26,8 +27,11 @@ public:
         return _type;
     }
     
+    void print();
+    
     union {
         char *msg;
+        FLOPPYRecordSet *recordSet;
     };
     
     FLOPPYResultType _type;
