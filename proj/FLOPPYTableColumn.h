@@ -1,9 +1,9 @@
 //
-//  FLOPPYColumn.h
+//  FLOPPYTableColumn.h
 //
 
-#ifndef FLOPPYColumn_h
-#define FLOPPYColumn_h
+#ifndef FLOPPYTableColumn_h
+#define FLOPPYTableColumn_h
 
 #include "libs/FLOPPYParser/FLOPPY_statements/FLOPPYCreateColumn.h"
 
@@ -15,14 +15,13 @@
     BOOLEAN
 } ColumnType;*/
 
-class FLOPPYColumn {
+class FLOPPYTableColumn {
 public:
 	/* Constructors */
-    FLOPPYColumn();
-    FLOPPYColumn(char *name, ColumnType type, int size, int offset);
+    FLOPPYTableColumn();
     
     /* Descructor */
-    virtual ~FLOPPYColumn();
+    virtual ~FLOPPYTableColumn();
     
     /* Instance Variables */
     char *name;
@@ -31,4 +30,4 @@ public:
     int offset;
 };
 
-#endif /* FLOPPYColumn_h */
+#endif /* FLOPPYTableColumn_h */

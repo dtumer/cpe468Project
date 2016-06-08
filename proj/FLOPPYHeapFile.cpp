@@ -5,14 +5,21 @@
 #include "FLOPPYHeapFile.h"
 
 FLOPPYHeapFile::FLOPPYHeapFile(FLOPPYBufferManager *buf, fileDescriptor fd) : FLOPPYFileManager(buf, fd) {
-    
+    _tblDes = NULL;
 }
 
 FLOPPYHeapFile::FLOPPYHeapFile(FLOPPYBufferManager *buf, std::string tableName) : FLOPPYFileManager(buf) {
+    _tblDes = NULL;
+    
     char *fileName = (char*) calloc(FILE_NAME_SIZE, sizeof(char));
     getFileName(tableName, fileName);
     fd = buf->getFileDescriptor(fileName);
     free(fileName);
+}
+
+FLOPPYHeapFile::~FLOPPYHeapFile() {
+    if(_tblDes)
+        delete _tblDes;
 }
 
 /* Helper functions */
@@ -126,7 +133,7 @@ FLOPPYHeapFile * FLOPPYHeapFile::createFile(FLOPPYBufferManager *buf, FLOPPYCrea
     heapFileHeader->isVolatile = statement->flags->volatileFlag;
     
     //record description
-    heapFileHeader->recordSize = FLOPPYRecordDescription::packRecordDescription(statement, heapFileHeader->recordDescription);
+    heapFileHeader->recordSize = FLOPPYTableDescription::packRecordDescription(statement, heapFileHeader->recordDescription);
     
     //bitmap
     heapFileHeader->bitmapSize = FLOPPYBitmap::calcBitmapSize(heapFileHeader->recordSize, BLOCKSIZE, sizeof(HeapPageHeader), 0);
@@ -149,33 +156,6 @@ FLOPPYHeapFile * FLOPPYHeapFile::createFile(FLOPPYBufferManager *buf, FLOPPYCrea
 
 int FLOPPYHeapFile::deleteFile(std::string tableName) {
     return 0;
-}
-
-/* File Header Functions */
-
-// Get the table name from a given header page
-int FLOPPYHeapFile::headerGetTableName(char *name) {
-    HeapFileHeader *header = getHeapFileHeader();
-    name = (char*) calloc(strlen(header->tableName), sizeof(char));
-    
-    strcpy(name, header->tableName);
-    
-    free(header);
-    return 0;
-}
-
-// Get the file descriptor structure
-/*uint16_t FLOPPYHeapFile::headerGetRecordDesc(tableDescription *desc) {
-    
-    return 0;
-}*/
-
-// Return the address of the next page in the pagelist list
-DiskAddress FLOPPYHeapFile::headerGetNextPage() {
-    HeapFileHeader *header = getHeapFileHeader();
-    DiskAddress page = getDiskAddress(header->firstFreeSlotPage);
-    free(header);
-    return page;
 }
 
 /* Data Page functions */
@@ -298,6 +278,60 @@ int FLOPPYHeapFile::updateRecord(int pageId, int recordId, char * record) {
     return 0;
 }
 
+FLOPPYRecordSet * FLOPPYHeapFile::getAllRecords() {
+    FLOPPYRecordSet *rs = new FLOPPYRecordSet();
+    HeapFileHeader *heapFileHeader = getHeapFileHeader();
+    FLOPPYTableDescription *recDesc = new FLOPPYTableDescription(heapFileHeader->recordDescription);
+    int pageId = heapFileHeader->firstPage;
+    
+    DiskAddress page;
+    HeapPageHeader *heapPageHeader;
+    uint8_t *bitmapData;
+    FLOPPYBitmap *bitmap;
+    int recordId;
+    
+    while (pageId) {
+        printf("pageId:%d\n",pageId);
+        heapPageHeader = getPageHeader(pageId);
+        page = getDiskAddress(pageId);
+        
+        bitmapData = (uint8_t *) buf->read(page, sizeof(HeapPageHeader), heapFileHeader->bitmapSize);
+        bitmap = new FLOPPYBitmap(bitmapData, heapFileHeader->numRecordsPerPage);
+        
+        recordId = bitmap->nextRecord();
+        while (recordId >= 0) {
+            printf("\tRECORD: %d %d\n", pageId, recordId);
+            recordId = bitmap->nextRecord();
+        }
+        
+        //get next page
+        pageId = heapPageHeader->nextPage;
+        
+        //free this page data
+        free(heapPageHeader);
+        free(bitmapData);
+        delete bitmap;
+    }
+    
+    //free file data
+    free(heapFileHeader);
+    
+    return rs;
+}
+
+
+
+FLOPPYTableDescription * FLOPPYHeapFile::getTableDescription() {
+    if(!_tblDes) {
+        HeapFileHeader *heapFileHeader = getHeapFileHeader();
+        _tblDes = new FLOPPYTableDescription(heapFileHeader->recordDescription);
+        
+        free(heapFileHeader);
+    }
+    
+    return _tblDes;
+}
+
 /* Test Functions */
 
 void FLOPPYHeapFile::printFileInfo() {
@@ -314,8 +348,6 @@ void FLOPPYHeapFile::printFileInfo() {
     printf("\t firstFreeSlotPage: %d\n", heapFileHeader->firstFreeSlotPage);
     printf("\t bitmapSize: %d\n", heapFileHeader->bitmapSize);
     printf("\t isVolatile: %d\n", heapFileHeader->isVolatile);
-    
-    //header->recordDescription;
     
     free(heapFileHeader);
     free(fileHeader);
@@ -348,32 +380,6 @@ void FLOPPYHeapFile::printPageInfo(int pageId) {
     free(bitmapData);
 }
 
-// testing function for printing all recordIds
-void FLOPPYHeapFile::getAllRecords(int pageId) {
-    DiskAddress page = getDiskAddress(pageId);
-	HeapPageHeader *heapPageHeader = getPageHeader(pageId);
-	HeapFileHeader *heapFileHeader = getHeapFileHeader();
-	uint8_t *bitmapData = (uint8_t *) buf->read(page, sizeof(HeapPageHeader), heapFileHeader->bitmapSize);
-    FLOPPYBitmap *bitmap = new FLOPPYBitmap(bitmapData, heapFileHeader->numRecordsPerPage);
-    int recordId = 0;
-    
-    while (recordId >= 0) {
-    	recordId = bitmap->nextRecord();
-    	printf("RECORD: %d\n", recordId);
-    }
-    
-    free(heapPageHeader);
-    free(bitmapData);
-    free(bitmap);
-    free(heapFileHeader);
-}
-
-void FLOPPYHeapFile::printRecordDescription() {
-	HeapFileHeader *heapFileHeader = getHeapFileHeader();
-	FLOPPYRecordDescription *desc = new FLOPPYRecordDescription(heapFileHeader->recordDescription);
-    
-    desc->print();
-    
-    delete desc;
-    free(heapFileHeader);
+void FLOPPYHeapFile::printTableDescription() {
+	getTableDescription()->print();
 }

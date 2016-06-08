@@ -1,9 +1,9 @@
 //
-//  FLOPPYRecordDescription.h
+//  FLOPPYTableDescription.h
 //
 
-#ifndef FLOPPYRecordDescription_h
-#define FLOPPYRecordDescription_h
+#ifndef FLOPPYTableDescription_h
+#define FLOPPYTableDescription_h
 
 #define ATTRIBUTE_OFFSET 4
 #define MAX_LENGTH 600
@@ -11,20 +11,20 @@
 #include <vector>
 #include <string.h>
 
-#include "FLOPPYColumn.h"
+#include "FLOPPYTableColumn.h"
 #include "libs/FLOPPYParser/FLOPPYParser.h"
 
-class FLOPPYRecordDescription {
+class FLOPPYTableDescription {
 public:
-    FLOPPYRecordDescription();
-    FLOPPYRecordDescription(char *recordDescription); //parses data and returns list of columns
-    virtual ~FLOPPYRecordDescription();
+    FLOPPYTableDescription();
+    FLOPPYTableDescription(char *recordDescription); //parses data and returns list of columns
+    virtual ~FLOPPYTableDescription();
     
     /* Statement packing method */
     static int packRecordDescription(FLOPPYCreateTableStatement *statement, char *data); //look into seeing if function can return size of a single record
     
     /* Get data associated with the specified column name */
-    FLOPPYColumn* getAttribute(char *colName);
+    FLOPPYTableColumn* getAttribute(char *colName);
     
     /* Adds a column to record description object. Public for projecting certain columns and not others */
     void addColumn(char *name, ColumnType type, int size, int offset);
@@ -34,7 +34,7 @@ public:
 	
     /* Instance Variables */
     char *recordDescription;
-    std::vector<FLOPPYColumn *> *columns;
+    std::vector<FLOPPYTableColumn *> *columns;
 
 private:
 	/* Helper functions */
@@ -57,4 +57,4 @@ private:
 	int getColumnNameLen(char *data);
 };
 
-#endif /* FLOPPYRecordDescription_h */
+#endif /* FLOPPYTableDescription_h */

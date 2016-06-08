@@ -1,21 +1,21 @@
 //
-//  FLOPPYRecordDescription.cpp
+//  FLOPPYTableDescription.cpp
 //
 
-#include "FLOPPYRecordDescription.h"
+#include "FLOPPYTableDescription.h"
 
-FLOPPYRecordDescription::FLOPPYRecordDescription() {
-    columns = new std::vector<FLOPPYColumn *>();
+FLOPPYTableDescription::FLOPPYTableDescription() {
+    columns = new std::vector<FLOPPYTableColumn *>();
 }
 
-FLOPPYRecordDescription::FLOPPYRecordDescription(char *recordDescription) {
-    FLOPPYColumn *column;
+FLOPPYTableDescription::FLOPPYTableDescription(char *recordDescription) {
+    FLOPPYTableColumn *column;
     uint16_t pkOffset = 0, fkOffset = 0;
     char *ptr = recordDescription;
     int recordOffset = 0;
     
     //allocate columns store
-    columns = new std::vector<FLOPPYColumn *>();
+    columns = new std::vector<FLOPPYTableColumn *>();
     
     //grab primary key offset
     pkOffset = (uint16_t) *ptr;
@@ -24,7 +24,7 @@ FLOPPYRecordDescription::FLOPPYRecordDescription(char *recordDescription) {
     ptr += sizeof(uint16_t);
     
     while (ptr < (recordDescription + pkOffset)) {
-        column = new FLOPPYColumn();
+        column = new FLOPPYTableColumn();
         
         //get attribute type
         column->type = (ColumnType)*ptr;
@@ -64,14 +64,14 @@ FLOPPYRecordDescription::FLOPPYRecordDescription(char *recordDescription) {
     }
 }
 
-FLOPPYRecordDescription::~FLOPPYRecordDescription() {
+FLOPPYTableDescription::~FLOPPYTableDescription() {
     for (auto itr = this->columns->begin() ; itr != this->columns->end(); itr++) {
         delete (*itr);
     }
     delete columns;
 }
 
-int FLOPPYRecordDescription::packRecordDescription(FLOPPYCreateTableStatement *statement, char *data) {
+int FLOPPYTableDescription::packRecordDescription(FLOPPYCreateTableStatement *statement, char *data) {
     uint16_t attrSize = calcSizeOfAttributes(statement->columns);
     uint16_t pKeySize = calcSizeOfPrimaryKeys(statement->pk);
     uint16_t fKeySize = calcSizeOfForeignKeys(statement->fk);
@@ -93,10 +93,10 @@ int FLOPPYRecordDescription::packRecordDescription(FLOPPYCreateTableStatement *s
     packPrimaryKeys(pKeyOffset, statement->pk, data);
     packForeignKeys(fKeyOffset, statement->fk, data);
     
-    return FLOPPYRecordDescription::calcRecordLength(data);
+    return FLOPPYTableDescription::calcRecordLength(data);
 }
 
-FLOPPYColumn* FLOPPYRecordDescription::getAttribute(char *colName) {
+FLOPPYTableColumn* FLOPPYTableDescription::getAttribute(char *colName) {
     int cmp = -1;
     
     for (unsigned i = 0; i < columns->size(); i++) {
@@ -110,13 +110,13 @@ FLOPPYColumn* FLOPPYRecordDescription::getAttribute(char *colName) {
     return NULL;
 }
 
-void FLOPPYRecordDescription::addColumn(char *name, ColumnType type, int size, int offset) {
-    FLOPPYColumn *column = new FLOPPYColumn(name, type, size, offset);
+void FLOPPYTableDescription::addColumn(char *name, ColumnType type, int size, int offset) {
+    FLOPPYTableColumn *column = new FLOPPYTableColumn(name, type, size, offset);
     columns->push_back(column);
 }
 
 
-uint16_t FLOPPYRecordDescription::calcSizeOfAttributes(std::vector<FLOPPYCreateColumn *> *columns) {
+uint16_t FLOPPYTableDescription::calcSizeOfAttributes(std::vector<FLOPPYCreateColumn *> *columns) {
     uint16_t runningSize = 0;
     uint8_t attrNameLen = 0, attrType;
     
@@ -136,7 +136,7 @@ uint16_t FLOPPYRecordDescription::calcSizeOfAttributes(std::vector<FLOPPYCreateC
     return runningSize;
 }
 
-uint16_t FLOPPYRecordDescription::calcSizeOfPrimaryKeys(FLOPPYPrimaryKey *pKeys) {
+uint16_t FLOPPYTableDescription::calcSizeOfPrimaryKeys(FLOPPYPrimaryKey *pKeys) {
     uint16_t runningSize = 0;
     uint8_t pKeyNameLen = 0;
     
@@ -149,7 +149,7 @@ uint16_t FLOPPYRecordDescription::calcSizeOfPrimaryKeys(FLOPPYPrimaryKey *pKeys)
     return runningSize;
 }
 
-uint16_t FLOPPYRecordDescription::calcSizeOfForeignKeys(std::vector<FLOPPYForeignKey *> *fKeys) {
+uint16_t FLOPPYTableDescription::calcSizeOfForeignKeys(std::vector<FLOPPYForeignKey *> *fKeys) {
     uint16_t runningSize = 0;
     uint8_t fKeyTableNameLen = 0, fKeyAttrNameLen = 0;
     
@@ -170,12 +170,12 @@ uint16_t FLOPPYRecordDescription::calcSizeOfForeignKeys(std::vector<FLOPPYForeig
     return runningSize;
 }
 
-void FLOPPYRecordDescription::packMetaData(uint16_t pKeyOffset, uint16_t fKeyOffset, char *data) {
+void FLOPPYTableDescription::packMetaData(uint16_t pKeyOffset, uint16_t fKeyOffset, char *data) {
     memcpy(data, &pKeyOffset, sizeof(uint16_t));
     memcpy(data + 2, &fKeyOffset, sizeof(uint16_t));
 }
 
-void FLOPPYRecordDescription::packAttributes(uint16_t attrOffset, std::vector<FLOPPYCreateColumn *> *columns, char *data) {
+void FLOPPYTableDescription::packAttributes(uint16_t attrOffset, std::vector<FLOPPYCreateColumn *> *columns, char *data) {
     uint16_t currentOffset = attrOffset;
     uint8_t attrType = 0, colLen = 0, attrNameLen = 0;
     
@@ -201,7 +201,7 @@ void FLOPPYRecordDescription::packAttributes(uint16_t attrOffset, std::vector<FL
     }
 }
 
-void FLOPPYRecordDescription::packPrimaryKeys(uint16_t pKeyOffset, FLOPPYPrimaryKey *pKeys, char *data) {
+void FLOPPYTableDescription::packPrimaryKeys(uint16_t pKeyOffset, FLOPPYPrimaryKey *pKeys, char *data) {
     char *pKeyName;
     uint16_t currentOffset = pKeyOffset;
     uint8_t attrNameLen = 0;
@@ -216,7 +216,7 @@ void FLOPPYRecordDescription::packPrimaryKeys(uint16_t pKeyOffset, FLOPPYPrimary
     }
 }
 
-void FLOPPYRecordDescription::packForeignKeys(uint16_t fKeyOffset, std::vector<FLOPPYForeignKey *> *fKeys, char *data) {
+void FLOPPYTableDescription::packForeignKeys(uint16_t fKeyOffset, std::vector<FLOPPYForeignKey *> *fKeys, char *data) {
     uint16_t currentOffset = fKeyOffset;
     uint8_t fKeyTableNameLen = 0, fKeyAttrNameLen = 0;
     char *tableName, *attrName;
@@ -244,7 +244,7 @@ void FLOPPYRecordDescription::packForeignKeys(uint16_t fKeyOffset, std::vector<F
     }
 }
 
-int FLOPPYRecordDescription::calcRecordLength(char *data) {
+int FLOPPYTableDescription::calcRecordLength(char *data) {
     int recLen = 0, pkOffset = 0, curOffset = 4, attrType, colLen;
     
     //grab primary key offset
@@ -291,7 +291,7 @@ int FLOPPYRecordDescription::calcRecordLength(char *data) {
     return recLen;
 }
 
-int FLOPPYRecordDescription::getAttrTypeByteSize(ColumnType attrType) {
+int FLOPPYTableDescription::getAttrTypeByteSize(ColumnType attrType) {
     if (attrType == ColumnType::INT)
         return 4;
     else if (attrType == ColumnType::FLOAT)
@@ -307,7 +307,7 @@ int FLOPPYRecordDescription::getAttrTypeByteSize(ColumnType attrType) {
 }
 
 //returns the size of the name and also stores the name into a string
-void FLOPPYRecordDescription::buildColumnName(char *data, int nameLen, char *storedName) {
+void FLOPPYTableDescription::buildColumnName(char *data, int nameLen, char *storedName) {
     int i;
     
     for (i = 0; i < nameLen; i++) {
@@ -316,7 +316,7 @@ void FLOPPYRecordDescription::buildColumnName(char *data, int nameLen, char *sto
 }
 
 //gets the length of the column name in the binary data array
-int FLOPPYRecordDescription::getColumnNameLen(char *data) {
+int FLOPPYTableDescription::getColumnNameLen(char *data) {
     char *temp = data;
     int nameLen = 0;
     
@@ -330,10 +330,10 @@ int FLOPPYRecordDescription::getColumnNameLen(char *data) {
 
 
 /* Debug Output */
-void FLOPPYRecordDescription::print() {
+void FLOPPYTableDescription::print() {
     printf("Columns\n");
     for (unsigned i=0; i<columns->size(); i++) {
-        FLOPPYColumn *column = columns->at(i);
+        FLOPPYTableColumn *column = columns->at(i);
         
         printf("\t Column: %s\n", column->name);
         if(column->type == ColumnType::INT)

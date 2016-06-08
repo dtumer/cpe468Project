@@ -35,7 +35,9 @@ int main(int argc, char *argv[]) {
     
     //fill page
     printf("\nfill page\n");
-    heap->insertRecord(record);
+    for(ndx=0; ndx<20; ndx++) {
+        heap->insertRecord(record);
+    }
     
     heap->printFileInfo();
     heap->printPageInfo(1);
@@ -43,15 +45,13 @@ int main(int argc, char *argv[]) {
     
     //delete record from page 1
     printf("\ndelete record from page 1\n");
-    heap->deleteRecord(1, 9);
-    heap->deleteRecord(1, 49);
+    for(ndx=0; ndx<49; ndx=ndx+8) {
+        heap->deleteRecord(1, ndx);
+    }
     
     heap->printFileInfo();
     heap->printPageInfo(1);
     heap->printPageInfo(2);
-    
-    heap->getAllRecords(1);
-    heap->getAllRecords(2);
     
     //re-fill page
     printf("\nre-fill page\n");
@@ -61,8 +61,8 @@ int main(int argc, char *argv[]) {
     heap->printPageInfo(1);
     heap->printPageInfo(2);
     
-    
-    heap->printRecordDescription();
+    heap->getAllRecords();
+    heap->printTableDescription();
     
 	//cleanup
     free(record);

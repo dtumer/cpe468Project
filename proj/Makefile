@@ -10,6 +10,7 @@ FLOPPY_LEX_PARSER_DIR = $(FLOPPY_PARSER_DIR)/lex_parse
 
 LIBS  = libs/hashmap.c libs/TFS468/libDisk.o libs/TFS468/libTinyFS.o
 ParserSRC = $(FLOPPY_PARSER_DIR)/libFLOPPYParser.a
+BASE_FILES = FLOPPYHeapFile.cpp FLOPPYFileManager.o FLOPPYBufferManager.cpp FLOPPYBitmap.o FLOPPYTableColumn.o FLOPPYTableDescription.o FLOPPYRecordSet.o
 
 all: clean
 
@@ -28,22 +29,16 @@ $(FLOPPY_PARSER_DIR)/libFLOPPYParser.a: $(patsubst %.cpp, %.o, $(wildcard $(FLOP
 %.o: %.cpp %.h
 	$(CPP) $(CPPFLAGS) -c -o $@ $<
 
-HeapFile.o: HeapFile.c
-	$(CC) $(CFLAGS) -c -o $@ $^
-
-FileManager.o: FileManager.c
-	$(CC) $(CFLAGS) -c -o $@ $^
-
 TestHarness.out: TestHarness.cpp FLOPPYBufferManager.o $(LIBS)
 	$(CPP) $(CPPFLAGS) -o $@ $^
 
-TestHeapFile.out: TestHeapFile.cpp FLOPPYHeapFile.cpp FLOPPYFileManager.o FLOPPYBufferManager.cpp FLOPPYBitmap.o FLOPPYColumn.o FLOPPYRecordDescription.o FLOPPYRecord.o $(ParserSRC) $(LIBS)
+TestHeapFile.out: TestHeapFile.cpp $(BASE_FILES) $(ParserSRC) $(LIBS)
 	$(CPP) $(CPPFLAGS) -o $@ $^
 
 TestParser.out: TestParser.cpp ParserDebug.cpp $(ParserSRC) $(LIBS)
 	$(CPP) $(CPPFLAGS) -o $@ $^
 
-FLOPPY_CLI.out: FLOPPY_CLI.cpp ParserDebug.cpp FLOPPYResult.cpp FLOPPY_DBMS.o FLOPPYHeapFile.cpp FLOPPYFileManager.o FLOPPYBufferManager.cpp FLOPPYBitmap.o FLOPPYColumn.o FLOPPYRecordDescription.o FLOPPYRecord.o $(ParserSRC) $(LIBS)
+FLOPPY_CLI.out: FLOPPY_CLI.cpp ParserDebug.cpp FLOPPYResult.cpp FLOPPY_DBMS.o $(BASE_FILES) $(ParserSRC) $(LIBS)
 	$(CPP) $(CPPFLAGS) -o $@ $^
 
 runTestHarness: TestHarness.out

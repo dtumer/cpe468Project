@@ -36,10 +36,12 @@
 		CB4270AE1D04D0130038493C /* FLOPPYBitmap.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FLOPPYBitmap.h; sourceTree = "<group>"; };
 		CB4270B31D0533C80038493C /* FLOPPYRecord.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = FLOPPYRecord.cpp; sourceTree = "<group>"; };
 		CB4270B41D0533C80038493C /* FLOPPYRecord.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FLOPPYRecord.h; sourceTree = "<group>"; };
-		CB4270B51D0543F60038493C /* FLOPPYColumn.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = FLOPPYColumn.cpp; sourceTree = "<group>"; };
-		CB4270B61D0543F60038493C /* FLOPPYColumn.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FLOPPYColumn.h; sourceTree = "<group>"; };
-		CB4270B71D0545330038493C /* FLOPPYRecordDescription.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = FLOPPYRecordDescription.cpp; sourceTree = "<group>"; };
-		CB4270B81D0545330038493C /* FLOPPYRecordDescription.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FLOPPYRecordDescription.h; sourceTree = "<group>"; };
+		CB4270B51D0543F60038493C /* FLOPPYTableColumn.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = FLOPPYTableColumn.cpp; sourceTree = "<group>"; };
+		CB4270B61D0543F60038493C /* FLOPPYTableColumn.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FLOPPYTableColumn.h; sourceTree = "<group>"; };
+		CB4270B71D0545330038493C /* FLOPPYTableDescription.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = FLOPPYTableDescription.cpp; sourceTree = "<group>"; };
+		CB4270B81D0545330038493C /* FLOPPYTableDescription.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FLOPPYTableDescription.h; sourceTree = "<group>"; };
+		CB4270BD1D075FFB0038493C /* FLOPPYRecordSet.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = FLOPPYRecordSet.cpp; sourceTree = "<group>"; };
+		CB4270BE1D075FFB0038493C /* FLOPPYRecordSet.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FLOPPYRecordSet.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
@@ -102,6 +104,10 @@
 				CB4270A11D0412AE0038493C /* FLOPPYHeapFile.h */,
 				CB4270AD1D04D0130038493C /* FLOPPYBitmap.cpp */,
 				CB4270AE1D04D0130038493C /* FLOPPYBitmap.h */,
+				CB4270B71D0545330038493C /* FLOPPYTableDescription.cpp */,
+				CB4270B81D0545330038493C /* FLOPPYTableDescription.h */,
+				CB4270B51D0543F60038493C /* FLOPPYTableColumn.cpp */,
+				CB4270B61D0543F60038493C /* FLOPPYTableColumn.h */,
 			);
 			name = "file level";
 			sourceTree = "<group>";
@@ -120,12 +126,10 @@
 		CB4270B21D05329D0038493C /* record level */ = {
 			isa = PBXGroup;
 			children = (
-				CB4270B71D0545330038493C /* FLOPPYRecordDescription.cpp */,
-				CB4270B81D0545330038493C /* FLOPPYRecordDescription.h */,
-				CB4270B51D0543F60038493C /* FLOPPYColumn.cpp */,
-				CB4270B61D0543F60038493C /* FLOPPYColumn.h */,
 				CB4270B31D0533C80038493C /* FLOPPYRecord.cpp */,
 				CB4270B41D0533C80038493C /* FLOPPYRecord.h */,
+				CB4270BD1D075FFB0038493C /* FLOPPYRecordSet.cpp */,
+				CB4270BE1D075FFB0038493C /* FLOPPYRecordSet.h */,
 			);
 			name = "record level";
 			sourceTree = "<group>";

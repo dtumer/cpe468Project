@@ -8,8 +8,9 @@
 #include "FLOPPYBufferManager.h"
 #include "FLOPPYFileManager.h"
 #include "FLOPPYBitmap.h"
-#include "FLOPPYRecordDescription.h"
+#include "FLOPPYTableDescription.h"
 #include "libs/FLOPPYParser/FLOPPYParser.h"
+#include "FLOPPYRecordSet.h"
 
 
 #include <stdio.h>
@@ -43,20 +44,11 @@ class FLOPPYHeapFile : public FLOPPYFileManager {
 public:
     FLOPPYHeapFile(FLOPPYBufferManager *buf, fileDescriptor fd); // constructor
     FLOPPYHeapFile(FLOPPYBufferManager *buf, std::string tableName); // constructor
+    ~FLOPPYHeapFile();
     
     /* file-level functions */
     static FLOPPYHeapFile * createFile(FLOPPYBufferManager *buf, FLOPPYCreateTableStatement *statement);
     static int deleteFile(std::string tableName);
-    
-    /* File Header functions */
-    // Get the table name from a given header page
-    int headerGetTableName(char *name);
-    // Get the file descriptor structure
-    //uint16_t headerGetRecordDesc(tableDescription *desc);
-    // Return the address of the next page in the pagelist list
-    DiskAddress headerGetNextPage();
-    // Return the address of the next page in the freespace list
-    //int headerGetFreeSpace(DiskAddress *page);
     
     /* Data Page functions */
     //given a page id and a location on the page (represented by id) retrieve the contents of the record into output array
@@ -68,12 +60,12 @@ public:
     int insertRecord(char * record);
     int deleteRecord(int pageId, int recordId);
     int updateRecord(int pageId, int recordId, char * record);
+    FLOPPYRecordSet * getAllRecords();
     
     /* Test Functions */
     void printFileInfo();
     void printPageInfo(int pageId);
-    void getAllRecords(int pageId);
-    void printRecordDescription();
+    void printTableDescription();
     
 private:
     static void getFileName(std::string tableName, char *fileName);
@@ -84,5 +76,9 @@ private:
     void createNewPage(HeapFileHeader *heapFileHeader);
     
     DiskAddress getDiskAddress(int pageId);
+    
+    //Table description methods and instance
+    FLOPPYTableDescription * getTableDescription();
+    FLOPPYTableDescription *_tblDes;
 };
 #endif /* FLOPPYHeapFile_h */
