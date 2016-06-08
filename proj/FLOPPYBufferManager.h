@@ -70,7 +70,8 @@ public:
     
     unsigned char * readVolatile(DiskAddress page, int startOffset, int nBytes);
     int writeVolatile(DiskAddress page, int startOffset, int nBytes, char * data);
-
+    
+    int removeFile(fileDescriptor fd);
     
 private:
     int numDigits(int n);
@@ -81,6 +82,8 @@ private:
     int removeIndex(map_t map, DiskAddress diskAdd);
     Block* findPageInBuffer(int index);
     int placePageInBuffer(Block *newBlock);
+    
+	void removePagesWithFD(fileDescriptor fd);
     
     int persistentEvictionPolicy();
     int volatileEvictionPolicy();

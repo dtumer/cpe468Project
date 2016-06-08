@@ -50,7 +50,7 @@ public:
     
     /* file-level functions */
     static FLOPPYHeapFile * createFile(FLOPPYBufferManager *buf, FLOPPYCreateTableStatement *statement);
-    static int deleteFile(std::string tableName);
+    static int deleteFile(FLOPPYBufferManager *buf, char *tableName);
     
     /* Data Page functions */
     //given a page id and a location on the page (represented by id) retrieve the contents of the record into output array

@@ -154,8 +154,16 @@ FLOPPYHeapFile * FLOPPYHeapFile::createFile(FLOPPYBufferManager *buf, FLOPPYCrea
     return heapFile;
 }
 
-int FLOPPYHeapFile::deleteFile(std::string tableName) {
-    return 0;
+int FLOPPYHeapFile::deleteFile(FLOPPYBufferManager *buf, char *tableName) {
+	char *fileName = (char *)calloc(TABLE_NAME_SIZE, sizeof(char));
+	fileDescriptor fd;
+	
+	FLOPPYHeapFile::getFileName(std::string(tableName), fileName);
+	fd = buf->getFileDescriptor(fileName);
+	
+	printf("FD of table to remove: %d\n", fd);
+	
+	return buf->removeFile(fd);
 }
 
 /* Data Page functions */
