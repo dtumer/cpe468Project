@@ -34,8 +34,6 @@ int main(int argc, char *argv[]) {
     TestSQLStatement("SELECT DISTINCT NodeId, COUNT(BlockID) FROM Availability, files WHERE FileId=10 GROUP BY NodeId HAVING BlockID>2 ORDER BY BlockID LIMIT 10;");
     TestSQLStatement("DROP INDEX ndx2 on Availability;");
     TestSQLStatement("DROP TABLE Availability;");
-    dbms.execute("SELECT NodeId, FileId FROM Availability WHERE x = 5;");
-    
     
     //TestSQLStatement("CREATE TABLE list( LastName VARCHAR(16), FirstName VARCHAR(16), grade INT, classroom INT,  PRIMARY KEY(FirstName,LastName));");
     //TestSQLStatement("CREATE TABLE teachers(Last VARCHAR(16), First VARCHAR(16), classroom INT, PRIMARY KEY(classroom));");
@@ -143,8 +141,8 @@ int main(int argc, char *argv[]) {
     TestSQLStatement("SELECT l.FirstName, l.LastName FROM list l, list pa WHERE pa.FirstName = 'AMY' AND pa.LastName = 'PATRINA' AND l.classroom = pa.classroom ORDER BY l.LastName;");
     TestSQLStatement("SELECT l.FirstName, l.LastName FROM list l, teachers t WHERE t.classroom = 103 AND t.classroom = l.classroom AND t.LastName <> 'BIBB';");
     TestSQLStatement("SELECT l.classroom, COUNT(*) FROM list l,  teachers t WHERE l.classroom = t.classroom AND l.grade > 3 GROUP BY l.classroom;");
-    
-    
+
+    dbms.execute("SELECT NodeId, FileId FROM Availability WHERE x = 5;");
     
     return 0;
 }
