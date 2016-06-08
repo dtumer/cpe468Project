@@ -7,7 +7,6 @@
 int main(int argc, char *argv[]) {
     int ndx;
     char diskName[] = "Foo.disk";
-    char tableName[] = "people";
     FLOPPYBufferManager *buf = new FLOPPYBufferManager(diskName, 5, 5);
     
     FLOPPYOutput *result = FLOPPYParser::parseFLOPPYString("CREATE TABLE Availability VOLATILE (NodeId  VARCHAR(20), DistroId  INT, FileId  INT, BlockID  INT, TimeStamp DATETIME, PRIMARY KEY(FileId, BlockId, NodeId), FOREIGN KEY(NodeId) REFERENCES Nodes, FOREIGN KEY (DistroId) REFERENCES Distros, FOREIGN KEY (FileId) REFERENCES Files);");

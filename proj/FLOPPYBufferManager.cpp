@@ -738,9 +738,10 @@ int FLOPPYBufferManager::writeVolatile(DiskAddress page, int startOffset, int nB
  * Removes references to files with this file descriptor and removes
  * the file from the tinyFS disk
 */
-int FLOPPYBufferManager::removeFile(fileDescriptor fd) {
-	int result = tfs_deleteFile(fd);
-	
+int FLOPPYBufferManager::deleteFile(fileDescriptor fd, char *fileName) {
+    int result = tfs_deleteFile(fd);
+    hashmap_remove(openFileMap, fileName);
+    
 	if (result) {
 		return -1;
 	}

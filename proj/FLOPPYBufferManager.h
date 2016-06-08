@@ -71,7 +71,7 @@ public:
     unsigned char * readVolatile(DiskAddress page, int startOffset, int nBytes);
     int writeVolatile(DiskAddress page, int startOffset, int nBytes, char * data);
     
-    int removeFile(fileDescriptor fd);
+    int deleteFile(fileDescriptor fd, char *fileName);
     
 private:
     int numDigits(int n);
