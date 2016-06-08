@@ -39,6 +39,7 @@ FLOPPYResult* FLOPPY_DBMS::execute(std::string sql) {
             case StatementType::InsertStatement:
                 printf("INSERT\n");
                 printInsertStatement((FLOPPYInsertStatement*) parsedCommand->statement);
+                insertRecord((FLOPPYInsertStatement*) parsedCommand->statement);
                 break;
             case StatementType::DeleteStatement:
                 printf("DELETE\n");

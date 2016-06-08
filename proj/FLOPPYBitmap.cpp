@@ -34,7 +34,7 @@ int FLOPPYBitmap::nextRecord() {
 		//if we're looking at a bit that is empty call nextRecord() again
 		if (curRecord == 0) {	
 			curRecordOffset++;
-			nextRecord();
+			return nextRecord();
 		}
 		else {
 			return curRecordOffset++;
@@ -48,7 +48,7 @@ int FLOPPYBitmap::nextRecord() {
 }
 
 int FLOPPYBitmap::getFirstFreeRecord() {
-    FLOPPYBitmap::getFirstFreeRecordHelper(bitmap, numRecords);
+    return FLOPPYBitmap::getFirstFreeRecordHelper(bitmap, numRecords);
 }
 
 int FLOPPYBitmap::getFirstFreeRecordHelper(uint8_t *bitmap, int numRecords) {
