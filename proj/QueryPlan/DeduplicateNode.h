@@ -1,0 +1,2 @@
+class DeduplicateNode extends FLOPPYQueryPlanNode {
+};

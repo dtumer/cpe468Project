@@ -1,0 +1,3 @@
+class GroupingNode extends FLOPPYQueryPlanNode {
+};
+

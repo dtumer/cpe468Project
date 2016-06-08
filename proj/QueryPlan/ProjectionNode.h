@@ -1,0 +1,2 @@
+class ProjectionNode extends FLOPPYQueryPlanNode {
+};

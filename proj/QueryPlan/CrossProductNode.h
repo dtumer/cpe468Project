@@ -1,0 +1,3 @@
+class CrossProductNode extends FLOPPYQueryPlanNode {
+};
+
