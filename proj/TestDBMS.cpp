@@ -54,6 +54,9 @@ int main(int argc, char *argv[]) {
     result = db->execute("SELECT * FROM teachers;");
     result->print();
     
+    result = db->execute("DROP TABLE teachers;");
+    result->print();
+    
     
     delete result;
     delete db;

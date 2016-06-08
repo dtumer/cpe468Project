@@ -19,10 +19,11 @@ FLOPPYResult* FLOPPY_DBMS::execute(std::string sql) {
     if (parsedCommand->isValid) { // Use isValid flag to detect is parser parsed correctly.
         
         switch (parsedCommand->statement->type()) {
-            case StatementType::ErrorStatement:
-                break;
             case StatementType::CreateTableStatement:
                 result = createTable((FLOPPYCreateTableStatement*) parsedCommand->statement);
+                break;
+            case StatementType::DropTableStatement:
+                result = dropTable((FLOPPYDropTableStatement*) parsedCommand->statement);
                 break;
             case StatementType::InsertStatement:
                 result = insertRecord((FLOPPYInsertStatement*) parsedCommand->statement);
@@ -30,12 +31,7 @@ FLOPPYResult* FLOPPY_DBMS::execute(std::string sql) {
             case StatementType::SelectStatement:
                 result = selectRecords((FLOPPYSelectStatement*) parsedCommand->statement);
                 break;
-            
             /*
-            case StatementType::DropTableStatement:
-                printf("DROP TABLE\n");
-                printDropTableStatement((FLOPPYDropTableStatement*) parsedCommand->statement);
-                break;
             case StatementType::UpdateStatement:
                 printf("UPDATE\n");
                 printUpdateStatement((FLOPPYUpdateStatement*) parsedCommand->statement);
@@ -52,15 +48,19 @@ FLOPPYResult* FLOPPY_DBMS::execute(std::string sql) {
                 printf("DROP INDEX\n");
                 printDropIndexStatement((FLOPPYDropIndexStatement*) parsedCommand->statement);
                 break;
+             case StatementType::ErrorStatement:
+                break;
              */
             default:
                 result = new FLOPPYResult(ErrorType);
-                result->msg = "Unhandled FLOPPY SQL command";
+                result->msg = (char*)calloc(sizeof(char), 50);
+                sprintf(result->msg, "Unhandled FLOPPY SQL command");
                 
         }
     } else {
         result = new FLOPPYResult(ErrorType);
-        result->msg = "Unable to parse FLOPPY SQL";
+        result->msg = (char*)calloc(sizeof(char), 50);
+        sprintf(result->msg, "Unable to parse FLOPPY SQL");
     }
     
     delete parsedCommand;
@@ -71,11 +71,9 @@ FLOPPYResult* FLOPPY_DBMS::execute(std::string sql) {
 FLOPPYResult * FLOPPY_DBMS::createTable(FLOPPYCreateTableStatement *statement) {
     FLOPPYHeapFile *heap = FLOPPYHeapFile::createFile(buf, statement);
     
-    char *msg = (char*)calloc(sizeof(char), 100);
-    sprintf(msg, "Created the table `%s` successfully.", statement->tableName);
-    
     FLOPPYResult *result = new FLOPPYResult(MessageType);
-    result->msg = msg;
+    result->msg = (char*)calloc(sizeof(char), 100);
+    sprintf(result->msg, "Created the table `%s` successfully.", statement->tableName);
     
     delete heap;
     
@@ -87,22 +85,35 @@ FLOPPYResult * FLOPPY_DBMS::insertRecord(FLOPPYInsertStatement *statement) {
     FLOPPYHeapFile *heap = new FLOPPYHeapFile(buf, statement->name);
     heap->insertStatement(statement);
     
-    char *msg = (char*)calloc(sizeof(char), 100);
-    sprintf(msg, "Inserted record successfully.");
-    
-    FLOPPYResult *result = new FLOPPYResult(InsertType);
-    result->msg = msg;
+    FLOPPYResult *result = new FLOPPYResult(MessageType);
+    result->msg = (char*)calloc(sizeof(char), 100);
+    sprintf(result->msg, "Inserted record successfully.");
     
     delete heap;
     
     return result;
 }
 
+/*
+ * THIS NEEDS TO NOT JUST USE A HARD CODED TABLE
+ */
 FLOPPYResult * FLOPPY_DBMS::selectRecords(FLOPPYSelectStatement *statement) {
-    FLOPPYHeapFile *heap = new FLOPPYHeapFile(buf, "teachers");
+    FLOPPYHeapFile *heap = new FLOPPYHeapFile(buf, statement->tableSpecs->at(0)->tableName);
     
     FLOPPYResult *result = new FLOPPYResult(SelectType);
     result->recordSet = heap->getAllRecords();
+    
+    delete heap;
+    
+    return result;
+}
+
+FLOPPYResult * FLOPPY_DBMS::dropTable(FLOPPYDropTableStatement *statement) {
+    FLOPPYHeapFile *heap = new FLOPPYHeapFile(buf, statement->table);
+    
+    FLOPPYResult *result = new FLOPPYResult(MessageType);
+    result->msg = (char*)calloc(sizeof(char), 100);
+    sprintf(result->msg, "Dropped the table `%s` successfully.", statement->table);
     
     delete heap;
     

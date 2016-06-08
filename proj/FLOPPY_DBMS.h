@@ -33,8 +33,11 @@ public:
     
     
     FLOPPYResult * createTable(FLOPPYCreateTableStatement *statement);
+    FLOPPYResult * dropTable(FLOPPYDropTableStatement *statement);
+    
     FLOPPYResult * insertRecord(FLOPPYInsertStatement *statement);
     FLOPPYResult * selectRecords(FLOPPYSelectStatement *statement);
+    
     
 };
 
