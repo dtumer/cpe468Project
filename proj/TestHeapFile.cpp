@@ -60,12 +60,13 @@ int main(int argc, char *argv[]) {
     heap->printFileInfo();
     heap->printPageInfo(1);
     heap->printPageInfo(2);
-    
-    heap->getAllRecords();
+    FLOPPYRecordSet *rs = heap->getAllRecords();
+    rs->print();
     heap->printTableDescription();
     
 	//cleanup
     free(record);
+    delete rs;
     delete heap;
     delete result;
     delete buf;

@@ -10,7 +10,7 @@ FLOPPY_LEX_PARSER_DIR = $(FLOPPY_PARSER_DIR)/lex_parse
 
 LIBS  = libs/hashmap.c libs/TFS468/libDisk.o libs/TFS468/libTinyFS.o
 ParserSRC = $(FLOPPY_PARSER_DIR)/libFLOPPYParser.a
-BASE_FILES = FLOPPYHeapFile.cpp FLOPPYFileManager.o FLOPPYBufferManager.cpp FLOPPYBitmap.o FLOPPYTableColumn.o FLOPPYTableDescription.o FLOPPYRecordSet.o
+BASE_FILES = FLOPPYHeapFile.cpp FLOPPYFileManager.o FLOPPYBufferManager.cpp FLOPPYBitmap.o FLOPPYTableColumn.o FLOPPYTableDescription.o FLOPPYRecordSet.o FLOPPYRecord.o FLOPPYRecordAttribute.o
 
 all: clean
 

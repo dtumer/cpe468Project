@@ -71,6 +71,8 @@ FLOPPYTableDescription::~FLOPPYTableDescription() {
     delete columns;
 }
 
+/* Packing functions */
+
 int FLOPPYTableDescription::packRecordDescription(FLOPPYCreateTableStatement *statement, char *data) {
     uint16_t attrSize = calcSizeOfAttributes(statement->columns);
     uint16_t pKeySize = calcSizeOfPrimaryKeys(statement->pk);
@@ -109,12 +111,6 @@ FLOPPYTableColumn* FLOPPYTableDescription::getAttribute(char *colName) {
     
     return NULL;
 }
-
-void FLOPPYTableDescription::addColumn(char *name, ColumnType type, int size, int offset) {
-    FLOPPYTableColumn *column = new FLOPPYTableColumn(name, type, size, offset);
-    columns->push_back(column);
-}
-
 
 uint16_t FLOPPYTableDescription::calcSizeOfAttributes(std::vector<FLOPPYCreateColumn *> *columns) {
     uint16_t runningSize = 0;

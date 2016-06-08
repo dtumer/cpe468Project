@@ -26,9 +26,6 @@ public:
     /* Get data associated with the specified column name */
     FLOPPYTableColumn* getAttribute(char *colName);
     
-    /* Adds a column to record description object. Public for projecting certain columns and not others */
-    void addColumn(char *name, ColumnType type, int size, int offset);
-    
     /* Debugging */
     void print();
 	

@@ -5,16 +5,18 @@
 #ifndef FLOPPYHeapFile_h
 #define FLOPPYHeapFile_h
 
+
+#include "libs/FLOPPYParser/FLOPPYParser.h"
+
 #include "FLOPPYBufferManager.h"
 #include "FLOPPYFileManager.h"
 #include "FLOPPYBitmap.h"
 #include "FLOPPYTableDescription.h"
-#include "libs/FLOPPYParser/FLOPPYParser.h"
 #include "FLOPPYRecordSet.h"
+#include "FLOPPYRecordAttribute.h"
 
 
 #include <stdio.h>
-
 #include <string>
 #include <string.h>
 
@@ -57,9 +59,9 @@ public:
     int putRecord(int pageId, uint16_t dataOffset, uint16_t recordSize, int recordId, char *data);
     
     /* Heap File CRUD operations */
-    int insertRecord(char * record);
+    int insertRecord(char *record);
     int deleteRecord(int pageId, int recordId);
-    int updateRecord(int pageId, int recordId, char * record);
+    int updateRecord(int pageId, int recordId, char *record);
     FLOPPYRecordSet * getAllRecords();
     
     /* Test Functions */

@@ -281,7 +281,7 @@ int FLOPPYHeapFile::updateRecord(int pageId, int recordId, char * record) {
 FLOPPYRecordSet * FLOPPYHeapFile::getAllRecords() {
     FLOPPYRecordSet *rs = new FLOPPYRecordSet();
     HeapFileHeader *heapFileHeader = getHeapFileHeader();
-    FLOPPYTableDescription *recDesc = new FLOPPYTableDescription(heapFileHeader->recordDescription);
+    FLOPPYTableDescription *tblDesc = getTableDescription();
     int pageId = heapFileHeader->firstPage;
     
     DiskAddress page;
@@ -291,7 +291,6 @@ FLOPPYRecordSet * FLOPPYHeapFile::getAllRecords() {
     int recordId;
     
     while (pageId) {
-        printf("pageId:%d\n",pageId);
         heapPageHeader = getPageHeader(pageId);
         page = getDiskAddress(pageId);
         
@@ -300,7 +299,57 @@ FLOPPYRecordSet * FLOPPYHeapFile::getAllRecords() {
         
         recordId = bitmap->nextRecord();
         while (recordId >= 0) {
-            printf("\tRECORD: %d %d\n", pageId, recordId);
+            FLOPPYRecord *record = new FLOPPYRecord();
+            unsigned char *data = buf->read(page, sizeof(HeapPageHeader) + heapFileHeader->bitmapSize + (heapFileHeader->recordSize * recordId), heapFileHeader->recordSize);
+            unsigned char *ptr;
+            
+            record->pageId = pageId;
+            record->recordId = recordId;
+            
+            for (unsigned i=0; i<tblDesc->columns->size(); i++) {
+                FLOPPYTableColumn *tblCol = tblDesc->columns->at(i);
+                FLOPPYRecordAttribute *recCol = new FLOPPYRecordAttribute();
+                
+                //table name
+                recCol->tableName = (char*)calloc(sizeof(char*), strlen(heapFileHeader->tableName)+1);
+                strcpy(recCol->tableName, heapFileHeader->tableName);
+                
+                //attribute name
+                recCol->name = (char*)calloc(sizeof(char*), strlen(tblCol->name)+1);
+                strcpy(recCol->name, tblCol->name);
+                
+                
+                //value
+                ptr = data + tblCol->offset;
+                
+                if(tblCol->type == ColumnType::INT) {
+                    recCol->val = new FLOPPYValue(IntValue);
+                    recCol->val->iVal = (uint64_t)*ptr;
+                }
+                else if(tblCol->type == ColumnType::FLOAT) {
+                    recCol->val = new FLOPPYValue(FloatValue);
+                    recCol->val->fVal = (float)*ptr;
+                }
+                else if(tblCol->type == ColumnType::DATETIME) {
+                    recCol->val = new FLOPPYValue(FloatValue);
+                    recCol->val->fVal = (float)*ptr;
+                }
+                else if(tblCol->type == ColumnType::VARCHAR) {
+                    recCol->val = new FLOPPYValue(StringValue);
+                    recCol->val->sVal = (char*)calloc(sizeof(char*), tblCol->size);
+                    memcpy(recCol->val->sVal, ptr, tblCol->size);
+                }
+                else if(tblCol->type == ColumnType::BOOLEAN) {
+                    recCol->val = new FLOPPYValue(BooleanValue);
+                    recCol->val->bVal = (bool)*ptr;
+                }
+                record->columns->push_back(recCol);
+                
+            }
+            
+            rs->records->push_back(record);
+            
+            //printf("\tRECORD: %d %d\n", pageId, recordId);
             recordId = bitmap->nextRecord();
         }
         
@@ -318,8 +367,6 @@ FLOPPYRecordSet * FLOPPYHeapFile::getAllRecords() {
     
     return rs;
 }
-
-
 
 FLOPPYTableDescription * FLOPPYHeapFile::getTableDescription() {
     if(!_tblDes) {
