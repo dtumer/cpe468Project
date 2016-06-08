@@ -1,0 +1,3 @@
+class SelectionNode extends FLOPPYQueryPlanNode {
+
+};
