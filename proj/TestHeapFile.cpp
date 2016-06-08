@@ -42,6 +42,7 @@ int main(int argc, char *argv[]) {
     heap->printPageInfo(1);
     heap->printPageInfo(2);
     
+    
     //delete record from page 1
     printf("\ndelete record from page 1\n");
     for(ndx=0; ndx<49; ndx=ndx+8) {
@@ -52,21 +53,31 @@ int main(int argc, char *argv[]) {
     heap->printPageInfo(1);
     heap->printPageInfo(2);
     
-    //re-fill page
+    //re-fill record
     printf("\nre-fill page\n");
     heap->insertRecord(record);
     
     heap->printFileInfo();
     heap->printPageInfo(1);
     heap->printPageInfo(2);
+    
+    
+    //print all records
     FLOPPYRecordSet *rs = heap->getAllRecords();
     rs->print();
+    
+    
+    //print the record description
     heap->printTableDescription();
+    
+    
+    //delete the file
+    heap->deleteFile();
+
     
 	//cleanup
     free(record);
     delete rs;
-    delete heap;
     delete result;
     delete buf;
 
