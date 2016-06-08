@@ -284,16 +284,20 @@ Block* FLOPPYBufferManager::findPageInBuffer(int index) {
  * if not, ask the eviction policy.
  */
 int FLOPPYBufferManager::placePageInBuffer(Block *newBlock) {
-    int toEvict;
-    
+    int toEvict, i;
     int insertNdx = getIndex(persistentMap, newBlock->diskAddress);
     
     if (insertNdx == -1) { //need to fetch it
         //check for open page
         if (numPersistentOccupied < nPersistentBlocks) {
-            insertNdx = numPersistentOccupied;
-            numPersistentOccupied++;
-        } else {
+        	for (i=0; i<nPersistentBlocks; i++) {
+            	if (persistentPages[i] == NULL) {
+               		insertNdx = i;
+                	break;
+            	}
+        	}
+        } 
+        else {
             toEvict = persistentEvictionPolicy();
             if (dirty[toEvict] == 'T') {
                 if (flushPage(persistentPages[toEvict]->diskAddress) == BFMG_ERR) {
@@ -313,6 +317,7 @@ int FLOPPYBufferManager::placePageInBuffer(Block *newBlock) {
         dirty[insertNdx] = 'F';
         isVolatile[insertNdx] = 'F';
         persistentTimestamp[insertNdx] = ops++;
+        numPersistentOccupied += numPersistentOccupied < nPersistentBlocks ? 1 : 0;
         putIndex(persistentMap, persistentPages[insertNdx]->diskAddress, insertNdx);
         
     }
@@ -727,6 +732,62 @@ int FLOPPYBufferManager::writeVolatile(DiskAddress page, int startOffset, int nB
     }
     
     return 0;
+}
+
+/**
+ * Removes references to files with this file descriptor and removes
+ * the file from the tinyFS disk
+*/
+int FLOPPYBufferManager::removeFile(fileDescriptor fd) {
+	int result = tfs_deleteFile(fd);
+	
+	if (result) {
+		return -1;
+	}
+	else {
+		removePagesWithFD(fd);
+		checkpoint();
+		return 0;
+	}
+}
+
+/**
+ * Function for removing all pages with a specified fileDescriptor
+*/
+void FLOPPYBufferManager::removePagesWithFD(fileDescriptor fd) {
+	int i;
+	Block *temp;
+	
+	//look for pages in persistent storage
+	for (i = 0; i < nPersistentBlocks; i++) {
+		temp = persistentPages[i];
+		
+		//if file descriptor of block is same as what we're looking for
+		//1: free block
+		//2: set block to null in persistentPages
+		//3: set pin, dirty, is volatile to 'F'
+		//4: decrement from num occupied
+		if (temp != NULL && temp->diskAddress.FD == fd) {
+			free(temp);
+			persistentPages[i] = NULL;
+			pin[i] = 'F';
+			isVolatile[i] = 'F';
+			dirty[i] = 'F';
+			numPersistentOccupied--;
+		}
+	}
+	
+	//look for pages in volatile storage
+	for (i = 0; i < nVolatileBlocks; i++) {
+		temp = volatilePages[i];
+		
+		if (temp != NULL && temp->diskAddress.FD == fd) {
+			free(temp);
+			volatilePages[i] = NULL;
+			volatileTimestamp[i] = 0;
+			numVolatileOccupied--;
+		}
+	}
 }
 
 /* Test Functions */

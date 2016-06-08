@@ -46,7 +46,7 @@ public:
     
     /* file-level functions */
     static FLOPPYHeapFile * createFile(FLOPPYBufferManager *buf, FLOPPYCreateTableStatement *statement);
-    static int deleteFile(std::string tableName);
+    static int deleteFile(FLOPPYBufferManager *buf, char *tableName);
     
     /* File Header functions */
     // Get the table name from a given header page
