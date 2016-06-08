@@ -177,7 +177,7 @@ int FLOPPYHeapFile::putRecord(int pageId, uint16_t dataOffset, uint16_t recordSi
 
 /* Heap File CRUD operations */
 
-int FLOPPYHeapFile::insertRecord(char * record) {
+int FLOPPYHeapFile::insertRecord(char *record) {
     HeapFileHeader *heapFileHeader = getHeapFileHeader();
     HeapPageHeader *heapPageHeader;
     uint8_t *bitmapData;
@@ -367,6 +367,42 @@ FLOPPYRecordSet * FLOPPYHeapFile::getAllRecords() {
     
     return rs;
 }
+
+int FLOPPYHeapFile::insertStatement(FLOPPYInsertStatement *statement) {
+    FLOPPYTableDescription *tblDesc = getTableDescription();
+    HeapFileHeader *heapFileHeader = getHeapFileHeader();
+    char *data = (char*)calloc(sizeof(char), heapFileHeader->recordSize);
+    char *ptr;
+    
+    if(statement->values->size() != tblDesc->columns->size()) {
+        printf("ERROR sizes don't match\n");
+    }
+    else {
+    	for (unsigned i=0; i<tblDesc->columns->size(); i++) {
+        	FLOPPYTableColumn *tblCol = tblDesc->columns->at(i);
+            FLOPPYValue *val = statement->values->at(i);
+            
+            ptr = data + tblCol->offset;
+
+            if(val->type() == ValueType::StringValue)
+                memcpy(ptr, &(val->sVal), tblCol->size);
+            else if(val->type() == ValueType::IntValue)
+                memcpy(ptr, &(val->iVal), tblCol->size);
+            else if(val->type() == ValueType::FloatValue)
+                memcpy(ptr, &(val->fVal), tblCol->size);
+            else if(val->type() == ValueType::BooleanValue)
+                memcpy(ptr, &(val->bVal), tblCol->size);
+            //else if(val->type() == ValueType::NullValue)
+        }
+        insertRecord(data);
+    }
+    
+    free(data);
+    free(heapFileHeader);
+    
+    return 0;
+}
+
 
 FLOPPYTableDescription * FLOPPYHeapFile::getTableDescription() {
     if(!_tblDes) {

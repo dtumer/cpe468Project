@@ -37,9 +37,7 @@ FLOPPYResult* FLOPPY_DBMS::execute(std::string sql) {
                 printDropIndexStatement((FLOPPYDropIndexStatement*) parsedCommand->statement);
                 break;
             case StatementType::InsertStatement:
-                printf("INSERT\n");
-                printInsertStatement((FLOPPYInsertStatement*) parsedCommand->statement);
-                insertRecord((FLOPPYInsertStatement*) parsedCommand->statement);
+                result = insertRecord((FLOPPYInsertStatement*) parsedCommand->statement);
                 break;
             case StatementType::DeleteStatement:
                 printf("DELETE\n");
@@ -74,6 +72,24 @@ FLOPPYResult* FLOPPY_DBMS::createTable(FLOPPYCreateTableStatement *statement) {
     
     FLOPPYResult *result = new FLOPPYResult(MessageType);
     result->msg = msg.c_str();
+    delete heap;
+    
+    return result;
+}
+
+
+FLOPPYResult * FLOPPY_DBMS::insertRecord(FLOPPYInsertStatement *statement) {
+    FLOPPYHeapFile *heap = new FLOPPYHeapFile(buf, statement->name);
+    heap->insertStatement(statement);
+    
+    char *msg = (char*)calloc(sizeof(char), 100);
+    sprintf(msg, "Inserted record successfully.");
+    
+    FLOPPYResult *result = new FLOPPYResult(InsertType);
+    result->msg = msg;
+    
+    delete heap;
+    
     return result;
 }
 

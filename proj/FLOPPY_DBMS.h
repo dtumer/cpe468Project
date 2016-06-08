@@ -33,6 +33,7 @@ public:
     
     
     FLOPPYResult * createTable(FLOPPYCreateTableStatement *statement);
+    FLOPPYResult * insertRecord(FLOPPYInsertStatement *statement);
     
 };
 

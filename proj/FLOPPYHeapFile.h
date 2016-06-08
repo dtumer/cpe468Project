@@ -63,6 +63,7 @@ public:
     int deleteRecord(int pageId, int recordId);
     int updateRecord(int pageId, int recordId, char *record);
     FLOPPYRecordSet * getAllRecords();
+    int insertStatement(FLOPPYInsertStatement *statement);
     
     /* Test Functions */
     void printFileInfo();
