@@ -17,13 +17,13 @@ FLOPPYRecordAttribute::~FLOPPYRecordAttribute() {
     delete val;
 }
 
-int FLOPPYRecordAttribute::compareValues(FLOPPYValue *recA, FLOPPYValue *recB) {
-    if(recA->type() == ValueType::StringValue)
-        return strcmp(recA->sVal, recB->sVal);
-    else if(recA->type() == ValueType::IntValue)
-        return recA->iVal - recB->iVal;
-    else if(recA->type() == ValueType::FloatValue) {
-        float temp = recA->fVal - recB->fVal;
+int FLOPPYRecordAttribute::compareValues(FLOPPYValue *valA, FLOPPYValue *valB) {
+    if(valA->type() == ValueType::StringValue)
+        return strcmp(valA->sVal, valB->sVal);
+    else if(valA->type() == ValueType::IntValue)
+        return valA->iVal - valB->iVal;
+    else if(valA->type() == ValueType::FloatValue) {
+        float temp = valA->fVal - valB->fVal;
         
         if(temp == 0)
             return 0;
@@ -32,8 +32,8 @@ int FLOPPYRecordAttribute::compareValues(FLOPPYValue *recA, FLOPPYValue *recB) {
         else
             return 0;
     }
-    else if(recA->type() == ValueType::BooleanValue)
-        return recA->bVal - recB->bVal;
+    else if(valA->type() == ValueType::BooleanValue)
+        return valA->bVal - valB->bVal;
     else
         return 0;
 }

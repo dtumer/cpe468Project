@@ -22,7 +22,7 @@ public:
     char *name;
     FLOPPYValue *val;
     
-    static int compareValues(FLOPPYValue *recA, FLOPPYValue *recB);
+    static int compareValues(FLOPPYValue *valA, FLOPPYValue *valB);
     
 };
 
