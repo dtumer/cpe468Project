@@ -285,6 +285,16 @@ int FLOPPYHeapFile::updateRecord(int pageId, int recordId, char *record) {
 }
 
 FLOPPYRecordSet * FLOPPYHeapFile::getAllRecords() {
+    HeapFileHeader *heapFileHeader = getHeapFileHeader();
+    FLOPPYRecordSet *rs;
+    rs = getAllRecords(heapFileHeader->tableName);
+    
+    free(heapFileHeader);
+    
+    return rs;
+}
+
+FLOPPYRecordSet * FLOPPYHeapFile::getAllRecords(char *alias) {
     FLOPPYRecordSet *rs = new FLOPPYRecordSet();
     HeapFileHeader *heapFileHeader = getHeapFileHeader();
     FLOPPYTableDescription *tblDesc = getTableDescription();
@@ -317,8 +327,8 @@ FLOPPYRecordSet * FLOPPYHeapFile::getAllRecords() {
                 FLOPPYRecordAttribute *recCol = new FLOPPYRecordAttribute();
                 
                 //table name
-                recCol->tableName = (char*)calloc(strlen(heapFileHeader->tableName)+1, sizeof(char));
-                strcpy(recCol->tableName, heapFileHeader->tableName);
+                recCol->tableName = (char*)calloc(strlen(alias)+1, sizeof(char));
+                strcpy(recCol->tableName, alias);
                 
                 //attribute name
             	recCol->name = (char*)calloc(strlen(tblCol->name) + 1, sizeof(char));

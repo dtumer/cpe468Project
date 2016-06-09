@@ -200,8 +200,8 @@ int main(int argc, char *argv[]) {
     
     
     
-    //result = db->execute("SELECT * FROM teachers;");
 	result = db->execute("SELECT FirstName, LastName, First, Last FROM list, teachers WHERE list.classroom = teachers.classroom;");
+    result = db->execute("SELECT * FROM teachers AS t WHERE classroom > 105;");
     result->print();
     delete result;
     

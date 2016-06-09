@@ -23,6 +23,7 @@ extern "C" {
 
 
 class FLOPPY_DBMS {
+private:
     FLOPPYBufferManager *buf;
 public:
     FLOPPY_DBMS(std::string diskName, int nPersistentBlocks, int nVolatileBlocks); //constructor
@@ -37,7 +38,6 @@ public:
     
     FLOPPYResult * insertRecord(FLOPPYInsertStatement *statement);
     FLOPPYResult * selectRecords(FLOPPYSelectStatement *statement);
-    
     
 };
 
