@@ -5,6 +5,7 @@
 #include "FLOPPYRecord.h"
 
 #include <string.h>
+#include <math.h>
 
 
 FLOPPYRecord::FLOPPYRecord() {
@@ -37,17 +38,25 @@ FLOPPYValue * FLOPPYRecord::filter(FLOPPYNode *node) {
             char *tableName = node->value->tableAttribute->tableName;
             char *attribute = node->value->tableAttribute->attribute;
             
-            
+//             printf("ATTRIBUTE NAME: ;%s;\n", attribute);
             
             for (unsigned i=0; i<columns->size(); i++) {
                 FLOPPYRecordAttribute *col = columns->at(i);
                 
-                if(tableName)
-                    if(strcmp(tableName, col->tableName) != 0)
-                        continue;
+                if (tableName) {
+                	if (strcmp(tableName, col->tableName) != 0) {
+                		printf("WTF\n");
+                		continue;
+                	}
+                }
                 
-                if(strcmp(attribute, col->name) != 0)
-                    continue;
+                printf("COL NAME: ;%s;\n", col->name);
+                printf("ATTRIBUTE NAME: ;%s;\n", attribute);
+                printf("COMPARE: %d\n", strcmp(attribute, col->name));
+                if (0 != strcmp(attribute, col->name)) {
+                	printf("WTFFFF\n");
+                	continue;
+                }
                 
                 return col->val;
             }
@@ -61,8 +70,17 @@ FLOPPYValue * FLOPPYRecord::filter(FLOPPYNode *node) {
     {
         printf("ConditionNode\n");
         FLOPPYValue *leftRet = filter(node->node.left);
-        FLOPPYValue *rightRet = filter(node->node.right);
+        FLOPPYValue *rightRet;
         
+        if (node->node.op != FLOPPYNodeOperator::ParenthesisOperator && node->node.op != FLOPPYNodeOperator::NotOperator) {
+        	rightRet = filter(node->node.right);
+        }
+        
+        if (node->node.op == FLOPPYNodeOperator::NotOperator) {
+        	printf("\t NotOperator\n");
+        	
+        	return leftRet;
+        }
         if(node->node.op == FLOPPYNodeOperator::AndOperator) {
             printf("\t AndOperator\n");
             if((leftRet->type() != ValueType::BooleanValue) || (rightRet->type() != ValueType::BooleanValue)){
@@ -213,49 +231,184 @@ FLOPPYValue * FLOPPYRecord::filter(FLOPPYNode *node) {
             else
                 printf("ERROR - != with diff types\n");
         }
-        /*
-        else if(node->node.op == FLOPPYNodeOperator::NotOperator) {
-            printf("NOT ");
-            printFLOPPYNode(tabLvl+1, node->node.left);
-            printf("\n%s", std::string(tabLvl, '\t').c_str());
+        else if(node->node.op == FLOPPYNodeOperator::ParenthesisOperator) {
+            printf("\t ParenthesisOperator\n");
+            
+            return leftRet;
         }
-        else if(node->node.op == FLOPPYNodeOperator::GreaterThanOperator) {
-            printFLOPPYNode(tabLvl+1, node->node.left);
-            printf(" > ");
-            printFLOPPYNode(tabLvl+1, node->node.right);
+        else {
+        	printf("ERROR - operation in condition not found\n");
         }
-        else if(node->node.op == FLOPPYNodeOperator::GreaterThanEqualOperator) {
-            printFLOPPYNode(tabLvl+1, node->node.left);
-            printf(" >= ");
-            printFLOPPYNode(tabLvl+1, node->node.right);
+    }
+    else if (node->_type == FLOPPYNodeType::ExpressionNode) {
+    	FLOPPYValue *leftRet = filter(node->node.left);
+        FLOPPYValue *rightRet;
+        
+        if (node->node.op != FLOPPYNodeOperator::ParenthesisOperator) {
+        	rightRet = filter(node->node.right);
         }
-        else if(node->node.op == FLOPPYNodeOperator::LessThanOperator) {
-            printFLOPPYNode(tabLvl+1, node->node.left);
-            printf(" < ");
-            printFLOPPYNode(tabLvl+1, node->node.right);
+        
+    	if(node->node.op == FLOPPYNodeOperator::PlusOperator) {
+            printf("\t PlusOperator\n");
+
+            if(leftRet->type() == rightRet->type()) {
+                if(leftRet->type() == ValueType::IntValue) {
+                	ret = new FLOPPYValue(IntValue);
+                	tempNodes->push_back(ret);
+                	
+                	ret->iVal = leftRet->iVal + rightRet->iVal;
+                	
+                	return ret;
+                }
+                else if(leftRet->type() == ValueType::FloatValue) {
+                	ret = new FLOPPYValue(FloatValue);
+                	tempNodes->push_back(ret);
+                	
+                	ret->fVal = leftRet->fVal + rightRet->fVal;
+                	
+                	return ret;
+                }
+            }
+            else {
+            	printf("ERROR - '+' with diff types\n");
+            	
+            	ret = new FLOPPYValue(NullValue);
+                tempNodes->push_back(ret);
+                
+                return ret;
+            }
         }
-        else if(node->node.op == FLOPPYNodeOperator::LessThanEqualOperator) {
-            printFLOPPYNode(tabLvl+1, node->node.left);
-            printf(" <= ");
-            printFLOPPYNode(tabLvl+1, node->node.right);
+        else if(node->node.op == FLOPPYNodeOperator::MinusOperator) {
+            printf("\t MinusOperator\n");
+
+            if(leftRet->type() == rightRet->type()) {
+                if(leftRet->type() == ValueType::IntValue) {
+                	ret = new FLOPPYValue(IntValue);
+                	tempNodes->push_back(ret);
+                	
+                	ret->iVal = leftRet->iVal + rightRet->iVal;
+                	
+                	return ret;
+                }
+                else if(leftRet->type() == ValueType::FloatValue) {
+                	ret = new FLOPPYValue(FloatValue);
+                	tempNodes->push_back(ret);
+                	
+                	ret->fVal = leftRet->fVal + rightRet->fVal;
+                	
+                	return ret;
+                }
+            }
+            else {
+            	printf("ERROR - '-' with diff types\n");
+            	
+            	ret = new FLOPPYValue(NullValue);
+                tempNodes->push_back(ret);
+                
+                return ret;
+            }
         }
-        else if(node->node.op == FLOPPYNodeOperator::EqualOperator) {
-            printFLOPPYNode(tabLvl+1, node->node.left);
-            printf(" = ");
-            printFLOPPYNode(tabLvl+1, node->node.right);
+        else if(node->node.op == FLOPPYNodeOperator::TimesOperator) {
+            printf("\t TimesOperator\n");
+
+            if(leftRet->type() == rightRet->type()) {
+                if(leftRet->type() == ValueType::IntValue) {
+                	ret = new FLOPPYValue(IntValue);
+                	tempNodes->push_back(ret);
+                	
+                	ret->iVal = leftRet->iVal * rightRet->iVal;
+                	
+                	return ret;
+                }
+                else if(leftRet->type() == ValueType::FloatValue) {
+                	ret = new FLOPPYValue(FloatValue);
+                	tempNodes->push_back(ret);
+                	
+                	ret->fVal = leftRet->fVal * rightRet->fVal;
+                	
+                	return ret;
+                }
+            }
+            else {
+            	printf("ERROR - '*' with diff types\n");
+            	
+            	ret = new FLOPPYValue(NullValue);
+                tempNodes->push_back(ret);
+                
+                return ret;
+            }
         }
-        else if(node->node.op == FLOPPYNodeOperator::NotEqualOperator) {
-            printFLOPPYNode(tabLvl+1, node->node.left);
-            printf(" != ");
-            printFLOPPYNode(tabLvl+1, node->node.right);
+        else if(node->node.op == FLOPPYNodeOperator::DivideOperator) {
+            printf("\t DivideOperator\n");
+
+            if(leftRet->type() == rightRet->type()) {
+                if(leftRet->type() == ValueType::IntValue) {
+                	ret = new FLOPPYValue(IntValue);
+                	tempNodes->push_back(ret);
+                	
+                	ret->iVal = leftRet->iVal / rightRet->iVal;
+                	
+                	return ret;
+                }
+                else if(leftRet->type() == ValueType::FloatValue) {
+                	ret = new FLOPPYValue(FloatValue);
+                	tempNodes->push_back(ret);
+                	
+                	ret->fVal = leftRet->fVal / rightRet->fVal;
+                	
+                	return ret;
+                }
+            }
+            else {
+            	printf("ERROR - '/' with diff types\n");
+            	
+            	ret = new FLOPPYValue(NullValue);
+                tempNodes->push_back(ret);
+                
+                return ret;
+            }
+        }
+        else if(node->node.op == FLOPPYNodeOperator::ModOperator) {
+            printf("\t ModOperator\n");
+
+            if(leftRet->type() == rightRet->type()) {
+                if(leftRet->type() == ValueType::IntValue) {
+                	ret = new FLOPPYValue(IntValue);
+                	tempNodes->push_back(ret);
+                	
+                	ret->iVal = leftRet->iVal % rightRet->iVal;
+                	
+                	return ret;
+                }
+                else if(leftRet->type() == ValueType::FloatValue) {
+                	ret = new FLOPPYValue(FloatValue);
+                	tempNodes->push_back(ret);
+                	
+                	ret->fVal = fmod(leftRet->fVal, rightRet->fVal);
+                	
+                	return ret;
+                }
+            }
+            else {
+            	printf("ERROR - '\%' with diff types\n");
+            	
+            	ret = new FLOPPYValue(NullValue);
+                tempNodes->push_back(ret);
+                
+                return ret;
+            }
         }
         else if(node->node.op == FLOPPYNodeOperator::ParenthesisOperator) {
-            printf("Parenthesis ");
-            printFLOPPYNode(tabLvl+1, node->node.left);
-            printf("\n%s", std::string(tabLvl, '\t').c_str());
+            printf("\t ParenthesisOperator\n");
+            
+            return leftRet;
         }
-         */
-        
+        else {
+        	printf("ERROR - operation in expression not found\n");
+        }
+    }
+    else if (node->_type == FLOPPYNodeType::AggregateNode) {
+    	printf("AGGREGATE\n");
     }
     
     ret = new FLOPPYValue(NullValue);
