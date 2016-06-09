@@ -7,6 +7,7 @@
 
 FLOPPYRecordAttribute::FLOPPYRecordAttribute() {
     tableName = NULL;
+    name = NULL;
 }
 
 FLOPPYRecordAttribute::~FLOPPYRecordAttribute() {

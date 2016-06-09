@@ -33,6 +33,7 @@ FLOPPYTableDescription::FLOPPYTableDescription(char *recordDescription) {
         //get col length
         if (column->type == ColumnType::VARCHAR) {
             column->size = (uint8_t)*ptr;
+            ptr += sizeof(uint8_t);
         }
         else if (column->type == ColumnType::INT) {
             column->size = 4;

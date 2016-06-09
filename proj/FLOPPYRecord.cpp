@@ -45,16 +45,14 @@ FLOPPYValue * FLOPPYRecord::filter(FLOPPYNode *node) {
                 
                 if (tableName) {
                 	if (strcmp(tableName, col->tableName) != 0) {
-                		printf("WTF\n");
                 		continue;
                 	}
                 }
                 
-                printf("COL NAME: ;%s;\n", col->name);
-                printf("ATTRIBUTE NAME: ;%s;\n", attribute);
-                printf("COMPARE: %d\n", strcmp(attribute, col->name));
+                // printf("COL NAME: ;%s;\n", col->name);
+//                 printf("ATTRIBUTE NAME: ;%s;\n", attribute);
+//                 printf("COMPARE: %d\n", strcmp(attribute, col->name));
                 if (0 != strcmp(attribute, col->name)) {
-                	printf("WTFFFF\n");
                 	continue;
                 }
                 
@@ -192,8 +190,10 @@ FLOPPYValue * FLOPPYRecord::filter(FLOPPYNode *node) {
                 ret = new FLOPPYValue(BooleanValue);
                 tempNodes->push_back(ret);
                 
-                if(leftRet->type() == ValueType::StringValue)
-                    ret->bVal = (strcmp(leftRet->sVal, rightRet->sVal) == 0);
+                if(leftRet->type() == ValueType::StringValue) {
+                	ret->bVal = (strcmp(leftRet->sVal, rightRet->sVal) == 0);
+                }
+//                     ret->bVal = (strcmp(leftRet->sVal, rightRet->sVal) == 0);
                 else if(leftRet->type() == ValueType::IntValue)
                     ret->bVal = (leftRet->iVal == rightRet->iVal);
                 else if(leftRet->type() == ValueType::FloatValue)
@@ -203,6 +203,7 @@ FLOPPYValue * FLOPPYRecord::filter(FLOPPYNode *node) {
                 else
                     ret->bVal = 0;
                 
+                printf("HERE\n");
                 return ret;
             }
             else

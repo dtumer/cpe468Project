@@ -317,11 +317,12 @@ FLOPPYRecordSet * FLOPPYHeapFile::getAllRecords() {
                 FLOPPYRecordAttribute *recCol = new FLOPPYRecordAttribute();
                 
                 //table name
-                recCol->tableName = (char*)calloc(sizeof(char), strlen(heapFileHeader->tableName)+1);
+                recCol->tableName = (char*)calloc(strlen(heapFileHeader->tableName)+1, sizeof(char));
                 strcpy(recCol->tableName, heapFileHeader->tableName);
                 
                 //attribute name
-                recCol->name = (char*)calloc(sizeof(char), strlen(tblCol->name)+1);
+                //printf("TABLE COLUMN NAME FIRST LETTER: %c\n", tblCol->name[0]);
+                recCol->name = (char*)calloc(strlen(tblCol->name) + 1, sizeof(char));
                 strcpy(recCol->name, tblCol->name);
                 
                 
