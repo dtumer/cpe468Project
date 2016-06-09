@@ -8,7 +8,7 @@
 #include "FLOPPYRecordAttribute.h"
 #include "FLOPPYRecord.h"
 
-#include <vector>
+#include <list>
 #include <stdio.h>
 
 class FLOPPYRecordSet {
@@ -19,7 +19,7 @@ public:
     void filter(FLOPPYNode *filter);
     void print();
     
-	std::vector<FLOPPYRecord *> *records;
+	std::list<FLOPPYRecord *> *records;
 };
 
 

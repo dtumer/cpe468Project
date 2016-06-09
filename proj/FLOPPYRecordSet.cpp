@@ -6,7 +6,7 @@
 
 
 FLOPPYRecordSet::FLOPPYRecordSet() {
-    records = new std::vector<FLOPPYRecord *>();
+    records = new std::list<FLOPPYRecord *>();
 }
 
 FLOPPYRecordSet::~FLOPPYRecordSet() {
@@ -19,8 +19,7 @@ FLOPPYRecordSet::~FLOPPYRecordSet() {
 void FLOPPYRecordSet::filter(FLOPPYNode *filter) {
 	FLOPPYRecord *tempRec;
     
-    std::vector<FLOPPYRecord *>::iterator itr = records->begin();
-    
+    std::list<FLOPPYRecord *>::iterator itr = records->begin();
 	while (itr != records->end()) {
         tempRec = *itr;
         FLOPPYValue *val = tempRec->filter(filter);
@@ -43,15 +42,17 @@ void FLOPPYRecordSet::filter(FLOPPYNode *filter) {
 
 void FLOPPYRecordSet::print() {
     printf("Records:\n");
-    for (unsigned i=0; i<records->size(); i++) {
-        FLOPPYRecord *record = records->at(i);
-        printf("  %02d-%02d: ", record->pageId, record->recordId);
+    
+    std::list<FLOPPYRecord *>::iterator itr = records->begin();
+    
+    while (itr != records->end()) {
+        printf("  %02d-%02d: ", (*itr)->pageId, (*itr)->recordId);
         
-        for (unsigned i=0; i<record->columns->size(); i++) {
+        for (unsigned i=0; i<(*itr)->columns->size(); i++) {
             if(i>0)
                 printf(", ");
             
-            FLOPPYRecordAttribute *col = record->columns->at(i);
+            FLOPPYRecordAttribute *col = (*itr)->columns->at(i);
             if(col->tableName)
                 printf("%s.",col->tableName);
             printf("%s (",col->name);
@@ -69,6 +70,8 @@ void FLOPPYRecordSet::print() {
             
             printf(")");
         }
+        
+        itr++;
         
         printf("\n");
     }
