@@ -75,6 +75,31 @@ FLOPPYQueryPlan::FLOPPYQueryPlan(FLOPPYStatement *statement) {
     }
 }
 
+/*Create a right-deep tree of table nodes to represent the joins. 
+Right-deep tree means that the left child of a cross product node is always going to be a
+Table node; i.e. createJoinTree( [r1, r2, r3, r4] ) would produce this tree:
+       X
+      / \
+    r1   X
+        / \
+        r2 X
+          / \
+        r3   r4
+        
+        The return value is a pointer to the root of the join-tree, which can be inserted
+        into the select-tree. */ 
+FLOPPYQueryPlanNode *createJoinTree(std::vector<FLOPPYTableSpec *> tableSpecs) {
+
+}
+
+/* Create the select statement tree.
+   If DISTINCT, add a deduplicate at the root. Otherwise, the tree is: 
+   Projection [select-set] ( Selection [where condition] (Join tree))
+   Remember to free the current tree if it exists.
+   */
+void createSelectStatementTree(FLOPPYSelectStatement *statement) {
+
+}
 //free all nodes in the tree, and any allocated instance variables
 FLOPPYQueryPlan::~FLOPPYQueryPlan() {
 
