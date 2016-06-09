@@ -17,22 +17,27 @@ FLOPPYRecordSet::~FLOPPYRecordSet() {
 }
 
 void FLOPPYRecordSet::filter(FLOPPYNode *filter) {
-	unsigned int i = 0;
-	while (i < records->size()) {
-		FLOPPYValue *val = records->at(i)->filter(filter);
+	FLOPPYRecord *tempRec;
+    
+    std::vector<FLOPPYRecord *>::iterator itr = records->begin();
+    
+	while (itr != records->end()) {
+        tempRec = *itr;
+        FLOPPYValue *val = tempRec->filter(filter);
 		
 		if (val->type() == ValueType::BooleanValue) {
 			if (!val->bVal) {
-				std::swap(records->at(i), records->back());
-				records->pop_back();
+				itr = records->erase(itr);
+				delete tempRec;
 			}
-			else {
-				i++;
-			}
+            else
+                itr++;
 		}
 		else {
 			printf("ERROR - FLOPPYRecordSet::filter\n");
+            itr++;
 		}
+        
 	}
 }
 
