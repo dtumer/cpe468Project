@@ -42,11 +42,21 @@ FLOPPYRecordAttribute * FLOPPYRecord::getColByTblAttr(FLOPPYTableAttribute *attr
             itr++;
             continue;
         }
-        
         return *itr;
     }
-    
     return NULL;
+}
+
+int FLOPPYRecord::compare(FLOPPYRecord *recA, FLOPPYRecord *recB, FLOPPYTableAttribute *cmpAttr) {
+    FLOPPYRecordAttribute *colA = recA->getColByTblAttr(cmpAttr);
+    FLOPPYRecordAttribute *colB = recB->getColByTblAttr(cmpAttr);
+    
+    //handle if we can't find a column because it was spelled wrong
+    if(!colA || !colB)
+        return 0;
+    
+    
+    return FLOPPYRecordAttribute::compareValues(colA->val, colB->val);
 }
 
 FLOPPYValue * FLOPPYRecord::filter(FLOPPYNode *node) {

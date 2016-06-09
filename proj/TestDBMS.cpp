@@ -163,8 +163,8 @@ int main(int argc, char *argv[]) {
     result = db->execute("INSERT INTO list VALUES('YUEN', 'ANIKA', 1, 103);");
     delete result;
     
-    
-    result = db->execute("SELECT * FROM teachers AS t WHERE classroom > 105 LIMIT 2;");
+    result = db->execute("SELECT * FROM list AS l ORDER BY classroom, LastName;");
+    //result = db->execute("SELECT * FROM teachers AS t WHERE classroom > 105 LIMIT 2;");
 	//result = db->execute("SELECT FirstName, LastName, First, Last FROM list, teachers AS t;");
     //result = db->execute("SELECT FirstName, LastName, First, Last FROM list, teachers AS t WHERE list.classroom = teachers.classroom;");
     result->print();
