@@ -321,10 +321,8 @@ FLOPPYRecordSet * FLOPPYHeapFile::getAllRecords() {
                 strcpy(recCol->tableName, heapFileHeader->tableName);
                 
                 //attribute name
-                //printf("TABLE COLUMN NAME FIRST LETTER: %c\n", tblCol->name[0]);
-                recCol->name = (char*)calloc(strlen(tblCol->name) + 1, sizeof(char));
+            	recCol->name = (char*)calloc(strlen(tblCol->name) + 1, sizeof(char));
                 strcpy(recCol->name, tblCol->name);
-                
                 
                 //value
                 ptr = data + tblCol->offset;
@@ -355,8 +353,6 @@ FLOPPYRecordSet * FLOPPYHeapFile::getAllRecords() {
             }
             
             rs->records->push_back(record);
-            
-            //printf("\tRECORD: %d %d\n", pageId, recordId);
             recordId = bitmap->nextRecord();
             
             free(data);
