@@ -299,7 +299,7 @@ int FLOPPYBufferManager::placePageInBuffer(Block *newBlock) {
         } 
         else {
             toEvict = persistentEvictionPolicy();
-            if (dirty[toEvict] == 'T') {
+            if (dirty[toEvict] == 'T' || isVolatile[toEvict] == 'T') {
                 if (flushPage(persistentPages[toEvict]->diskAddress) == BFMG_ERR) {
                     fprintf(stderr, "placePageInBuffer: failed to flush dirty page\n");
                     return BFMG_ERR;
