@@ -16,6 +16,18 @@ FLOPPYRecordSet::~FLOPPYRecordSet() {
     delete records;
 }
 
+void FLOPPYRecordSet::filter(FLOPPYNode *filter) {
+    for (auto itr = records->begin(); itr != records->end(); itr++) {
+        FLOPPYValue *val = (*itr)->filter(filter);
+        if(val->type() == ValueType::BooleanValue) {
+            if(!val->bVal)
+                records->erase(itr);
+        }
+        else
+            printf("ERROR - FLOPPYRecordSet::filter\n");
+    }
+}
+
 void FLOPPYRecordSet::print() {
     printf("Records:\n");
     for (unsigned i=0; i<records->size(); i++) {

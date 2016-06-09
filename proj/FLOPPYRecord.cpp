@@ -390,7 +390,7 @@ FLOPPYValue * FLOPPYRecord::filter(FLOPPYNode *node) {
                 }
             }
             else {
-            	printf("ERROR - '\%' with diff types\n");
+            	printf("ERROR - '%%' with diff types\n");
             	
             	ret = new FLOPPYValue(NullValue);
                 tempNodes->push_back(ret);

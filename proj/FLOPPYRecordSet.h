@@ -16,6 +16,7 @@ public:
     FLOPPYRecordSet();
     ~FLOPPYRecordSet();
     
+    void filter(FLOPPYNode *filter);
     void print();
     
 	std::vector<FLOPPYRecord *> *records;

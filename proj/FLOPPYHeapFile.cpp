@@ -393,8 +393,7 @@ int FLOPPYHeapFile::insertStatement(FLOPPYInsertStatement *statement) {
             ptr = data + tblCol->offset;
 
             if(val->type() == ValueType::StringValue) {
-                //val->sVal = (char*)calloc(sizeof(char), tblCol->size + 1);
-                memcpy(ptr, val->sVal, tblCol->size + 1);
+                strncpy(ptr, val->sVal, tblCol->size);
             }
             else if(val->type() == ValueType::IntValue)
                 memcpy(ptr, &(val->iVal), tblCol->size);

@@ -102,9 +102,9 @@ FLOPPYResult * FLOPPY_DBMS::selectRecords(FLOPPYSelectStatement *statement) {
     FLOPPYResult *result = new FLOPPYResult(SelectType);
     result->recordSet = heap->getAllRecords();
     
-    printSelectStatement(statement);
+    result->recordSet->filter(statement->whereCondition);
     
-    printFLOPPYValue(result->recordSet->records->at(0)->filter(statement->whereCondition));
+    printSelectStatement(statement);
     
     
     printf("\n\n;");
