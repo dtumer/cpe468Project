@@ -15,43 +15,32 @@ int main(int argc, char *argv[]) {
     //result->print();
     delete result;
     result = db->execute("INSERT INTO teachers VALUES('MACROSTIE', 'MIN', 101);");
-    //result->print();
     delete result;
     result = db->execute("INSERT INTO teachers VALUES('COVIN', 'JEROME', 102);");
-    //result->print();
     delete result;
     result = db->execute("INSERT INTO teachers VALUES('MOYER', 'OTHA', 103);");
-    //result->print();
     delete result;
     result = db->execute("INSERT INTO teachers VALUES('NIBLER', 'JERLENE', 104);");
-    //result->print();
     delete result;
     result = db->execute("INSERT INTO teachers VALUES('MARROTTE', 'KIRK', 105);");
-    //result->print();
     delete result;
     result = db->execute("INSERT INTO teachers VALUES('TARRING', 'LEIA', 106);");
-    //result->print();
     delete result;
     result = db->execute("INSERT INTO teachers VALUES('URSERY', 'CHARMAINE', 107);");
-    //result->print();
     delete result;
     result = db->execute("INSERT INTO teachers VALUES('ONDERSMA', 'LORIA', 108);");
-    //result->print();
     delete result;
     result = db->execute("INSERT INTO teachers VALUES('KAWA', 'GORDON', 109);");
-    //result->print();
     delete result;
     result = db->execute("INSERT INTO teachers VALUES('SUMPTION', 'GEORGETTA', 110);");
-    //result->print();
     delete result;
     result = db->execute("INSERT INTO teachers VALUES('KRIENER', 'BILLIE', 111);");
-    //result->print();
     delete result;
     result = db->execute("INSERT INTO teachers VALUES('SUGAI', 'ALFREDA', 112);");
-    //result->print();
     delete result;
     
-    result = db->execute("CREATE TABLE list( LastName VARCHAR(16), FirstName VARCHAR(16), grade INT, classroom INT,  PRIMARY KEY(FirstName,LastName));");
+    
+    result = db->execute("CREATE TABLE list VOLATILE( LastName VARCHAR(16), FirstName VARCHAR(16), grade INT, classroom INT,  PRIMARY KEY(FirstName,LastName));");
 	delete result;
     result = db->execute("INSERT INTO list VALUES('AMY', 'PATRINA', 1, 102);");
 	delete result;
@@ -173,40 +162,15 @@ int main(int argc, char *argv[]) {
     delete result;
     result = db->execute("INSERT INTO list VALUES('YUEN', 'ANIKA', 1, 103);");
     delete result;
-    result = db->execute("INSERT INTO teachers VALUES('MACROSTIE', 'MIN', 101);");
-    delete result;
-    result = db->execute("INSERT INTO teachers VALUES('COVIN', 'JEROME', 102);");
-    delete result;
-    result = db->execute("INSERT INTO teachers VALUES('MOYER', 'OTHA', 103);");
-    delete result;
-    result = db->execute("INSERT INTO teachers VALUES('NIBLER', 'JERLENE', 104);");
-    delete result;
-    result = db->execute("INSERT INTO teachers VALUES('MARROTTE', 'KIRK', 105);");
-    delete result;
-    result = db->execute("INSERT INTO teachers VALUES('TARRING', 'LEIA', 106);");
-    delete result;
-    result = db->execute("INSERT INTO teachers VALUES('URSERY', 'CHARMAINE', 107);");
-    delete result;
-    result = db->execute("INSERT INTO teachers VALUES('ONDERSMA', 'LORIA', 108);");
-    delete result;
-    result = db->execute("INSERT INTO teachers VALUES('KAWA', 'GORDON', 109);");
-    delete result;
-    result = db->execute("INSERT INTO teachers VALUES('SUMPTION', 'GEORGETTA', 110);");
-    delete result;
-    result = db->execute("INSERT INTO teachers VALUES('KRIENER', 'BILLIE', 111);");
-    delete result;
-    result = db->execute("INSERT INTO teachers VALUES('SUGAI', 'ALFREDA', 112);");
-    delete result;
     
     
-    
-	result = db->execute("SELECT FirstName, LastName, First, Last FROM list, teachers WHERE list.classroom = teachers.classroom;");
     result = db->execute("SELECT * FROM teachers AS t WHERE classroom > 105;");
+	//result = db->execute("SELECT FirstName, LastName, First, Last FROM list, teachers AS t;");
+    //result = db->execute("SELECT FirstName, LastName, First, Last FROM list, teachers AS t WHERE list.classroom = teachers.classroom;");
     result->print();
     delete result;
     
     result = db->execute("DROP TABLE teachers;");
-    ////result->print();
     delete result;
     
     

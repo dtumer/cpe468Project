@@ -98,18 +98,44 @@ FLOPPYResult * FLOPPY_DBMS::insertRecord(FLOPPYInsertStatement *statement) {
  * THIS NEEDS TO NOT JUST USE A HARD CODED TABLE
  */
 FLOPPYResult * FLOPPY_DBMS::selectRecords(FLOPPYSelectStatement *statement) {
-    FLOPPYHeapFile *heap = new FLOPPYHeapFile(buf, statement->tableSpecs->at(0)->tableName);
+    //Get tables and do cross products as needed
+    FLOPPYRecordSet *recordSet = NULL, *tempRS, *newRS;
+    for (auto itr = statement->tableSpecs->begin() ; itr != statement->tableSpecs->end(); itr++) {
+        FLOPPYHeapFile *heap = new FLOPPYHeapFile(buf, (*itr)->tableName);
+        
+        //move previous recordSet to temp storage
+        tempRS = recordSet;
+        
+        if((*itr)->alias)
+            newRS = heap->getAllRecords((*itr)->alias);
+        else
+            newRS = heap->getAllRecords();
+        
+        //merge record sets if more than one
+        if(tempRS) {
+            printf("do crossProduct\n");
+            //recordSet = FLOPPYRecordSet::crossProduct(tempRS, newRS);
+            
+            recordSet = newRS;//remove me
+            
+            delete tempRS;
+            //delete newRS;
+        }
+        else {
+            printf("one table\n");
+            recordSet = newRS;
+        }
+        
+        delete heap;
+    }
+    
+    //handle where clause
+    if(statement->whereCondition)
+        recordSet->filter(statement->whereCondition);
+    
+    //get results
     FLOPPYResult *result = new FLOPPYResult(SelectType);
-    result->recordSet = heap->getAllRecords();
-    
-    result->recordSet->filter(statement->whereCondition);
-    
-    printSelectStatement(statement);
-    
-    
-    printf("\n\n;");
-    
-    delete heap;
+    result->recordSet = recordSet;
     
     return result;
 }
