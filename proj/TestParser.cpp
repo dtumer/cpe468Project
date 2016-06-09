@@ -32,8 +32,8 @@ int main(int argc, char *argv[]) {
     TestSQLStatement("DROP TABLE Availability;");
     
     
-    //TestSQLStatement("CREATE TABLE list( LastName VARCHAR(16), FirstName VARCHAR(16), grade INT, classroom INT,  PRIMARY KEY(FirstName,LastName));");
-    //TestSQLStatement("CREATE TABLE teachers(Last VARCHAR(16), First VARCHAR(16), classroom INT, PRIMARY KEY(classroom));");
+    TestSQLStatement("CREATE TABLE list( LastName VARCHAR(16), FirstName VARCHAR(16), grade INT, classroom INT,  PRIMARY KEY(FirstName,LastName));");
+    TestSQLStatement("CREATE TABLE teachers(Last VARCHAR(16), First VARCHAR(16), classroom INT, PRIMARY KEY(classroom));");
     TestSQLStatement("INSERT INTO list VALUES('AMY', 'PATRINA', 1, 102);");
     TestSQLStatement("INSERT INTO list VALUES('AREHART', 'VERTIE', 3, 107);");
     TestSQLStatement("INSERT INTO list VALUES('ATWOOD', 'BETHEL', 5, 109);");

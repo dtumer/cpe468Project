@@ -21,6 +21,9 @@ public:
     void print();
     
 	std::list<FLOPPYRecord *> *records;
+	//std::vector<FLOPPYRecord *> *records;
+	
+	static FLOPPYRecordSet* crossProduct(FLOPPYRecordSet *set1, FLOPPYRecordSet *set2);
 };
 
 

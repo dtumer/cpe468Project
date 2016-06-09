@@ -23,7 +23,8 @@ public:
     FLOPPYValue *val;
     
     static int compareValues(FLOPPYValue *valA, FLOPPYValue *valB);
-    
+
+    FLOPPYRecordAttribute* clone();
 };
 
 #endif /* FLOPPYRecordAttribute_h */

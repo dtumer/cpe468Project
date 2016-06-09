@@ -37,3 +37,39 @@ int FLOPPYRecordAttribute::compareValues(FLOPPYValue *valA, FLOPPYValue *valB) {
     else
         return 0;
 }
+
+FLOPPYRecordAttribute* FLOPPYRecordAttribute::clone() {
+	FLOPPYRecordAttribute *ret = new FLOPPYRecordAttribute();
+	FLOPPYValue *value;
+	
+	ret->tableName = (char*)calloc(strlen(tableName) + 1, sizeof(char));
+	memcpy(ret->tableName, tableName, strlen(tableName));
+	
+	ret->name = (char*)calloc(strlen(name) + 1, sizeof(char));
+	memcpy(ret->name, name, strlen(name));
+	
+	if (val->type() == ValueType::StringValue) {
+		value = new FLOPPYValue(StringValue);
+		value->sVal = (char*)calloc(strlen(val->sVal) + 1, sizeof(char));
+		memcpy(value->sVal, val->sVal, strlen(val->sVal));
+	}
+	else if (val->type() == ValueType::IntValue) {
+		value = new FLOPPYValue(IntValue);
+		value->iVal = val->iVal;
+	}
+	else if (val->type() == ValueType::FloatValue) {
+		value = new FLOPPYValue(FloatValue);
+		value->fVal = val->fVal;
+	}
+	else if (val->type() == ValueType::BooleanValue) {
+		value = new FLOPPYValue(BooleanValue);
+		value->bVal = val->bVal;		
+	}
+	else {
+		value = new FLOPPYValue(NullValue);
+	}
+	
+	ret->val = value;
+	
+	return ret;
+}

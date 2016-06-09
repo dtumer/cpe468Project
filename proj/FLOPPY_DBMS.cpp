@@ -114,12 +114,12 @@ FLOPPYResult * FLOPPY_DBMS::selectRecords(FLOPPYSelectStatement *statement) {
         //merge record sets if more than one
         if(tempRS) {
             printf("do crossProduct\n");
-            //recordSet = FLOPPYRecordSet::crossProduct(tempRS, newRS);
+            recordSet = FLOPPYRecordSet::crossProduct(tempRS, newRS);
             
-            recordSet = newRS;//remove me
+            //recordSet = newRS;//remove me
             
             delete tempRS;
-            //delete newRS;
+            delete newRS;
         }
         else {
             printf("one table\n");
