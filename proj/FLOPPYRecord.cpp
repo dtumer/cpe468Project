@@ -68,7 +68,7 @@ FLOPPYValue * FLOPPYRecord::filter(FLOPPYNode *node) {
     {
         //printf("ConditionNode\n");
         FLOPPYValue *leftRet = filter(node->node.left);
-        FLOPPYValue *rightRet;
+        FLOPPYValue *rightRet = NULL;
         
         if (node->node.op != FLOPPYNodeOperator::ParenthesisOperator && node->node.op != FLOPPYNodeOperator::NotOperator) {
         	rightRet = filter(node->node.right);
@@ -96,18 +96,7 @@ FLOPPYValue * FLOPPYRecord::filter(FLOPPYNode *node) {
             if(leftRet->type() == rightRet->type()) {
                 ret = new FLOPPYValue(BooleanValue);
                 tempNodes->push_back(ret);
-                
-                if(leftRet->type() == ValueType::StringValue)
-                    ret->bVal = (strcmp(leftRet->sVal, rightRet->sVal) > 0);
-                else if(leftRet->type() == ValueType::IntValue)
-                    ret->bVal = (leftRet->iVal > rightRet->iVal);
-                else if(leftRet->type() == ValueType::FloatValue)
-                    ret->bVal = (leftRet->fVal > rightRet->fVal);
-                else if(leftRet->type() == ValueType::BooleanValue)
-                    ret->bVal = (leftRet->bVal > rightRet->bVal);
-                else
-                    ret->bVal = 0;
-                
+                ret->bVal = (FLOPPYRecordAttribute::compareValues(leftRet, rightRet) > 0) ? 1 : 0;
                 return ret;
             }
             else
@@ -119,18 +108,7 @@ FLOPPYValue * FLOPPYRecord::filter(FLOPPYNode *node) {
             if(leftRet->type() == rightRet->type()) {
                 ret = new FLOPPYValue(BooleanValue);
                 tempNodes->push_back(ret);
-                
-                if(leftRet->type() == ValueType::StringValue)
-                    ret->bVal = (strcmp(leftRet->sVal, rightRet->sVal) >= 0);
-                else if(leftRet->type() == ValueType::IntValue)
-                    ret->bVal = (leftRet->iVal >= rightRet->iVal);
-                else if(leftRet->type() == ValueType::FloatValue)
-                    ret->bVal = (leftRet->fVal >= rightRet->fVal);
-                else if(leftRet->type() == ValueType::BooleanValue)
-                    ret->bVal = (leftRet->bVal >= rightRet->bVal);
-                else
-                    ret->bVal = 0;
-                
+                ret->bVal = (FLOPPYRecordAttribute::compareValues(leftRet, rightRet) >= 0) ? 1 : 0;
                 return ret;
             }
             else
@@ -142,18 +120,7 @@ FLOPPYValue * FLOPPYRecord::filter(FLOPPYNode *node) {
             if(leftRet->type() == rightRet->type()) {
                 ret = new FLOPPYValue(BooleanValue);
                 tempNodes->push_back(ret);
-                
-                if(leftRet->type() == ValueType::StringValue)
-                    ret->bVal = (strcmp(leftRet->sVal, rightRet->sVal) < 0);
-                else if(leftRet->type() == ValueType::IntValue)
-                    ret->bVal = (leftRet->iVal < rightRet->iVal);
-                else if(leftRet->type() == ValueType::FloatValue)
-                    ret->bVal = (leftRet->fVal < rightRet->fVal);
-                else if(leftRet->type() == ValueType::BooleanValue)
-                    ret->bVal = (leftRet->bVal < rightRet->bVal);
-                else
-                    ret->bVal = 0;
-                
+                ret->bVal = (FLOPPYRecordAttribute::compareValues(leftRet, rightRet) < 0) ? 1 : 0;
                 return ret;
             }
             else
@@ -165,18 +132,7 @@ FLOPPYValue * FLOPPYRecord::filter(FLOPPYNode *node) {
             if(leftRet->type() == rightRet->type()) {
                 ret = new FLOPPYValue(BooleanValue);
                 tempNodes->push_back(ret);
-                
-                if(leftRet->type() == ValueType::StringValue)
-                    ret->bVal = (strcmp(leftRet->sVal, rightRet->sVal) <= 0);
-                else if(leftRet->type() == ValueType::IntValue)
-                    ret->bVal = (leftRet->iVal <= rightRet->iVal);
-                else if(leftRet->type() == ValueType::FloatValue)
-                    ret->bVal = (leftRet->fVal <= rightRet->fVal);
-                else if(leftRet->type() == ValueType::BooleanValue)
-                    ret->bVal = (leftRet->bVal <= rightRet->bVal);
-                else
-                    ret->bVal = 0;
-                
+                ret->bVal = (FLOPPYRecordAttribute::compareValues(leftRet, rightRet) <= 0) ? 1 : 0;
                 return ret;
             }
             else
@@ -188,42 +144,19 @@ FLOPPYValue * FLOPPYRecord::filter(FLOPPYNode *node) {
             if(leftRet->type() == rightRet->type()) {
                 ret = new FLOPPYValue(BooleanValue);
                 tempNodes->push_back(ret);
-                
-                if(leftRet->type() == ValueType::StringValue)
-                	ret->bVal = (strcmp(leftRet->sVal, rightRet->sVal) == 0);
-                else if(leftRet->type() == ValueType::IntValue)
-                    ret->bVal = (leftRet->iVal == rightRet->iVal);
-                else if(leftRet->type() == ValueType::FloatValue)
-                    ret->bVal = (leftRet->fVal == rightRet->fVal);
-                else if(leftRet->type() == ValueType::BooleanValue)
-                    ret->bVal = (leftRet->bVal == rightRet->bVal);
-                else
-                    ret->bVal = 0;
-                
-                printf("HERE\n");
+                ret->bVal = (FLOPPYRecordAttribute::compareValues(leftRet, rightRet) == 0) ? 1 : 0;
                 return ret;
             }
             else
                 printf("ERROR - == with diff types\n");
         }
         else if(node->node.op == FLOPPYNodeOperator::NotEqualOperator) {
-            printf("\t NotEqualOperator\n");
+            //printf("\t NotEqualOperator\n");
             
             if(leftRet->type() == rightRet->type()) {
                 ret = new FLOPPYValue(BooleanValue);
                 tempNodes->push_back(ret);
-                
-                if(leftRet->type() == ValueType::StringValue)
-                    ret->bVal = (strcmp(leftRet->sVal, rightRet->sVal) != 0);
-                else if(leftRet->type() == ValueType::IntValue)
-                    ret->bVal = (leftRet->iVal != rightRet->iVal);
-                else if(leftRet->type() == ValueType::FloatValue)
-                    ret->bVal = (leftRet->fVal != rightRet->fVal);
-                else if(leftRet->type() == ValueType::BooleanValue)
-                    ret->bVal = (leftRet->bVal != rightRet->bVal);
-                else
-                    ret->bVal = 0;
-                
+                ret->bVal = (FLOPPYRecordAttribute::compareValues(leftRet, rightRet) != 0) ? 1 : 0;
                 return ret;
             }
             else
@@ -240,7 +173,7 @@ FLOPPYValue * FLOPPYRecord::filter(FLOPPYNode *node) {
     }
     else if (node->_type == FLOPPYNodeType::ExpressionNode) {
     	FLOPPYValue *leftRet = filter(node->node.left);
-        FLOPPYValue *rightRet;
+        FLOPPYValue *rightRet = NULL;
         
         if (node->node.op != FLOPPYNodeOperator::ParenthesisOperator) {
         	rightRet = filter(node->node.right);

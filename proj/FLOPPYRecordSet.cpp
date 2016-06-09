@@ -56,8 +56,6 @@ void FLOPPYRecordSet::limit(int limit) {
             itr++;
             count++;
         }
-        
-        
     }
 }
 
