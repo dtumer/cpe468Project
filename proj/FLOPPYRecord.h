@@ -17,6 +17,7 @@ public:
     int pageId;
     int recordId;
     
+    FLOPPYRecordAttribute * getColByTblAttr(FLOPPYTableAttribute *attr);
     FLOPPYValue *filter(FLOPPYNode *node);
     
     std::vector<FLOPPYRecordAttribute *> *columns;

@@ -28,31 +28,36 @@ FLOPPYRecord::~FLOPPYRecord() {
 }
 
 
+FLOPPYRecordAttribute * FLOPPYRecord::getColByTblAttr(FLOPPYTableAttribute *attr) {
+    std::vector<FLOPPYRecordAttribute *>::iterator itr = columns->begin();
+    while (itr != columns->end()) {
+        if (attr->tableName) {
+            if (strcmp(attr->tableName, (*itr)->tableName) != 0) {
+                itr++;
+                continue;
+            }
+        }
+        
+        if (strcmp(attr->attribute, (*itr)->name) != 0) {
+            itr++;
+            continue;
+        }
+        
+        return *itr;
+    }
+    
+    return NULL;
+}
+
 FLOPPYValue * FLOPPYRecord::filter(FLOPPYNode *node) {
     FLOPPYValue *ret;
     
     if(node->_type == FLOPPYNodeType::ValueNode) {
         //printf("ValueNode\n");
         if(node->value->type() == ValueType::TableAttributeValue) {
-            //printf("\t TableAttributeValue\n");
-            char *tableName = node->value->tableAttribute->tableName;
-            char *attribute = node->value->tableAttribute->attribute;
-            
-            for (unsigned i=0; i<columns->size(); i++) {
-                FLOPPYRecordAttribute *col = columns->at(i);
-                
-                if (tableName) {
-                	if (strcmp(tableName, col->tableName) != 0) {
-                		continue;
-                	}
-                }
-                
-                if (0 != strcmp(attribute, col->name)) {
-                	continue;
-                }
-                
-                return col->val;
-            }
+            FLOPPYRecordAttribute *attr = getColByTblAttr(node->value->tableAttribute);
+            if(attr)
+                return attr->val;
             
             printf("ERROR - tableAttribute not found\n");
         }
