@@ -17,6 +17,7 @@ public:
     ~FLOPPYRecordSet();
     
     void filter(FLOPPYNode *filter);
+    void limit(int limit);
     void print();
     
 	std::list<FLOPPYRecord *> *records;

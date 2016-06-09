@@ -164,7 +164,7 @@ int main(int argc, char *argv[]) {
     delete result;
     
     
-    result = db->execute("SELECT * FROM teachers AS t WHERE classroom > 105;");
+    result = db->execute("SELECT * FROM teachers AS t WHERE classroom > 105 LIMIT 2;");
 	//result = db->execute("SELECT FirstName, LastName, First, Last FROM list, teachers AS t;");
     //result = db->execute("SELECT FirstName, LastName, First, Last FROM list, teachers AS t WHERE list.classroom = teachers.classroom;");
     result->print();

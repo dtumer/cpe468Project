@@ -133,6 +133,10 @@ FLOPPYResult * FLOPPY_DBMS::selectRecords(FLOPPYSelectStatement *statement) {
     if(statement->whereCondition)
         recordSet->filter(statement->whereCondition);
     
+    //limit
+    if(statement->limit > 0)
+    	recordSet->limit(statement->limit);
+    
     //get results
     FLOPPYResult *result = new FLOPPYResult(SelectType);
     result->recordSet = recordSet;

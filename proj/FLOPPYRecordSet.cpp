@@ -40,6 +40,27 @@ void FLOPPYRecordSet::filter(FLOPPYNode *filter) {
 	}
 }
 
+void FLOPPYRecordSet::limit(int limit) {
+    int count = 0;
+    FLOPPYRecord *tempRec;
+    
+    std::list<FLOPPYRecord *>::iterator itr = records->begin();
+    while (itr != records->end()) {
+        tempRec = *itr;
+        
+        if(count >= limit) {
+            itr = records->erase(itr);
+            delete tempRec;
+        }
+        else {
+            itr++;
+            count++;
+        }
+        
+        
+    }
+}
+
 void FLOPPYRecordSet::print() {
     printf("Records:\n");
     
