@@ -1,5 +1,18 @@
-#include "FLOPPYQueryPlanNode.h"
+#ifndef TableNode_h
+#define TableNode_h
 
-class TableNode extends FLOPPYQueryPlanNode {
-   char *tableName;
+#include "FLOPPYQueryPlanNode.h"
+#include <string>
+#include <iostream>
+
+class TableNode : public FLOPPYQueryPlanNode {
+private:
+   std::string tableName;
+public:
+    TableNode(); 
+    ~TableNode(); 
+    void setTableName(std::string tableName);
+    void printTableName();
 };
+
+#endif
