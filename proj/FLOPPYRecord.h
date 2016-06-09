@@ -18,6 +18,8 @@ public:
     int recordId;
     
     FLOPPYRecordAttribute * getColByTblAttr(FLOPPYTableAttribute *attr);
+    
+    static int compare(FLOPPYRecord *recA, FLOPPYRecord *recB, FLOPPYTableAttribute *cmpAttr);
     FLOPPYValue *filter(FLOPPYNode *node);
     
     std::vector<FLOPPYRecordAttribute *> *columns;

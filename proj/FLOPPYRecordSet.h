@@ -17,13 +17,19 @@ public:
     ~FLOPPYRecordSet();
     
     void filter(FLOPPYNode *filter);
+    void sort(std::vector<FLOPPYTableAttribute *> *orderBys);
     void limit(int limit);
     void print();
     
 	std::list<FLOPPYRecord *> *records;
-	//std::vector<FLOPPYRecord *> *records;
 	
 	static FLOPPYRecordSet* crossProduct(FLOPPYRecordSet *set1, FLOPPYRecordSet *set2);
+    
+private:
+    static bool sortHelper(FLOPPYRecord *recA, FLOPPYRecord *recB, std::vector<FLOPPYTableAttribute *> *orderBys);
+    
+    void mergeSort(std::vector<FLOPPYTableAttribute *> *orderBys);
+    void mergeSortMerge(FLOPPYRecordSet *setA, FLOPPYRecordSet *setB, std::vector<FLOPPYTableAttribute *> *orderBys);
 };
 
 
