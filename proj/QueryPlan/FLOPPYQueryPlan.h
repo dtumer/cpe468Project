@@ -22,8 +22,8 @@ public:
     FLOPPYQueryPlanNode *getTree();
 private:
    FLOPPYQueryPlanNode *root;
-   
-
+   void createJoinTree(std::vector<FLOPPYTableSpec *> tableSpecs);
+   void createSelectStatementTree(FLOPPYSelectStatement *statement);
 	
 };
 
