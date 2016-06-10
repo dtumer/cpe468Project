@@ -7,6 +7,7 @@
 
 #include "FLOPPYRecordAttribute.h"
 #include "FLOPPYRecord.h"
+#include "libs/FLOPPYParser/FLOPPY_statements/FLOPPYSelectItem.h"
 
 #include <list>
 #include <stdio.h>

@@ -116,8 +116,6 @@ FLOPPYResult * FLOPPY_DBMS::selectRecords(FLOPPYSelectStatement *statement) {
             printf("do crossProduct\n");
             recordSet = FLOPPYRecordSet::crossProduct(tempRS, newRS);
             
-            //recordSet = newRS;//remove me
-            
             delete tempRS;
             delete newRS;
         }
@@ -129,17 +127,20 @@ FLOPPYResult * FLOPPY_DBMS::selectRecords(FLOPPYSelectStatement *statement) {
         delete heap;
     }
     
-    //handle where clause
+    //WHERE
     if(statement->whereCondition)
         recordSet->filter(statement->whereCondition);
     
-    //order by
+    //ORDER BY
     if(statement->orderBys)
     	recordSet->sort(statement->orderBys);
     
-    //limit
+    //LIMIT
     if(statement->limit > 0)
     	recordSet->limit(statement->limit);
+    
+    //Projection
+    recordSet->projection(statement->selectItems);
     
     //get results
     FLOPPYResult *result = new FLOPPYResult(SelectType);

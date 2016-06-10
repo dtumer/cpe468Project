@@ -12,7 +12,6 @@
 #include "libs/FLOPPYParser/FLOPPY_statements/FLOPPYValue.h"
 #include "libs/FLOPPYParser/FLOPPY_statements/FLOPPYNode.h"
 
-
 class FLOPPYRecordAttribute {
 public:
     FLOPPYRecordAttribute();
@@ -21,6 +20,8 @@ public:
     char *tableName;
     char *name;
     FLOPPYValue *val;
+    bool isAggregate;
+    FLOPPYAggregateOperator op;
     
     static int compareValues(FLOPPYValue *valA, FLOPPYValue *valB);
 
