@@ -8,6 +8,7 @@
 FLOPPYRecordAttribute::FLOPPYRecordAttribute() {
     tableName = NULL;
     name = NULL;
+    val = NULL;
     isAggregate = 0;
 }
 

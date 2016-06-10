@@ -297,75 +297,88 @@ FLOPPYRecordSet* FLOPPYRecordSet::crossProduct(FLOPPYRecordSet *set1, FLOPPYReco
 
 void FLOPPYRecordSet::groupBy(std::vector<FLOPPYTableAttribute *> *groupByAttributes, std::vector<FLOPPYSelectItem *> *aggregates) {
 	std::list<FLOPPYRecord *> *newRecords = new std::list<FLOPPYRecord *>();
-	int cmp = 0;
-	//for every current record
-	//	compare to list of newRecords using the group by attributes (use sort helper body for this)
-	//		if not there
-	//			add to new record set
-	//			for all aggregation functions put a new column in the record with value zero of type that table attribute
-					//create RecordAttribute object
-					//NOTE: get table attribute type in group by attribute and look for that attribute in the record column attributes
-	//		
-	//		
-	//		go through all aggregates
-	//			go through all record columns
-	//				check if aggregate
-	//					check if operation is same
-	//						perform aggregate operation
 	
-	auto recordItr = records->begin();
-	
+    //go through each record on the table
+    auto recordItr = records->begin();
 	while (recordItr != records->end()) {
 		FLOPPYRecord *tempAggRecord = NULL;
 		FLOPPYRecord *tempCurRecord = *recordItr;
 		
     	for (auto newRecordItr = newRecords->begin(); newRecordItr != newRecords->end(); newRecordItr++) {
-    		cmp = 0;
+    		int cmp = 0;
         	
-        	for (auto groupByItr = groupByAttributes->begin(); groupByItr != groupByAttributes->end(); groupByItr++) {
+            for (auto groupByItr = groupByAttributes->begin(); groupByItr != groupByAttributes->end(); groupByItr++) {
         		cmp = FLOPPYRecord::compare(tempCurRecord, *newRecordItr, *groupByItr);
-        		
-        		//printf("COMPARE ATTRIBUTES: %d\n", cmp);
-        		
-        		if (cmp != 0) {
+        		if (cmp != 0)
         			break;
-        		}
         	}
         	
         	if (cmp == 0) {
         		tempAggRecord = *newRecordItr;
         	}
         	
-        	//printf("\n");
     	}
     	
+        //grouped record does not exist so we need to create it
     	if (!tempAggRecord) {
     		tempAggRecord = new FLOPPYRecord();
     		
-    		//go through each group by attribute and see if it's in the columns and add it to the new record
-    		for (auto groupByItr2 = groupByAttributes->begin(); groupByItr2 != groupByAttributes->end(); groupByItr2++) {
-    			auto attributeItr = tempCurRecord->columns->begin();
-    			
-    			while (attributeItr != tempCurRecord->columns->end()) {
-    				FLOPPYRecordAttribute *tempAttr = *attributeItr;
-    				
-    				if ((*groupByItr2)->tableName) {
-    					if (strcmp((*attributeItr)->tableName, (*groupByItr2)->tableName) != 0) {
-    						attributeItr++;
-    						continue;
-    					}
-    				}
-    				
-    				if (strcmp((*attributeItr)->name, (*groupByItr2)->attribute) != 0) {
-    						attributeItr++;
-    						continue;
-    				}
-    				
-    				//printf("TEMP ATTR NAME: %s\n", tempAttr->name);
-    				attributeItr = tempCurRecord->columns->erase(attributeItr);
-    				tempAggRecord->columns->push_back(tempAttr);
-    			}
-    		}
+            //go through each group by attribute and see if it's in the columns and add it to the new record
+            for (auto groupByItr2 = groupByAttributes->begin(); groupByItr2 != groupByAttributes->end(); groupByItr2++) {
+                auto attributeItr = tempCurRecord->columns->begin();
+                
+                while (attributeItr != tempCurRecord->columns->end()) {
+                    FLOPPYRecordAttribute *tempAttr = *attributeItr;
+                    
+                    if ((*groupByItr2)->tableName) {
+                        if (strcmp((*attributeItr)->tableName, (*groupByItr2)->tableName) != 0) {
+                            attributeItr++;
+                            continue;
+                        }
+                    }
+                    
+                    if (strcmp((*attributeItr)->name, (*groupByItr2)->attribute) != 0) {
+                        attributeItr++;
+                        continue;
+                    }
+                    
+                    //create FLOPPYTableAttribute column
+                    FLOPPYRecordAttribute *aggAttr = new FLOPPYRecordAttribute();
+                    
+                    if(tempAttr->tableName) {
+                        aggAttr->tableName = (char*)calloc(strlen(tempAttr->tableName) + 1, sizeof(char));
+                        strcpy(aggAttr->tableName, tempAttr->tableName);
+                    }
+                    
+                    aggAttr->name = (char*)calloc(strlen(tempAttr->name) + 1, sizeof(char));
+                    strcpy(aggAttr->name, tempAttr->name);
+                    
+                    
+                    if(tempAttr->val->type() == ValueType::StringValue) {
+                        aggAttr->val = new FLOPPYValue(StringValue);
+                        aggAttr->val->sVal = (char*)calloc(sizeof(char), strlen(tempAttr->val->sVal) + 1);
+                        strcpy(aggAttr->val->sVal, tempAttr->val->sVal);
+                    }
+                    else if(tempAttr->val->type() == ValueType::IntValue) {
+                        aggAttr->val = new FLOPPYValue(IntValue);
+                        aggAttr->val->iVal = tempAttr->val->iVal;
+                    }
+                    else if(tempAttr->val->type() == ValueType::FloatValue) {
+                        aggAttr->val = new FLOPPYValue(FloatValue);
+                        aggAttr->val->fVal = tempAttr->val->fVal;
+                    }
+                    else if(tempAttr->val->type() == ValueType::BooleanValue) {
+                        aggAttr->val = new FLOPPYValue(BooleanValue);
+                        aggAttr->val->bVal = tempAttr->val->bVal;
+                    }
+                    else if(tempAttr->val->type() == ValueType::NullValue) {
+                        aggAttr->val = new FLOPPYValue(NullValue);
+                    }
+                    
+                    tempAggRecord->columns->push_back(aggAttr);
+                    break;
+                }
+            }
     		
     		//add aggregation columns...if exists
     		for (auto aggItr = aggregates->begin(); aggItr != aggregates->end(); aggItr++) {
@@ -381,25 +394,24 @@ void FLOPPYRecordSet::groupBy(std::vector<FLOPPYTableAttribute *> *groupByAttrib
     				aggAttr->val->iVal = 0;
     			}
     			else {
-//     				printf("ATTRIBUTE NAME: %s\n", (*aggItr)->aggregate.value->sVal);
     				aggAttr->name = (char*)calloc(strlen((*aggItr)->aggregate.value->sVal) + 1, sizeof(char));
     				strcpy(aggAttr->name, (*aggItr)->aggregate.value->sVal);
     			
     				//go through all attributes in tempCurRecord to find type of attribute and create FLOPPY value of that attribute type
     				for (auto tempRecItr = tempCurRecord->columns->begin(); tempRecItr != tempCurRecord->columns->end(); tempRecItr++) {
-    					//check column 
-    					if (strcmp((*tempRecItr)->name, (*aggItr)->aggregate.value->sVal) != 0) {
+                        
+                        //check column
+    					if (strcmp((*tempRecItr)->name, (*aggItr)->aggregate.value->sVal) != 0)
     						continue;
-    					}
-    				
-    					//aggregated column is of type INT
+                        
+                        //aggregated column is of type INT
     					if ((*tempRecItr)->val->type() == ValueType::IntValue) {
-    						aggAttr->val = new FLOPPYValue(IntValue);
+                            aggAttr->val = new FLOPPYValue(IntValue);
     						aggAttr->val->iVal = 0;
     					}
     					//aggregated column is of type FLOAT
     					else if ((*tempRecItr)->val->type() == ValueType::FloatValue) {
-    						aggAttr->val = new FLOPPYValue(FloatValue);
+                            aggAttr->val = new FLOPPYValue(FloatValue);
     						aggAttr->val->fVal = 0.0;
     					}
     					else {
@@ -412,21 +424,21 @@ void FLOPPYRecordSet::groupBy(std::vector<FLOPPYTableAttribute *> *groupByAttrib
     			
     			tempAggRecord->columns->push_back(aggAttr);
     		}
-    		
-    		//add aggregation "set to zero"
-    		newRecords->push_back(tempAggRecord);
-    	}
-    	
-    	//do the math for each aggregation
-    	for (auto aggItr = aggregates->begin(); aggItr != aggregates->end(); aggItr++) {
-    			//check for FLOPPYTableAttribute 
-    			printf("compute AGGREGATIONS\n");
-    		}
-    	
-    	//delete each record from old records
-    	recordItr = records->erase(recordItr);
-    	delete tempCurRecord;
-	}
+            
+            //add aggregation "set to zero"
+            newRecords->push_back(tempAggRecord);
+        }
+        
+        //do the math for each aggregation
+        for (auto aggItr = aggregates->begin(); aggItr != aggregates->end(); aggItr++) {
+            //check for FLOPPYTableAttribute
+            //printf("compute AGGREGATIONS\n");
+        }
+        
+        //delete each record from old records
+        recordItr = records->erase(recordItr);
+        delete tempCurRecord;
+    }
 	
 	records->swap(*newRecords);
 	
@@ -447,50 +459,40 @@ void FLOPPYRecordSet::print() {
             
             FLOPPYRecordAttribute *col = (*itr)->columns->at(i);
             
-            printf("\n");
-            
             if (col->isAggregate && col->op == FLOPPYAggregateOperator::CountStarAggregate) {
             	printf("COUNT(*) %ld", col->val->iVal);
             } 
             else {
             	if (col->isAggregate) {
-            		if (col->op == FLOPPYAggregateOperator::CountAggregate) {
-            			printf("COUNT(%s) (", col->name);
-            		}
-            		else if (col->op == FLOPPYAggregateOperator::AverageAggregate) {
+            		if(col->op == FLOPPYAggregateOperator::CountAggregate)
+                        printf("COUNT(%s) (", col->name);
+            		else if(col->op == FLOPPYAggregateOperator::AverageAggregate)
             			printf("AVG(%s) (", col->name);
-            		}
-            		else if (col->op == FLOPPYAggregateOperator::MinAggregate) {
+            		else if(col->op == FLOPPYAggregateOperator::MinAggregate)
             			printf("MIN(%s) (", col->name);
-            		}
-            		else if (col->op == FLOPPYAggregateOperator::MaxAggregate) {
+            		else if(col->op == FLOPPYAggregateOperator::MaxAggregate)
             			printf("MAX(%s) (", col->name);
-            		}
-					else if (col->op == FLOPPYAggregateOperator::SumAggregate) {
+					else if(col->op == FLOPPYAggregateOperator::SumAggregate)
             			printf("SUM(%s) (", col->name);
-            		} 
-            		
-            		printf("\n");         		
             	}
             	else {
             		if(col->tableName)
                 		printf("%s.",col->tableName);
            			printf("%s (",col->name);
-            	}
-            
-            	printf("TYPE: %d\n", col->val->type());
-            	if(col->val->type() == ValueType::StringValue)
-                	printf("STRING \"%s\"", col->val->sVal);
-            	else if(col->val->type() == ValueType::IntValue)
-                	printf("INT %ld", col->val->iVal);
-            	else if(col->val->type() == ValueType::FloatValue)
-                	printf("FLOAT %f", col->val->fVal);
-            	else if(col->val->type() == ValueType::BooleanValue)
-                	printf("BOOLEAN %d", col->val->bVal);
-            	else if(col->val->type() == ValueType::NullValue)
-                	printf("NULL");
-            
-            printf(")");	
+                }
+                
+                if(col->val->type() == ValueType::StringValue)
+                    printf("STRING \"%s\"", col->val->sVal);
+                else if(col->val->type() == ValueType::IntValue)
+                    printf("INT %ld", col->val->iVal);
+                else if(col->val->type() == ValueType::FloatValue)
+                    printf("FLOAT %f", col->val->fVal);
+                else if(col->val->type() == ValueType::BooleanValue)
+                    printf("BOOLEAN %d", col->val->bVal);
+                else if(col->val->type() == ValueType::NullValue)
+                    printf("NULL");
+                
+                printf(")");
             }
         }
         
