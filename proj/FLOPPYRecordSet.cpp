@@ -60,7 +60,7 @@ void FLOPPYRecordSet::projection(std::vector<FLOPPYSelectItem *> *items) {
         while (selectItr != items->end()) {
             
             if((*selectItr)->_type == FLOPPYSelectItemType::TableAttributeType) {
-                printf("\t Attr: \"%s.%s\n", (*selectItr)->tableAttribute->tableName, (*selectItr)->tableAttribute->attribute);
+                //printf("\t Attr: \"%s.%s\n", (*selectItr)->tableAttribute->tableName, (*selectItr)->tableAttribute->attribute);
                 
                 //loop through all columns still in record
                 std::vector<FLOPPYRecordAttribute *>::iterator colItr = (*recItr)->columns->begin();
@@ -623,6 +623,49 @@ void FLOPPYRecordSet::groupBy(std::vector<FLOPPYTableAttribute *> *groupByAttrib
 // 	records->swap(*newRecords);
 // 	
 // 	delete newRecords;
+}
+
+void FLOPPYRecordSet::distinct() {
+    std::list<FLOPPYRecord *> *newRecords = new std::list<FLOPPYRecord *>();
+    
+    //go through each record on the table
+    auto recordItr = records->begin();
+    while (recordItr != records->end()) {
+        FLOPPYRecord *tempNewRecord = NULL;
+        FLOPPYRecord *tempCurRecord = *recordItr;
+        
+        for (auto newRecordItr = newRecords->begin(); newRecordItr != newRecords->end(); newRecordItr++) {
+            int cmp = 0;
+            
+            for (unsigned int i=0; i<tempCurRecord->columns->size(); i++) {
+                FLOPPYRecordAttribute *colA = tempCurRecord->columns->at(i);
+                FLOPPYRecordAttribute *colB = (*newRecordItr)->columns->at(i);
+                
+                cmp = FLOPPYRecordAttribute::compareValues(colA->val, colB->val);
+                
+                if (cmp != 0)
+                    break;
+            }
+            
+            if (cmp == 0)
+                tempNewRecord = *newRecordItr;
+        }
+        
+        //new record, lets add it
+        if (!tempNewRecord) {
+            recordItr = records->erase(recordItr);
+            newRecords->push_back(tempCurRecord);
+        }
+        else {
+            //delete each record from old records
+            recordItr = records->erase(recordItr);
+            delete tempCurRecord;
+        }
+    }
+    
+    records->swap(*newRecords);
+    
+    delete newRecords;
 }
 
 void FLOPPYRecordSet::print() {

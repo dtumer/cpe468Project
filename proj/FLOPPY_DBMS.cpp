@@ -152,15 +152,16 @@ FLOPPYResult * FLOPPY_DBMS::selectRecords(FLOPPYSelectStatement *statement) {
     if(statement->orderBys)
     	recordSet->sort(statement->orderBys);
     
-    //LIMIT
-    if(statement->limit > 0)
-    	recordSet->limit(statement->limit);
-    
     //Projection
     recordSet->projection(statement->selectItems);
     
     //DISTINCT
+    if(statement->distinct)
+        recordSet->distinct();
     
+    //LIMIT
+    if(statement->limit > 0)
+        recordSet->limit(statement->limit);
     
     //get results
     FLOPPYResult *result = new FLOPPYResult(SelectType);
