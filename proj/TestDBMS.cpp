@@ -167,6 +167,7 @@ int main(int argc, char *argv[]) {
     printf("\n");
     
     //ok
+
     db->executeTest("SELECT COUNT(*) FROM teachers;");
     printf("\n");
     
