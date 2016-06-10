@@ -40,6 +40,109 @@ void FLOPPYRecordSet::filter(FLOPPYNode *filter) {
 	}
 }
 
+void FLOPPYRecordSet::projection(std::vector<FLOPPYSelectItem *> *items) {
+    std::vector<FLOPPYRecordAttribute *> *tempAttributes;
+    
+    //if no items are in the list or if it is
+    if(items->size() < 1 || (items->size() == 1 && items->front()->_type == FLOPPYSelectItemType::StarType)) {
+        return;
+    }
+    
+    //loop through each record
+    std::list<FLOPPYRecord *>::iterator recItr = records->begin();
+    while (recItr != records->end()) {
+        tempAttributes = new std::vector<FLOPPYRecordAttribute *>();
+        
+        //loop though each select item
+        std::vector<FLOPPYSelectItem *>::iterator selectItr = items->begin();
+        while (selectItr != items->end()) {
+            
+            if((*selectItr)->_type == FLOPPYSelectItemType::TableAttributeType) {
+                printf("\t Attr: \"%s.%s\n", (*selectItr)->tableAttribute->tableName, (*selectItr)->tableAttribute->attribute);
+                
+                //loop through all columns still in record
+                std::vector<FLOPPYRecordAttribute *>::iterator colItr = (*recItr)->columns->begin();
+                while (colItr != (*recItr)->columns->end()) {
+                    FLOPPYRecordAttribute *tempAttr = *colItr;
+                    
+                    //skip aggregates
+                    if(tempAttr->isAggregate) {
+                        colItr++;
+                        continue;
+                    }
+                    
+                    //skip different table names
+                    if ((*selectItr)->tableAttribute->tableName) {
+                        if (strcmp((*selectItr)->tableAttribute->tableName, tempAttr->tableName) != 0) {
+                            colItr++;
+                            continue;
+                        }
+                    }
+                    
+                    //skip different attribute
+                    if (strcmp((*selectItr)->tableAttribute->attribute, tempAttr->name) != 0) {
+                        colItr++;
+                        continue;
+                    }
+                    
+                    //add to tempAttr
+                    colItr = (*recItr)->columns->erase(colItr);
+                    tempAttributes->push_back(tempAttr);
+                }
+                selectItr++;
+            }
+            else if((*selectItr)->_type == FLOPPYSelectItemType::AggregateType) {
+                printf("\t Aggregate: \"%s.%s\n", (*selectItr)->aggregate.value->tableAttribute->tableName, (*selectItr)->aggregate.value->tableAttribute->attribute);
+                
+                //loop through all columns still in record
+                std::vector<FLOPPYRecordAttribute *>::iterator colItr = (*recItr)->columns->begin();
+                while (colItr != (*recItr)->columns->end()) {
+                    FLOPPYRecordAttribute *tempAttr = *colItr;
+                    
+                    //skip attributes
+                    if(!tempAttr->isAggregate) {
+                        colItr++;
+                        continue;
+                    }
+                    
+                    //skip different operations
+                    if((*selectItr)->aggregate.op != tempAttr->op) {
+                        colItr++;
+                        continue;
+                    }
+                    
+                    //skip different table names
+                    if ((*selectItr)->aggregate.value->tableAttribute->tableName) {
+                        if (strcmp((*selectItr)->aggregate.value->tableAttribute->tableName, tempAttr->tableName) != 0) {
+                            colItr++;
+                            continue;
+                        }
+                    }
+                    
+                    //skip different attribute
+                    if (strcmp((*selectItr)->aggregate.value->tableAttribute->attribute, tempAttr->name) != 0) {
+                        colItr++;
+                        continue;
+                    }
+                    
+                    //add to tempAttr
+                    colItr = (*recItr)->columns->erase(colItr);
+                    tempAttributes->push_back(tempAttr);
+                }
+                selectItr++;
+            }
+        }
+        
+        (*recItr)->columns->swap(*tempAttributes);
+        
+        for (auto itr = tempAttributes->begin() ; itr != tempAttributes->end(); itr++) {
+            delete (*itr);
+        }
+        delete tempAttributes;
+        recItr++;
+    }
+}
+
 bool FLOPPYRecordSet::sortHelper(FLOPPYRecord *recA, FLOPPYRecord *recB, std::vector<FLOPPYTableAttribute *> *orderBys) {
     int cmp = 0;
     for (unsigned i=0; i<orderBys->size(); i++) {
