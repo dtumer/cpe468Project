@@ -137,10 +137,10 @@ FLOPPYResult * FLOPPY_DBMS::selectRecords(FLOPPYSelectStatement *statement) {
     if (statement->groupBy) {
         //GROUP BY
     	if (statement->groupBy->groupByAttributes) {
-    		recordSet->groupBy(statement->groupBy->groupByAttributes, getAggregations(statement));
+            std::vector<FLOPPYSelectItem *> *aggregations = getAggregations(statement);
+    		recordSet->groupBy(statement->groupBy->groupByAttributes, aggregations);
+            delete aggregations;
     	}
-    	
-    	recordSet->print();
     	
         //HAVING
     	if (statement->groupBy->havingCondition) {
@@ -157,7 +157,7 @@ FLOPPYResult * FLOPPY_DBMS::selectRecords(FLOPPYSelectStatement *statement) {
     	recordSet->limit(statement->limit);
     
     //Projection
-    recordSet->projection(statement->selectItems);
+    //recordSet->projection(statement->selectItems);
     
     //DISTINCT
     
