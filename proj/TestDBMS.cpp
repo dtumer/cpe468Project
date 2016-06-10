@@ -151,11 +151,11 @@ int main(int argc, char *argv[]) {
     //ok
     //db->executeTest("SELECT * FROM teachers WHERE Last <> 'MOYER';");
     
-    //broken
+    //ok
     //db->executeTest("SELECT COUNT(*) FROM teachers;");
     
-    //broken
-    db->executeTest("SELECT COUNT(*) FROM list;");
+    //ok
+    //db->executeTest("SELECT COUNT(*) FROM list;");
     
     //broken
     //db->executeTest("SELECT MAX(grade), MIN(grade), MAX(classroom), MIN(classroom) FROM list;");
