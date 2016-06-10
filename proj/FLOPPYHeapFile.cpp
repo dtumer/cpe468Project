@@ -235,7 +235,14 @@ int FLOPPYHeapFile::insertRecord(char *record) {
     return 0;
 }
 
-int FLOPPYHeapFile::deleteRecord(int pageId, int recordId) {
+void FLOPPYHeapFile::deleteRecords(FLOPPYRecordSet *recordSet) {
+    //loop through each record
+    for (auto itr = recordSet->records->begin() ; itr != recordSet->records->end(); itr++) {
+        deleteRecord((*itr)->pageId, (*itr)->recordId);
+    }
+}
+
+void FLOPPYHeapFile::deleteRecord(int pageId, int recordId) {
     HeapFileHeader *heapFileHeader = getHeapFileHeader();
     HeapPageHeader *heapPageHeader = getPageHeader(pageId);
     DiskAddress page = getDiskAddress(pageId);
@@ -269,7 +276,6 @@ int FLOPPYHeapFile::deleteRecord(int pageId, int recordId) {
     free(bitmapData);
     free(heapPageHeader);
     free(heapFileHeader);
-    return 0;
 }
 
 int FLOPPYHeapFile::updateRecord(int pageId, int recordId, char *record) {

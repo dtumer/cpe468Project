@@ -38,6 +38,7 @@ public:
     
     FLOPPYResult * insertRecord(FLOPPYInsertStatement *statement);
     FLOPPYResult * selectRecords(FLOPPYSelectStatement *statement);
+    FLOPPYResult * deleteRecords(FLOPPYDeleteStatement *statement);
     
 private:
 	/* for testing */
