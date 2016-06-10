@@ -6,6 +6,8 @@
 #include "SelectionNode.h"
 #include "GroupingNode.h"
 #include "TableNode.h"
+#include "CrossProductNode.h"
+#include "DeduplicateNode.h"
 
 /**
 * Create a FLOPPY query plan based on the statement 
@@ -69,8 +71,11 @@ FLOPPYQueryPlan::FLOPPYQueryPlan(FLOPPYStatement *statement) {
                 groupingTest.printAggregates();
             }
             printf("Testing table node: ");
-            tableTest.setTableName("testTable");
+            tableTest.setTableName((char*)"testTable");
             tableTest.printTableName();
+
+            FLOPPYQueryPlanNode *join = createJoinTree(theStatement->tableSpecs);
+            printCrossNode(join);
             break;
     }
 }
@@ -88,8 +93,93 @@ Table node; i.e. createJoinTree( [r1, r2, r3, r4] ) would produce this tree:
         
         The return value is a pointer to the root of the join-tree, which can be inserted
         into the select-tree. */ 
-FLOPPYQueryPlanNode *createJoinTree(std::vector<FLOPPYTableSpec *> tableSpecs) {
+FLOPPYQueryPlanNode * FLOPPYQueryPlan::createJoinTree(std::vector<FLOPPYTableSpec *> *tableSpecs) {
+    std::vector<FLOPPYTableSpec *> theTableSpecs = *tableSpecs;
 
+    //lets reverse the vector
+    std::reverse(theTableSpecs.begin(), theTableSpecs.end());
+
+    //set up bottom most node with two children
+    //since we know size >= 2
+    CrossProductNode *node = new CrossProductNode();
+    TableNode *leftTable = new TableNode();
+    TableNode *rightTable = new TableNode();
+    
+    //Get first table spec for right most node
+    FLOPPYTableSpec *tableSpec = theTableSpecs.at(0);
+
+    //setup right most node
+    //printf("table:name: ");
+    //printf(tableSpec->tableName);
+    //printf("\n");
+    rightTable->setTableName(tableSpec->tableName);
+    rightTable->setAlias(tableSpec->alias);
+    rightTable->setOp(TABLE);
+
+    //Get left sibling spec
+    tableSpec = theTableSpecs.at(1);
+
+    //setup left sibling
+    leftTable->setTableName(tableSpec->tableName);
+    leftTable->setAlias(tableSpec->alias);
+    leftTable->setOp(TABLE);
+
+    //actually setup the cross product node
+    node->setOp(CROSS);
+    node->setLeftChild(leftTable);
+    node->setRightChild(rightTable);
+
+    CrossProductNode *newCross;
+    TableNode *newTable;
+    for(unsigned int i = 2; i < theTableSpecs.size(); i++) { 
+        tableSpec = theTableSpecs.at(i);
+        printf(tableSpec->tableName);
+        printf("\n");
+
+        //Create new table node
+        newTable = new TableNode();
+        newTable->setOp(TABLE);
+        newTable->setTableName(tableSpec->tableName);
+        newTable->setAlias(tableSpec->alias);
+
+        newCross = new CrossProductNode();
+        newCross->setOp(CROSS);
+        newCross->setLeftChild(newTable);
+        
+        //set right child to our previous node
+        newCross->setRightChild(node);
+
+        //update old node poiner
+        node = newCross;
+    }
+    return node;
+}
+
+/**
+ * Prints a given cross product node out allowing you to see the
+ * different levels of the tree.
+ */
+void FLOPPYQueryPlan::printCrossNode(FLOPPYQueryPlanNode *node) {
+    int i = 0;
+   
+    TableNode *tNode;
+    while(node->rightChild->op != TABLE) {
+        printf("%d leftTable: ", i);
+        tNode = (TableNode*)node->leftChild;
+        printf(tNode->getTableName());
+        printf("\n");
+        node = node->rightChild;
+        i++;
+    }
+    printf("lastLeftTable: ");
+    tNode = (TableNode*)node->leftChild;
+    printf(tNode->getTableName());
+    printf("\n");
+
+    printf("lastRightTable: ");
+    tNode = (TableNode*)node->rightChild;
+    printf(tNode->getTableName());
+    printf("\n");
 }
 
 /* Create the select statement tree.

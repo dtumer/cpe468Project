@@ -8,10 +8,14 @@
 class TableNode : public FLOPPYQueryPlanNode {
 private:
    std::string tableName;
+   std::string alias;
 public:
     TableNode(); 
     ~TableNode(); 
-    void setTableName(std::string tableName);
+    void setTableName(char* tableName);
+    const char* getTableName();
+    void setAlias(char* tableAlias);
+    const char* getAlias();
     void printTableName();
 };
 

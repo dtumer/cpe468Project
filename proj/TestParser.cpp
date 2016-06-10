@@ -142,7 +142,7 @@ int main(int argc, char *argv[]) {
     TestSQLStatement("SELECT l.FirstName, l.LastName FROM list l, teachers t WHERE t.classroom = 103 AND t.classroom = l.classroom AND t.LastName <> 'BIBB';");
     TestSQLStatement("SELECT l.classroom, COUNT(*) FROM list l,  teachers t WHERE l.classroom = t.classroom AND l.grade > 3 GROUP BY l.classroom;");
 
-    dbms.execute("SELECT MAX(NodeId), FileId FROM Availability WHERE x = 5 GROUP By l.classroom;");
+    dbms.execute("SELECT MAX(NodeId), FileId FROM Seasons, Availability, Classrooms, Students WHERE x = 5 GROUP By l.classroom;");
     
     return 0;
 }

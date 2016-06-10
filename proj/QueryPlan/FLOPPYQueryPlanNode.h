@@ -28,13 +28,18 @@ typedef enum{
 
 class FLOPPYQueryPlanNode {
 public:
-	RelationalOperation op;
+    FLOPPYQueryPlanNode();
+    ~FLOPPYQueryPlanNode();
+    RelationalOperation op;
 
    FLOPPYQueryPlanNode *leftChild;
    FLOPPYQueryPlanNode *rightChild;
    
-   void apply();  
-   
+   //void apply();  
+   void setOp(RelationalOperation r);
+   RelationalOperation getOp();
+   void setLeftChild(FLOPPYQueryPlanNode *leftChild);
+   void setRightChild(FLOPPYQueryPlanNode *rightChild);
 };
 
 #endif

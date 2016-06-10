@@ -7,6 +7,7 @@
 #include "../libs/FLOPPYParser/FLOPPYParser.h"
 #include "../FLOPPYResult.h"
 #include "../ParserDebug.h"
+#include <algorithm>
 
 class FLOPPYQueryPlan {
 public:
@@ -22,8 +23,9 @@ public:
     FLOPPYQueryPlanNode *getTree();
 private:
    FLOPPYQueryPlanNode *root;
-   void createJoinTree(std::vector<FLOPPYTableSpec *> tableSpecs);
-   void createSelectStatementTree(FLOPPYSelectStatement *statement);
+   FLOPPYQueryPlanNode * createJoinTree(std::vector<FLOPPYTableSpec *> *tableSpecs);
+   FLOPPYQueryPlanNode * createSelectStatementTree(FLOPPYSelectStatement *statement);
+   void printCrossNode(FLOPPYQueryPlanNode *node);
 	
 };
 
