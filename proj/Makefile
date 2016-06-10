@@ -61,7 +61,7 @@ runFLOPPY_CLI: FLOPPY_CLI.out
 
 runTestDBMS: TestDBMS.out
 	-@rm *.disk
-	valgrind --track-origins=yes --leak-check=full ./TestDBMS.out
+	./TestDBMS.out
 
 clean:
 	rm -f *.out

@@ -1,6 +1,8 @@
 #include "FLOPPY_DBMS.h"
 #include "FLOPPYResult.h"
 
+#include <iostream>
+
 FLOPPY_DBMS::FLOPPY_DBMS (std::string diskName, int nPersistentBlocks, int nVolatileBlocks) {
     //create temp char*
     char *diskNameC = new char[diskName.length() + 1];
@@ -20,6 +22,8 @@ FLOPPYResult* FLOPPY_DBMS::execute(std::string sql) {
     FLOPPYOutput *parsedCommand = FLOPPYParser::parseFLOPPYString(sql);
     FLOPPYResult *result;
     
+    printf("FLOPPY Query: %s\n", sql.c_str());
+        
     if (parsedCommand->isValid) { // Use isValid flag to detect is parser parsed correctly.
         
         switch (parsedCommand->statement->type()) {
@@ -36,7 +40,6 @@ FLOPPYResult* FLOPPY_DBMS::execute(std::string sql) {
                 result = selectRecords((FLOPPYSelectStatement*) parsedCommand->statement);
                 break;
             case StatementType::DeleteStatement:
-                printf("DELETE\n");
                 result = deleteRecords((FLOPPYDeleteStatement*) parsedCommand->statement);
                 printDeleteStatement((FLOPPYDeleteStatement*) parsedCommand->statement);
                 break;

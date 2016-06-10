@@ -401,18 +401,28 @@ void FLOPPYRecordSet::initializeAggregations(FLOPPYRecord *record, FLOPPYRecord 
             	
     			if ((*recItr)->val->type() == ValueType::IntValue) {
                     aggregate->val = new FLOPPYValue(IntValue);
-    				aggregate->val->iVal = 0;
+                    
+                    //set min value first to first thing we're looking at rather than 0
+                    if (aggregate->op == FLOPPYAggregateOperator::MinAggregate) {
+                    	aggregate->val->iVal = (*recItr)->val->iVal;
+                    }
+                    else {
+                    	aggregate->val->iVal = 0;
+                    }
     			}
     			else if ((*recItr)->val->type() == ValueType::FloatValue) {
                     aggregate->val = new FLOPPYValue(FloatValue);
-    				aggregate->val->fVal = 0.0;
+                    
+                    //set min value first to first thing we're looking at rather than 0                    
+                    if (aggregate->op == FLOPPYAggregateOperator::MinAggregate) {
+                    	aggregate->val->fVal = (*recItr)->val->fVal;
+                    }
+                    else {
+                    	aggregate->val->fVal = 0.0;
+                    }
     			}
     			else {
     				printf("ERROR - Cannot aggregate on that column type\n");
-    			}
-    			
-    			if ((*aggItr)->aggregate.op == FLOPPYAggregateOperator::SumAggregate) {
-    				printf("INIT VALUE: %d\n", (*aggItr)->aggregate.value->iVal);
     			}
     					
     			break;
@@ -423,25 +433,27 @@ void FLOPPYRecordSet::initializeAggregations(FLOPPYRecord *record, FLOPPYRecord 
 	}
 }
 
+//assumes there will only be one CountStarType
 void FLOPPYRecordSet::incrementCountStar(FLOPPYRecord *record) {
 	for (auto itr = record->columns->begin(); itr != record->columns->end(); itr++) {
-		if ((*itr)->isAggregate && (*itr)->op == FLOPPYAggregateOperator::CountStarAggregate) {
+		if ((*itr)->isAggregate && (*itr)->op == FLOPPYAggregateOperator::CountStarAggregate /*&& strcmp((*colItr)->name, aggregate->aggregate.value->sVal) == 0*/) {
 			(*itr)->val->iVal++;
 		}
 	}
 }
 
 //update max value
+//*attribute - record attribute with value we need
+//*record - new record we will manipulate
 void FLOPPYRecordSet::updateMax(FLOPPYRecord *record, FLOPPYSelectItem *aggregate, FLOPPYRecordAttribute *attribute) {
 	for (auto colItr = record->columns->begin(); colItr != record->columns->end(); colItr++) {
-		if ((*colItr)->isAggregate && (*colItr)->op == FLOPPYAggregateOperator::MaxAggregate) {
-			if (attribute->val->type() == ValueType::IntValue) {
-				//printf("ATTR VAL: %d\n", attribute->val->iVal);
+		if (strcmp((*colItr)->name, aggregate->aggregate.value->sVal) == 0 && (*colItr)->isAggregate && (*colItr)->op == FLOPPYAggregateOperator::MaxAggregate) {
+			if ((*colItr)->val->type() == ValueType::IntValue) {
 				if (attribute->val->iVal > (*colItr)->val->iVal) {
 					(*colItr)->val->iVal = attribute->val->iVal;
 				}
 			}
-			else if (attribute->val->type() == ValueType::FloatValue) {
+			else if ((*colItr)->val->type() == ValueType::FloatValue) {
 				if (attribute->val->fVal > (*colItr)->val->fVal) {
 					(*colItr)->val->fVal = attribute->val->fVal;
 				}
@@ -451,15 +463,18 @@ void FLOPPYRecordSet::updateMax(FLOPPYRecord *record, FLOPPYSelectItem *aggregat
 }
 
 //update min value
+//FLOPPYRecordAttribute is the one to change!!!!
+//FLOPPYRecord is where to get the new value!!!
+//FLOPPYSelectItem contains the type of data and such
 void FLOPPYRecordSet::updateMin(FLOPPYRecord *record, FLOPPYSelectItem *aggregate, FLOPPYRecordAttribute *attribute) {
 	for (auto colItr = record->columns->begin(); colItr != record->columns->end(); colItr++) {
-		if ((*colItr)->isAggregate && (*colItr)->op == FLOPPYAggregateOperator::MaxAggregate) {
-			if (attribute->val->type() == ValueType::IntValue) {
+		if (strcmp((*colItr)->name, aggregate->aggregate.value->sVal) == 0 && (*colItr)->isAggregate && (*colItr)->op == FLOPPYAggregateOperator::MinAggregate) {
+			if ((*colItr)->val->type() == ValueType::IntValue) {
 				if (attribute->val->iVal < (*colItr)->val->iVal) {
 					(*colItr)->val->iVal = attribute->val->iVal;
 				}
 			}
-			else if (attribute->val->type() == ValueType::FloatValue) {
+			else if ((*colItr)->val->type() == ValueType::FloatValue) {
 				if (attribute->val->fVal < (*colItr)->val->fVal) {
 					(*colItr)->val->fVal = attribute->val->fVal;
 				}
@@ -471,12 +486,12 @@ void FLOPPYRecordSet::updateMin(FLOPPYRecord *record, FLOPPYSelectItem *aggregat
 //update sum value
 void FLOPPYRecordSet::updateSum(FLOPPYRecord *record, FLOPPYSelectItem *aggregate, FLOPPYRecordAttribute *attribute) {
 	for (auto colItr = record->columns->begin(); colItr != record->columns->end(); colItr++) {
-		if ((*colItr)->isAggregate && (*colItr)->op == FLOPPYAggregateOperator::SumAggregate) {
-			if (attribute->val->type() == ValueType::IntValue) {
+		if (strcmp((*colItr)->name, aggregate->aggregate.value->sVal) == 0 && (*colItr)->isAggregate && (*colItr)->op == FLOPPYAggregateOperator::SumAggregate) {
+			if ((*colItr)->val->type() == ValueType::IntValue) {
 				(*colItr)->val->iVal += attribute->val->iVal;
 			}
-			else if (attribute->val->type() == ValueType::FloatValue) {
-				(*colItr)->val->fVal += attribute->val->fVal;
+			else if ((*colItr)->val->type() == ValueType::FloatValue) {
+				(*colItr)->val->fVal = attribute->val->fVal;
 			}
 		}
 	}
@@ -500,15 +515,14 @@ void FLOPPYRecordSet::countAggregateColumns(FLOPPYRecord *record, std::list<FLOP
 			}
 			//handle all other aggregations
 			else {
-				//go through all the columns in this record and find the column represented by the aggregation
-				for (auto colItr = (*recItr)->columns->begin(); colItr != (*recItr)->columns->end(); colItr++) {
+				//go through all the columns the record to find the value which we need
+				for (auto colItr = record->columns->begin(); colItr != record->columns->end(); colItr++) {
 					//get the common column for this aggregation
 					if (strcmp((*aggItr)->aggregate.value->sVal, (*colItr)->name) == 0) {
 						if ((*aggItr)->aggregate.op == FLOPPYAggregateOperator::AverageAggregate) {
 							printf("AVG()\n");
 						}
 						else if ((*aggItr)->aggregate.op == FLOPPYAggregateOperator::MaxAggregate) {
-							//check if current column value is greater than the MAX value
 							updateMax(*recItr, *aggItr, *colItr);
 						}
 						else if ((*aggItr)->aggregate.op == FLOPPYAggregateOperator::MinAggregate) {
@@ -521,6 +535,7 @@ void FLOPPYRecordSet::countAggregateColumns(FLOPPYRecord *record, std::list<FLOP
 							printf("ERROR - Unsupported aggregation type!\n");
 						}
 						
+						break;
 // 						printf("COL VAL: %d\n", (*colItr)->val->iVal);
 					}
 				}

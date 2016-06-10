@@ -107,114 +107,149 @@ int main(int argc, char *argv[]) {
     db->executeTest("INSERT INTO list VALUES('YUEN', 'ANIKA', 1, 103);");
     
     //ok
-    //db->executeTest("SELECT * FROM teachers;");
+    db->executeTest("SELECT * FROM teachers;");
+    printf("\n");
     
     //ok
-    //db->executeTest("SELECT * FROM list WHERE classroom = 103;");
+    db->executeTest("SELECT * FROM list WHERE classroom = 103;");
+    printf("\n");
     
     //ok
-    //db->executeTest("SELECT Last, First FROM teachers;");
+    db->executeTest("SELECT Last, First FROM teachers;");
+    printf("\n");
     
     //ok
-    //db->executeTest("SELECT LastName, FirstName FROM list WHERE grade = 2;");
+    db->executeTest("SELECT LastName, FirstName FROM list WHERE grade = 2;");
+    printf("\n");
     
     //ok
-    //db->executeTest("SELECT * FROM list WHERE grade < 2;");
+    db->executeTest("SELECT * FROM list WHERE grade < 2;");
+    printf("\n");
     
     //ok
-    //db->executeTest("SELECT * FROM list WHERE grade > 4;");
+    db->executeTest("SELECT * FROM list WHERE grade > 4;");
+    printf("\n");
     
     //ok
-    //db->executeTest("SELECT * FROM list WHERE grade <= 2;");
+    db->executeTest("SELECT * FROM list WHERE grade <= 2;");
+    printf("\n");
     
     //ok
-    //db->executeTest("SELECT * FROM list WHERE grade >=5;");
+    db->executeTest("SELECT * FROM list WHERE grade >=5;");
+    printf("\n");
     
     //ok
-    //db->executeTest("SELECT * FROM list WHERE grade != 4;");
+    db->executeTest("SELECT * FROM list WHERE grade != 4 ORDER BY grade;");
+    printf("\n");
     
     //ok
-    //db->executeTest("SELECT * FROM list WHERE grade < 5 AND grade > 3;");
+    db->executeTest("SELECT * FROM list WHERE grade < 5 AND grade > 3;");
+    printf("\n");
     
     //ok
-    //db->executeTest("SELECT DISTINCT grade FROM list;");
+    db->executeTest("SELECT DISTINCT grade FROM list;");
+    printf("\n");
     
     //ok
-    //db->executeTest("SELECT DISTINCT classroom FROM list WHERE grade = 1;");
+    db->executeTest("SELECT DISTINCT classroom FROM list WHERE grade = 1;");
+    printf("\n");
     
     //ok
-    //db->executeTest("SELECT classroom FROM list WHERE LastName = 'BIBB';");
+    db->executeTest("SELECT classroom FROM list WHERE LastName = 'BIBB';");
+    printf("\n");
     
     //ok
-    //db->executeTest("SELECT * FROM teachers WHERE Last = 'MOYER';");
+    db->executeTest("SELECT * FROM teachers WHERE Last = 'MOYER';");
+    printf("\n");
     
     //ok
-    //db->executeTest("SELECT * FROM teachers WHERE Last <> 'MOYER';");
+    db->executeTest("SELECT * FROM teachers WHERE Last <> 'MOYER';");
+    printf("\n");
     
-    //broken
-    //db->executeTest("SELECT COUNT(*) FROM teachers;");
+    //ok
+    db->executeTest("SELECT COUNT(*) FROM teachers;");
+    printf("\n");
     
-    //broken
+    //ok
     db->executeTest("SELECT COUNT(*) FROM list;");
-    
-    //broken
-    //db->executeTest("SELECT MAX(grade), MIN(grade), MAX(classroom), MIN(classroom) FROM list;");
+    printf("\n");
     
     //ok
-    //db->executeTest("SELECT grade, COUNT(*) FROM list GROUP BY grade;");
+    db->executeTest("SELECT MAX(grade), MIN(grade), MAX(classroom), MIN(classroom) FROM list;");
+    printf("\n");
     
     //ok
-    //db->executeTest("SELECT classroom, COUNT(*) FROM list WHERE grade = 1 GROUP BY classroom;");
+    db->executeTest("SELECT grade, COUNT(*) FROM list GROUP BY grade;");
+    printf("\n");
     
     //ok
-    //db->executeTest("SELECT grade, COUNT(*) FROM list GROUP BY grade HAVING COUNT(*) > 8;");
+    db->executeTest("SELECT classroom, COUNT(*) FROM list WHERE grade = 1 GROUP BY classroom;");
+    printf("\n");
     
     //ok
-    //db->executeTest("SELECT DISTINCT grade FROM list ORDER BY grade;");
+    db->executeTest("SELECT grade, COUNT(*) FROM list GROUP BY grade HAVING COUNT(*) > 8;");
+    printf("\n");
+    
+    //ok - when projection is on
+    db->executeTest("SELECT DISTINCT grade FROM list ORDER BY grade;");
+    printf("\n");
     
     //ok
-    //db->executeTest("SELECT DISTINCT classroom FROM list ORDER BY grade;");
+    db->executeTest("SELECT DISTINCT classroom FROM list ORDER BY grade;");
+    printf("\n");
     
     //ok
-    //db->executeTest("SELECT FirstName, LastName, First, Last FROM list, teachers WHERE list.classroom = teachers.classroom;");
+    db->executeTest("SELECT FirstName, LastName, First, Last FROM list, teachers WHERE list.classroom = teachers.classroom;");
+    printf("\n");
     
     //ok
-    //db->executeTest("SELECT l.FirstName, l.LastName, t.First, t.Last FROM list l,  teachers t WHERE l.classroom = t.classroom;");
+    db->executeTest("SELECT l.FirstName, l.LastName, t.First, t.Last FROM list l,  teachers t WHERE l.classroom = t.classroom;");
+    printf("\n");
+    
+    //BROKEN
+    db->executeTest("SELECT l.FirstName, l.LastName FROM list l, list pa WHERE pa.FirstName = 'AMY' AND pa.LastName = 'PATRINA' AND l.classroom = pa.classroom;");
+    printf("\n");
+    
+    //BROKEN
+    db->executeTest("SELECT l.FirstName, l.LastName FROM list l, list pa WHERE pa.FirstName = 'AMY' AND pa.LastName = 'PATRINA' AND l.classroom = pa.classroom ORDER BY l.LastName;");
+    printf("\n");
+    
+    //BROKEN
+    db->executeTest("SELECT l.FirstName, l.LastName FROM list l, teachers t WHERE t.classroom = 103 AND t.classroom = l.classroom AND t.LastName <> 'BIBB';");
+    printf("\n");
     
     //ok
-    //db->executeTest("SELECT l.FirstName, l.LastName FROM list l, list pa WHERE pa.FirstName = 'AMY' AND pa.LastName = 'PATRINA' AND l.classroom = pa.classroom;");
+    db->executeTest("SELECT l.classroom, COUNT(*) FROM list l,  teachers t WHERE l.classroom = t.classroom AND l.grade > 3 GROUP BY l.classroom;");
+    printf("\n");
     
     //ok
-    //db->executeTest("SELECT l.FirstName, l.LastName FROM list l, list pa WHERE pa.FirstName = 'AMY' AND pa.LastName = 'PATRINA' AND l.classroom = pa.classroom ORDER BY l.LastName;");
+    db->executeTest("SELECT grade, classroom, COUNT(*) FROM list AS l GROUP BY grade, classroom;");
+    printf("\n");
     
     //ok
-    //db->executeTest("SELECT l.FirstName, l.LastName FROM list l, teachers t WHERE t.classroom = 103 AND t.classroom = l.classroom AND t.LastName <> 'BIBB';");
+    db->executeTest("SELECT * FROM list AS l ORDER BY classroom, LastName;");
+    printf("\n");
     
     //ok
-    //db->executeTest("SELECT l.classroom, COUNT(*) FROM list l,  teachers t WHERE l.classroom = t.classroom AND l.grade > 3 GROUP BY l.classroom;");
-    
-    //ok
-    //db->executeTest("SELECT grade, classroom, COUNT(*) FROM list AS l GROUP BY grade, classroom;");
-    
-    //ok
-    //db->executeTest("SELECT * FROM list AS l ORDER BY classroom, LastName;");
-    
-    //ok
-    //db->executeTest("SELECT * FROM teachers AS t WHERE classroom > 105 LIMIT 2;");
+    db->executeTest("SELECT * FROM teachers AS t WHERE classroom > 105 LIMIT 2;");
+	printf("\n");
 	
     //ok
-    //db->executeTest("SELECT FirstName, LastName, First, Last FROM list, teachers AS t;");
+    db->executeTest("SELECT FirstName, LastName, First, Last FROM list, teachers AS t;");
+    printf("\n");
     
     //ok
-    //db->executeTest("SELECT FirstName, LastName, First, Last FROM list, teachers AS t WHERE list.classroom = t.classroom;");
-    
-    //broken
-    //db->executeTest("SELECT MAX(grade) FROM list;");
+    db->executeTest("SELECT FirstName, LastName, First, Last FROM list, teachers AS t WHERE list.classroom = t.classroom;");
+    printf("\n");
     
     //ok
-    //db->executeTest("DROP TABLE teachers;");
+    db->executeTest("SELECT MAX(grade) FROM list;");
+    printf("\n");
+    
+    //ok
+    db->executeTest("DROP TABLE teachers;");
+    printf("\n");
     
     
     delete db;
-    
 }
