@@ -153,7 +153,7 @@ FLOPPYResult * FLOPPY_DBMS::selectRecords(FLOPPYSelectStatement *statement) {
     	recordSet->sort(statement->orderBys);
     
     //Projection
-    recordSet->projection(statement->selectItems);
+    //recordSet->projection(statement->selectItems);
     
     //DISTINCT
     if(statement->distinct)

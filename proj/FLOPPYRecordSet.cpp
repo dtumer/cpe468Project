@@ -397,6 +397,92 @@ void FLOPPYRecordSet::initializeAggregations(FLOPPYRecord *record, FLOPPYRecord 
 	}
 }
 
+void FLOPPYRecordSet::incrementCountStar(FLOPPYRecord *record) {
+	for (auto itr = record->columns->begin(); itr != record->columns->end(); itr++) {
+		if ((*itr)->isAggregate && (*itr)->op == FLOPPYAggregateOperator::CountStarAggregate) {
+			(*itr)->val->iVal++;
+		}
+	}
+}
+
+void FLOPPYRecordSet::countAggregateColumns(FLOPPYRecord *record, std::list<FLOPPYRecord *> *newRecords, std::vector<FLOPPYTableAttribute *> *groupByAttributes, std::vector<FLOPPYSelectItem *> *aggregates) {
+	for (auto aggItr = aggregates->begin(); aggItr != aggregates->end(); aggItr++) {
+		for (auto recItr = newRecords->begin(); recItr != newRecords->end(); recItr++) {
+			if ((*aggItr)->aggregate.op == FLOPPYAggregateOperator::CountStarAggregate) {
+				unsigned int numGroupEqual = 0;
+				
+				for (auto groupingItr = groupByAttributes->begin(); groupingItr != groupByAttributes->end(); groupingItr++) {
+					if (FLOPPYRecord::compare(record, *recItr, *groupingItr) == 0) {
+						numGroupEqual++;
+					}	
+				}
+				
+				if (numGroupEqual == groupByAttributes->size()) {
+					incrementCountStar(*recItr);
+				}
+			}
+			//handle all other aggregations
+			else {
+				printf("OTHER AGGREGATES\n");
+			}
+		}
+	}
+	
+	
+	
+	
+	//int numGroupingEqual;
+	
+	// loop through each of the new records looking for the specified record
+	// for (auto recItr = newRecords->begin(); recItr != newRecords->end(); recItr++) {
+// 		// loop through all the aggregations
+// 		for (auto aggItr = aggregates->begin(); aggItr != aggregates->end(); aggItr++) {
+// 			//deal with count(*) by just incrementing
+// 			if ((*aggItr)->aggregate.op == FLOPPYAggregateOperator::CountStarAggregate) {
+// 			
+// 				//check to make sure the record we're looking at is the same as the grouped column
+// 				//look through all records to be added and see if it should be added
+// 				for (auto itr = newRecords->begin(); itr != newRecords->end(); itr++) {
+// 					numGroupingEqual = 0;
+// 		
+// 					//look through each group by attribute and see if the record is equal to both
+// 					for (auto groupingItr = groupByAttributes->begin(); groupingItr != groupByAttributes->end(); groupingItr++) {
+// 						if (FLOPPYRecord::compare(record, *itr, *groupingItr) == 0) {
+// 							numGroupingEqual++;
+// 						}	
+// 					}
+// 		
+// 					//correct column!!!
+// 					if (numGroupingEqual == groupByAttributes->size()) {
+// 						incrementCountStar(*itr);
+// 					}
+// 				}
+// 			}
+// 			//deal with all others by making sure the column referenced in these is the same in the given record and the newRecord
+// 			else {
+// 				if ((*aggItr)->aggregate.op == FLOPPYAggregateOperator::AverageAggregate) {
+// 					printf("AVG()\n");
+// 				}
+// 				else if ((*aggItr)->aggregate.op == FLOPPYAggregateOperator::MaxAggregate) {
+// 					printf("MAX()\n");
+// 				}
+// 				else if ((*aggItr)->aggregate.op == FLOPPYAggregateOperator::MinAggregate) {
+// 					printf("MIN()\n");
+// 				}
+// 				else if ((*aggItr)->aggregate.op == FLOPPYAggregateOperator::SumAggregate) {
+// 					printf("SUM()\n");
+// 				}
+// 				else {
+// 					printf("ERROR - Unsupported aggregation type!\n");
+// 				}
+// 				// if (isColumnEquivilent()) {
+// // 				
+// // 				}
+// 			}
+// 		}
+// 	}
+}
+
 void FLOPPYRecordSet::groupBy(std::vector<FLOPPYTableAttribute *> *groupByAttributes, std::vector<FLOPPYSelectItem *> *aggregates) {
 	std::list<FLOPPYRecord *> *newRecords = new std::list<FLOPPYRecord *>();
 	
@@ -413,7 +499,7 @@ void FLOPPYRecordSet::groupBy(std::vector<FLOPPYTableAttribute *> *groupByAttrib
 			newRecords->push_back(newRecord);
 		}
 		
-// 		countAggregateColumns
+		countAggregateColumns(*recordItr, newRecords, groupByAttributes, aggregates);
 		
 		recordItr = records->erase(recordItr);
 	}
