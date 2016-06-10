@@ -352,7 +352,27 @@ FLOPPYValue * FLOPPYRecord::filter(FLOPPYNode *node) {
         }
     }
     else if (node->_type == FLOPPYNodeType::AggregateNode) {
-    	printf("AGGREGATE\n");
+        std::vector<FLOPPYRecordAttribute *>::iterator itr = columns->begin();
+        while (itr != columns->end()) {
+            
+            if(!(*itr)->isAggregate) {
+                itr++;
+                continue;
+            }
+            
+            if((*itr)->op != node->aggregate.op) {
+                itr++;
+                continue;
+            }
+            
+            if(node->aggregate.op != FLOPPYAggregateOperator::CountStarAggregate) {
+                if(strcmp(node->aggregate.value->sVal, (*itr)->name) != 0) {
+                    itr++;
+                    continue;
+                }
+            }
+            return (*itr)->val;
+        }
     }
     
     ret = new FLOPPYValue(NullValue);
