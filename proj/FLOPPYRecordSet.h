@@ -23,6 +23,7 @@ public:
     void sort(std::vector<FLOPPYTableAttribute *> *orderBys);
     void limit(int limit);
     void groupBy(std::vector<FLOPPYTableAttribute *> *groupByAttributes, std::vector<FLOPPYSelectItem *> *aggregates);
+    void distinct();
     void projection(std::vector<FLOPPYSelectItem *> *items);
     static FLOPPYRecordSet* crossProduct(FLOPPYRecordSet *set1, FLOPPYRecordSet *set2);
     
