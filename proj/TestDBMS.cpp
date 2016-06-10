@@ -155,18 +155,18 @@ int main(int argc, char *argv[]) {
     //db->executeTest("SELECT COUNT(*) FROM teachers;");
     
     //broken
-    //db->executeTest("SELECT COUNT(*) FROM list;");
+    db->executeTest("SELECT COUNT(*) FROM list;");
     
     //broken
-    db->executeTest("SELECT MAX(grade), MIN(grade), MAX(classroom), MIN(classroom) FROM list;");
+    //db->executeTest("SELECT MAX(grade), MIN(grade), MAX(classroom), MIN(classroom) FROM list;");
     
-    //broken
+    //ok
     //db->executeTest("SELECT grade, COUNT(*) FROM list GROUP BY grade;");
     
-    //broken
+    //ok
     //db->executeTest("SELECT classroom, COUNT(*) FROM list WHERE grade = 1 GROUP BY classroom;");
     
-    //broken
+    //ok
     //db->executeTest("SELECT grade, COUNT(*) FROM list GROUP BY grade HAVING COUNT(*) > 8;");
     
     //ok
@@ -190,10 +190,10 @@ int main(int argc, char *argv[]) {
     //ok
     //db->executeTest("SELECT l.FirstName, l.LastName FROM list l, teachers t WHERE t.classroom = 103 AND t.classroom = l.classroom AND t.LastName <> 'BIBB';");
     
-    //broken
+    //ok
     //db->executeTest("SELECT l.classroom, COUNT(*) FROM list l,  teachers t WHERE l.classroom = t.classroom AND l.grade > 3 GROUP BY l.classroom;");
     
-    //broken
+    //ok
     //db->executeTest("SELECT grade, classroom, COUNT(*) FROM list AS l GROUP BY grade, classroom;");
     
     //ok
