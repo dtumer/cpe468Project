@@ -26,6 +26,7 @@ void FLOPPYResult::print() {
             break;
         case FLOPPYResultType::SelectType:
             //printf("SelectType\n");
+            printf("Returned %d result(s):\n",recordSet->count());
             recordSet->print();
             break;
         case FLOPPYResultType::MessageType:
