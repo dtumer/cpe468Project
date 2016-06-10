@@ -191,6 +191,104 @@ FLOPPYRecordSet* FLOPPYRecordSet::crossProduct(FLOPPYRecordSet *set1, FLOPPYReco
 	return retRecordSet;
 }
 
+void FLOPPYRecordSet::groupBy(std::vector<FLOPPYTableAttribute *> *groupByAttributes, std::vector<FLOPPYSelectItem *> *aggregates) {
+	std::list<FLOPPYRecord *> *newRecords = new std::list<FLOPPYRecord *>();
+	int cmp = 0;
+	//for every current record
+	//	compare to list of newRecords using the group by attributes (use sort helper body for this)
+	//		if not there
+	//			add to new record set
+	//			for all aggregation functions put a new column in the record with value zero of type that table attribute
+					//create RecordAttribute object
+					//NOTE: get table attribute type in group by attribute and look for that attribute in the record column attributes
+	//		
+	//		
+	//		go through all aggregates
+	//			go through all record columns
+	//				check if aggregate
+	//					check if operation is same
+	//						perform aggregate operation
+	
+	auto recordItr = records->begin();
+	
+	while (recordItr != records->end()) {
+		FLOPPYRecord *tempAggRecord = NULL;
+		FLOPPYRecord *tempCurRecord = *recordItr;
+		
+    	for (auto newRecordItr = newRecords->begin(); newRecordItr != newRecords->end(); newRecordItr++) {
+    		cmp = 0;
+        	
+        	for (auto groupByItr = groupByAttributes->begin(); groupByItr != groupByAttributes->end(); groupByItr++) {
+        		cmp = FLOPPYRecord::compare(tempCurRecord, *newRecordItr, *groupByItr);
+        		
+        		//printf("COMPARE ATTRIBUTES: %d\n", cmp);
+        		
+        		if (cmp != 0) {
+        			break;
+        		}
+        	}
+        	
+        	if (cmp == 0) {
+        		tempAggRecord = *newRecordItr;
+        	}
+        	
+        	//printf("\n");
+    	}
+    	
+    	if (!tempAggRecord) {
+    		tempAggRecord = new FLOPPYRecord();
+    		
+    		//go through each group by attribute and see if it's in the columns and add it to the new record
+    		for (auto groupByItr2 = groupByAttributes->begin(); groupByItr2 != groupByAttributes->end(); groupByItr2++) {
+    			auto attributeItr = tempCurRecord->columns->begin();
+    			
+    			while (attributeItr != tempCurRecord->columns->end()) {
+    				FLOPPYRecordAttribute *tempAttr = *attributeItr;
+    				
+    				if ((*groupByItr2)->tableName) {
+    					if (strcmp((*attributeItr)->tableName, (*groupByItr2)->tableName) != 0) {
+    						attributeItr++;
+    						continue;
+    					}
+    				}
+    				
+    				if (strcmp((*attributeItr)->name, (*groupByItr2)->attribute) != 0) {
+    						attributeItr++;
+    						continue;
+    				}
+    				
+    				//printf("TEMP ATTR NAME: %s\n", tempAttr->name);
+    				attributeItr = tempCurRecord->columns->erase(attributeItr);
+    				tempAggRecord->columns->push_back(tempAttr);
+    			}
+    		}
+    		
+    		//add aggregation columns...if exists
+    		for (auto aggItr = aggregates->begin(); aggItr != aggregates->end(); aggItr++) {
+    			
+    			printf("ADD AGGREGATIONS\n");
+    		}
+    		
+    		//add aggregation "set to zero"
+    		newRecords->push_back(tempAggRecord);
+    	}
+    	
+    	//do the math for each aggregation
+    	for (auto aggItr = aggregates->begin(); aggItr != aggregates->end(); aggItr++) {
+    			
+    			printf("compute AGGREGATIONS\n");
+    		}
+    	
+    	//delete each record from old records
+    	recordItr = records->erase(recordItr);
+    	delete tempCurRecord;
+	}
+	
+	records->swap(*newRecords);
+	
+	delete newRecords;
+}
+
 void FLOPPYRecordSet::print() {
     printf("Records:\n");
     

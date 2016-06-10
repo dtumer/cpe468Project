@@ -12,6 +12,10 @@ FLOPPY_DBMS::FLOPPY_DBMS (std::string diskName, int nPersistentBlocks, int nVola
     delete [] diskNameC;
 }
 
+FLOPPY_DBMS::~FLOPPY_DBMS() {
+    delete buf;
+}
+
 FLOPPYResult* FLOPPY_DBMS::execute(std::string sql) {
     FLOPPYOutput *parsedCommand = FLOPPYParser::parseFLOPPYString(sql);
     FLOPPYResult *result;
@@ -100,6 +104,11 @@ FLOPPYResult * FLOPPY_DBMS::insertRecord(FLOPPYInsertStatement *statement) {
 FLOPPYResult * FLOPPY_DBMS::selectRecords(FLOPPYSelectStatement *statement) {
     //Get tables and do cross products as needed
     FLOPPYRecordSet *recordSet = NULL, *tempRS, *newRS;
+
+//     std::list<FLOPPYSelectItem *> *aggs = getAggregates(statement);
+//     
+//     printf("AGGREGATE SIZE: %d\n", aggs->size());
+    
     for (auto itr = statement->tableSpecs->begin() ; itr != statement->tableSpecs->end(); itr++) {
         FLOPPYHeapFile *heap = new FLOPPYHeapFile(buf, (*itr)->tableName);
         
@@ -133,6 +142,17 @@ FLOPPYResult * FLOPPY_DBMS::selectRecords(FLOPPYSelectStatement *statement) {
     if(statement->whereCondition)
         recordSet->filter(statement->whereCondition);
     
+    if (statement->groupBy) {
+    	if (statement->groupBy->groupByAttributes) {
+    		printf("GROUP BY\n");
+    		recordSet->groupBy(statement->groupBy->groupByAttributes, getAggregations(statement));
+    	}
+    	
+    	if (statement->groupBy->havingCondition) {
+    		printf("HAVING\n");
+    	}
+    }
+    
     //order by
     if(statement->orderBys)
     	recordSet->sort(statement->orderBys);
@@ -160,8 +180,14 @@ FLOPPYResult * FLOPPY_DBMS::dropTable(FLOPPYDropTableStatement *statement) {
     return result;
 }
 
-
-
-FLOPPY_DBMS::~FLOPPY_DBMS() {
-    delete buf;
+std::vector<FLOPPYSelectItem *>* FLOPPY_DBMS::getAggregations(FLOPPYSelectStatement *statement) {
+	std::vector<FLOPPYSelectItem *> *retAggs = new std::vector<FLOPPYSelectItem *>();
+	
+	for (auto itr = statement->selectItems->begin(); itr != statement->selectItems->end(); itr++) {
+		if ((*itr)->_type == FLOPPYSelectItemType::AggregateType) {
+			retAggs->push_back(*itr);
+		}
+	}
+	
+	return retAggs;
 }

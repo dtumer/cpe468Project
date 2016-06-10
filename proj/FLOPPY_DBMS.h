@@ -39,6 +39,9 @@ public:
     FLOPPYResult * insertRecord(FLOPPYInsertStatement *statement);
     FLOPPYResult * selectRecords(FLOPPYSelectStatement *statement);
     
+private:
+	/* for testing */
+	std::vector<FLOPPYSelectItem *>* getAggregations(FLOPPYSelectStatement *statement);
 };
 
 #endif /* FLOPPY_DBMS_h */

@@ -9,6 +9,9 @@
 
 
 FLOPPYRecord::FLOPPYRecord() {
+	pageId = -1;
+    recordId = -1;
+    
     columns = new std::vector<FLOPPYRecordAttribute *>();
     
     tempNodes = new std::vector<FLOPPYValue *>();
