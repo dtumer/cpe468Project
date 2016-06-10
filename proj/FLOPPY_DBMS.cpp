@@ -157,7 +157,7 @@ FLOPPYResult * FLOPPY_DBMS::selectRecords(FLOPPYSelectStatement *statement) {
     	recordSet->limit(statement->limit);
     
     //Projection
-    //recordSet->projection(statement->selectItems);
+    recordSet->projection(statement->selectItems);
     
     //DISTINCT
     
