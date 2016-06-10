@@ -16,11 +16,14 @@ private:
 public:
     GroupingNode();
     ~GroupingNode();    
+    
     std::vector<FLOPPYSelectItem *> aggregates;
+    
     void setStatement(FLOPPYSelectStatement *statement);
     void loadAggregates();
     void printAggregates();
     void printGroupByAttributes();
+    
     std::vector<FLOPPYTableAttribute *> * getGroupByAttributes();
     std::vector<FLOPPYSelectItem *> getAggregates();
 };

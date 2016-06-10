@@ -15,17 +15,15 @@ public:
     FLOPPYQueryPlan();
     FLOPPYQueryPlan(FLOPPYStatement *statement);
 	
-    
     /* Destructor */
-    virtual ~FLOPPYQueryPlan();
+	virtual ~FLOPPYQueryPlan();
 
-	/* getter for the tree structure */ 
-    FLOPPYQueryPlanNode *getTree();
+	FLOPPYQueryPlanNode *root;
+
 private:
-   FLOPPYQueryPlanNode *root;
-   FLOPPYQueryPlanNode * createJoinTree(std::vector<FLOPPYTableSpec *> *tableSpecs);
-   FLOPPYQueryPlanNode * createSelectStatementTree(FLOPPYSelectStatement *statement);
-   void printCrossNode(FLOPPYQueryPlanNode *node);
+	FLOPPYQueryPlanNode * createJoinTree(std::vector<FLOPPYTableSpec *> *tableSpecs);
+	FLOPPYQueryPlanNode * createSelectStatementTree(FLOPPYSelectStatement *statement);
+	void printCrossNode(FLOPPYQueryPlanNode *node);
 	
 };
 

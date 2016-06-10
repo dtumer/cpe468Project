@@ -7,12 +7,15 @@
 
 
 class SelectionNode : public FLOPPYQueryPlanNode {
-private:
-    FLOPPYNode *condition;
 public:
 	SelectionNode();
+	SelectionNode(FLOPPYNode *clause);
+	
 	~SelectionNode();
-    void setCondition(FLOPPYNode *node);
-    void printCondition();
+    
+    FLOPPYNode *clause;
+    
+    //void setCondition(FLOPPYNode *node);
+    //void printCondition();
 };
 #endif

@@ -24,22 +24,17 @@ typedef enum{
    DIFFERENCE,
    SORT,
    TABLE
-   } RelationalOperation;
+} RelationalOperation;
 
 class FLOPPYQueryPlanNode {
 public:
     FLOPPYQueryPlanNode();
     ~FLOPPYQueryPlanNode();
-    RelationalOperation op;
+    
+	RelationalOperation op;
 
-   FLOPPYQueryPlanNode *leftChild;
-   FLOPPYQueryPlanNode *rightChild;
-   
-   //void apply();  
-   void setOp(RelationalOperation r);
-   RelationalOperation getOp();
-   void setLeftChild(FLOPPYQueryPlanNode *leftChild);
-   void setRightChild(FLOPPYQueryPlanNode *rightChild);
+   	FLOPPYQueryPlanNode *leftChild;
+   	FLOPPYQueryPlanNode *rightChild;
 };
 
 #endif

@@ -11,9 +11,9 @@
 #include "LimitNode.h"
 #include "SortNode.h"
 
-/**
-* Create a FLOPPY query plan based on the statement 
-*/
+FLOPPYQueryPlan::FLOPPYQueryPlan() {
+}
+
 FLOPPYQueryPlan::FLOPPYQueryPlan(FLOPPYStatement *statement) {
     //FLOPPYResult *result; 
     ProjectionNode projectionTest;
@@ -22,6 +22,7 @@ FLOPPYQueryPlan::FLOPPYQueryPlan(FLOPPYStatement *statement) {
     TableNode tableTest;
     LimitNode limitTest;
     SortNode sortTest;
+    
     switch (statement->type()) {
         case StatementType::ErrorStatement:
             break;
@@ -53,11 +54,14 @@ FLOPPYQueryPlan::FLOPPYQueryPlan(FLOPPYStatement *statement) {
             printUpdateStatement((FLOPPYUpdateStatement*) statement);
             break;
         case StatementType::SelectStatement:
-            printf("SELECTQueryPlan\n");
-            //root = new SelectionNode();
-            FLOPPYSelectStatement *theStatement = (FLOPPYSelectStatement *)statement;
-            printSelectStatement(theStatement);
-            printf("Testing Projection: \n");
+            printf("SELECT\n");
+            
+            FLOPPYSelectStatement *selectStatement = (FLOPPYSelectStatement *)statement;
+            
+            root = new SelectionNode();
+           
+           	printSelectStatement(selectStatement);
+            //printf("Testing Projection: \n");
             projectionTest.addToProjection("hello", "world");
             projectionTest.addToProjection("test", "ing");
             projectionTest.printColumns();
@@ -101,6 +105,24 @@ FLOPPYQueryPlan::FLOPPYQueryPlan(FLOPPYStatement *statement) {
             }
             break;
     }
+}
+
+//free all nodes in the tree, and any allocated instance variables
+FLOPPYQueryPlan::~FLOPPYQueryPlan() {
+	destroyTree(root);
+}
+
+//destroy's tree
+void FLOPPYQueryPlan::destroyTree(FLOPPYQueryPlanNode *node) {
+	if (node->leftChild) {
+		destroyTree(node->leftChild);
+	}
+	
+	if (node->rightChild) {
+		desctroyTree(node->rightChild);
+	}
+	
+	
 }
 
 /*Create a right-deep tree of table nodes to represent the joins. 
@@ -211,9 +233,10 @@ void FLOPPYQueryPlan::printCrossNode(FLOPPYQueryPlanNode *node) {
    Remember to free the current tree if it exists.
    */
 void createSelectStatementTree(FLOPPYSelectStatement *statement) {
+	
     if(statement->orderBys) {
         SortNode *node = new SortNode();
-        node.orderBys = statement->orderBys;
+        node->orderBys = statement->orderBys;
     }
 
     if(statement->distinct) {
@@ -243,9 +266,5 @@ void createSelectStatementTree(FLOPPYSelectStatement *statement) {
         GroupingNode 
     }
 
-
-}
-//free all nodes in the tree, and any allocated instance variables
-FLOPPYQueryPlan::~FLOPPYQueryPlan() {
 
 }
