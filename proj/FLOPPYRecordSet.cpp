@@ -353,28 +353,31 @@ void FLOPPYRecordSet::addColumns(FLOPPYRecord *record, FLOPPYRecord **newRecord)
 bool FLOPPYRecordSet::isInGroupingAttrs(FLOPPYRecordAttribute *attr, std::vector<FLOPPYTableAttribute *> *groupByAttributes) {
 	for (auto itr = groupByAttributes->begin(); itr != groupByAttributes->end(); itr++) {
 		if ((*itr)->tableName) {
-            if (strcmp((*itr)->tableName, attr->tableName) != 0) {
-                return false;
+            if (strcmp((*itr)->tableName, attr->tableName) == 0) {
+                return true;
             }
         }
-                     
-        if (strcmp((*itr)->attribute, attr->name) != 0) {
-			return false;
+          
+        //column of type COUNT(*) will be null           
+        if (attr->name) {
+        	if (strcmp((*itr)->attribute, attr->name) == 0) {
+				return true;
+       		}
         }
 	}
 	
-	return true;
+	return false;
 }
 
 //checks if an attribute is in the aggregates
 bool FLOPPYRecordSet::isInAggregates(FLOPPYRecordAttribute *attr, std::vector<FLOPPYSelectItem *> *aggregates) {
-	for (auto itr = aggregates->begin(); itr != aggregates->end(); itr++) {        
-        if (strcmp((*itr)->aggregate.value->sVal, attr->name) != 0) {
-			return false;
-        }
+	for (auto itr = aggregates->begin(); itr != aggregates->end(); itr++) {
+		if (attr->isAggregate && (*itr)->aggregate.op == attr->op) {
+			return true;
+		}
 	}
 	
-	return true;
+	return false;
 }
 
 void FLOPPYRecordSet::pruneColumns(std::list<FLOPPYRecord *> *newRecords, std::vector<FLOPPYTableAttribute *> *groupByAttributes, std::vector<FLOPPYSelectItem *> *aggregates) {
