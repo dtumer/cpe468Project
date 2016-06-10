@@ -1,6 +1,7 @@
 #include "SelectionNode.h"
 
 SelectionNode::SelectionNode() {
+    this->op = SELECTION;
 }
 
 void SelectionNode::setCondition(FLOPPYNode *node) {

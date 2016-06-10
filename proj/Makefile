@@ -35,7 +35,7 @@ TestHarness.out: TestHarness.cpp FLOPPYBufferManager.o $(LIBS)
 TestHeapFile.out: TestHeapFile.cpp $(BASE_FILES) $(ParserSRC) $(LIBS)
 	$(CPP) $(CPPFLAGS) -o $@ $^
 
-TestParser.out: TestParser.cpp ParserDebug.cpp QueryPlan/FLOPPYQueryPlan.cpp FLOPPY_DBMS.cpp QueryPlan/ProjectionNode.cpp FLOPPYResult.cpp QueryPlan/SelectionNode.cpp QueryPlan/GroupingNode.cpp QueryPlan/TableNode.cpp QueryPlan/FLOPPYQueryPlanNode.cpp QueryPlan/CrossProductNode.cpp $(BASE_FILES) $(ParserSRC) $(LIBS)
+TestParser.out: TestParser.cpp ParserDebug.cpp QueryPlan/FLOPPYQueryPlan.cpp FLOPPY_DBMS.cpp QueryPlan/ProjectionNode.cpp FLOPPYResult.cpp QueryPlan/SelectionNode.cpp QueryPlan/GroupingNode.cpp QueryPlan/TableNode.cpp QueryPlan/FLOPPYQueryPlanNode.cpp QueryPlan/CrossProductNode.cpp QueryPlan/LimitNode.cpp QueryPlan/SortNode.cpp $(BASE_FILES) $(ParserSRC) $(LIBS)
 	$(CPP) $(CPPFLAGS) -o $@ $^
 
 FLOPPY_CLI.out: FLOPPY_CLI.cpp ParserDebug.cpp FLOPPYResult.cpp FLOPPY_DBMS.o $(BASE_FILES) $(ParserSRC) $(LIBS)

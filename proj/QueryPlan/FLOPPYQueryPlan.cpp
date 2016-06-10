@@ -8,6 +8,8 @@
 #include "TableNode.h"
 #include "CrossProductNode.h"
 #include "DeduplicateNode.h"
+#include "LimitNode.h"
+#include "SortNode.h"
 
 /**
 * Create a FLOPPY query plan based on the statement 
@@ -18,6 +20,8 @@ FLOPPYQueryPlan::FLOPPYQueryPlan(FLOPPYStatement *statement) {
     SelectionNode selectionTest;
     GroupingNode groupingTest;
     TableNode tableTest;
+    LimitNode limitTest;
+    SortNode sortTest;
     switch (statement->type()) {
         case StatementType::ErrorStatement:
             break;
@@ -57,25 +61,44 @@ FLOPPYQueryPlan::FLOPPYQueryPlan(FLOPPYStatement *statement) {
             projectionTest.addToProjection("hello", "world");
             projectionTest.addToProjection("test", "ing");
             projectionTest.printColumns();
+            projectionTest.setItems(theStatement->selectItems);
 
-            printf("Testing Selection: ");
+            printf("Testing Selection: \n");
             if(theStatement->whereCondition) {
                 selectionTest.setCondition(theStatement->whereCondition);
                 selectionTest.printCondition();
             }
 
-            printf("Testing Grouping: ");
+            printf("Testing Grouping: \n");
             if(theStatement->groupBy) {
                 groupingTest.setStatement(theStatement);
+                groupingTest.loadAggregates();
                 groupingTest.getAggregates();
                 groupingTest.printAggregates();
+                groupingTest.printGroupByAttributes();
             }
-            printf("Testing table node: ");
+            printf("Testing table node: \n");
             tableTest.setTableName((char*)"testTable");
             tableTest.printTableName();
 
-            FLOPPYQueryPlanNode *join = createJoinTree(theStatement->tableSpecs);
-            printCrossNode(join);
+            printf("Testing Limit Node: \n");
+            if(theStatement->limit > 0) {
+                limitTest.limit = theStatement->limit;
+                printf("the limit is: %d\n", limitTest.limit);
+            }
+
+            printf("Testing Sort Node: \n");
+            if(theStatement->orderBys) {
+                sortTest.orderBys = theStatement->orderBys;
+                printf("%s\n", sortTest.orderBys->at(0)->attribute);
+            }
+
+            FLOPPYQueryPlanNode *join;
+            std::vector<FLOPPYTableSpec *> theTableSpecs = *(theStatement->tableSpecs);
+            if(theTableSpecs.size() > 1) {
+                join = createJoinTree(theStatement->tableSpecs);
+                printCrossNode(join);
+            }
             break;
     }
 }
@@ -188,7 +211,21 @@ void FLOPPYQueryPlan::printCrossNode(FLOPPYQueryPlanNode *node) {
    Remember to free the current tree if it exists.
    */
 void createSelectStatementTree(FLOPPYSelectStatement *statement) {
+    if(statement->distinct) {
+        DeduplicateNode *node = new DeduplicateNode();
+    } else {
+        ProjectionNode *node = new ProjectionNode();
+    }
 
+    for (unsigned i=0; i<statement->selectItems->size(); i++) {
+        FLOPPYSelectItem *spec = statement->selectItems->at(i);
+        if(spec->_type == FLOPPYSelectItemType::StarType) {
+            //printf("\n\t\t%s", spec->attribute);
+        }
+        else if(spec->_type == FLOPPYSelectItemType::TableAttributeType) {
+            //printf("\n\t\t%s", spec->tableAttribute->attribute);
+        }
+    }
 }
 //free all nodes in the tree, and any allocated instance variables
 FLOPPYQueryPlan::~FLOPPYQueryPlan() {

@@ -143,6 +143,8 @@ int main(int argc, char *argv[]) {
     TestSQLStatement("SELECT l.classroom, COUNT(*) FROM list l,  teachers t WHERE l.classroom = t.classroom AND l.grade > 3 GROUP BY l.classroom;");
 
     dbms.execute("SELECT MAX(NodeId), FileId FROM Seasons, Availability, Classrooms, Students WHERE x = 5 GROUP By l.classroom;");
+    dbms.execute("SELECT grade FROM list GROUP BY grade HAVING COUNT(*) > 8;");
+    dbms.execute("SELECT grade, COUNT(*) FROM list GROUP BY grade HAVING COUNT(*) > 8 ORDER BY grade LIMIT 5;");
     
     return 0;
 }

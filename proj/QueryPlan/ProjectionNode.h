@@ -5,6 +5,7 @@
 #include <vector>
 #include <iostream>
 #include "FLOPPYQueryPlanNode.h"
+#include "../libs/FLOPPYParser/FLOPPY_statements/FLOPPYSelectItem.h"
 
 typedef struct {
    std::string tableName;
@@ -17,7 +18,10 @@ public:
     ~ProjectionNode(); 
     void addToProjection(std::string tableName, std::string colName);
     void printColumns();
+    void setItems(std::vector<FLOPPYSelectItem *> *aggregates);
+    std::vector<FLOPPYSelectItem *> *getItems();
     std::vector<Column> columns;
+    std::vector<FLOPPYSelectItem *> *items;
 };
 
 #endif
