@@ -5,6 +5,7 @@
 #include "FLOPPYRecordSet.h"
 #include <functional>
 #include <stdlib.h>
+#include <algorithm>
 
 
 FLOPPYRecordSet::FLOPPYRecordSet() {
@@ -429,10 +430,64 @@ void FLOPPYRecordSet::groupBy(std::vector<FLOPPYTableAttribute *> *groupByAttrib
             newRecords->push_back(tempAggRecord);
         }
         
+        //tempAggRecord
+        
         //do the math for each aggregation
-        for (auto aggItr = aggregates->begin(); aggItr != aggregates->end(); aggItr++) {
-            //check for FLOPPYTableAttribute
-            //printf("compute AGGREGATIONS\n");
+        for (auto tempRecItr = tempAggRecord->columns->begin(); tempRecItr != tempAggRecord->columns->end(); tempRecItr++) {
+            FLOPPYRecordAttribute *col = *tempRecItr;
+            
+            //skip non-aggregates
+            if(!col->isAggregate)
+                continue;
+            
+            if (col->op == FLOPPYAggregateOperator::CountStarAggregate) {
+                col->val->iVal++;
+            }
+            else {
+                
+                //loop through cols
+                for (auto dataColItr = tempCurRecord->columns->begin(); dataColItr != tempCurRecord->columns->end(); dataColItr++) {
+                    FLOPPYRecordAttribute *dataCol = *dataColItr;
+                    
+                    //check if name matches
+                    if (strcmp(col->name, col->name) != 0)
+                        continue;
+                    
+                    
+                    
+                    if(col->op == FLOPPYAggregateOperator::CountAggregate)
+                        printf("COUNT(%s) (", col->name);
+                    else if(col->op == FLOPPYAggregateOperator::AverageAggregate)
+                        printf("AVG(%s) (", col->name);
+                    else if(col->op == FLOPPYAggregateOperator::MinAggregate)
+                        printf("MIN(%s) (", col->name);
+                    else if(col->op == FLOPPYAggregateOperator::MaxAggregate)
+                        printf("MAX(%s) (", col->name);
+                    else if(col->op == FLOPPYAggregateOperator::SumAggregate) {
+                        if(col->val->type() == ValueType::IntValue)
+                            col->val->iVal += dataCol->val->iVal;
+                        else if(col->val->type() == ValueType::FloatValue)
+                            col->val->fVal += dataCol->val->fVal;
+                        else
+                            printf("error type SUM(%s)\n", col->name);;
+                    }
+                    
+                            
+                            
+                            /*AttributeValue,
+                            TableAttributeValue,
+                            StringValue,
+                            IntValue,
+                            FloatValue,
+                            BooleanValue,
+                            NullValue
+                             */
+                    }
+            }
+        
+            
+            printf("\n");
+            break;
         }
         
         //delete each record from old records
