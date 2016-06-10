@@ -140,7 +140,7 @@ FLOPPYResult * FLOPPY_DBMS::selectRecords(FLOPPYSelectStatement *statement) {
     		recordSet->groupBy(statement->groupBy->groupByAttributes, getAggregations(statement));
     	}
     	
-    	recordSet->print();
+    	//recordSet->print();
     	
         //HAVING
     	if (statement->groupBy->havingCondition) {
@@ -206,11 +206,86 @@ FLOPPYResult * FLOPPY_DBMS::deleteRecords(FLOPPYDeleteStatement *statement) {
 std::vector<FLOPPYSelectItem *>* FLOPPY_DBMS::getAggregations(FLOPPYSelectStatement *statement) {
     std::vector<FLOPPYSelectItem *> *retAggs = new std::vector<FLOPPYSelectItem *>();
     
+    //get aggregations from the projection part of the select statement
     for (auto itr = statement->selectItems->begin(); itr != statement->selectItems->end(); itr++) {
         if ((*itr)->_type == FLOPPYSelectItemType::AggregateType) {
             retAggs->push_back(*itr);
         }
     }
     
+    //get the aggregations from the having clause of the selection statement if it's present
+    if (statement->groupBy) {
+    	if (statement->groupBy->havingCondition) {
+    		std::vector<FLOPPYSelectItem *> *havingAggs = new std::vector<FLOPPYSelectItem *>();
+    		
+    		getAggregationsFromHaving(statement->groupBy->havingCondition, &havingAggs);
+    		
+    		//iterate through each having aggregation we want to add
+    		auto havingAggsItr = havingAggs->begin();
+    		
+    		while (havingAggsItr != havingAggs->end()) {
+    			bool isInList = false;
+    			
+    			//go through every aggregation we will return
+    			for (auto retAggsItr = retAggs->begin(); retAggsItr != retAggs->end(); retAggsItr++) {
+    				//if the operations are the same, check attribute name 
+    				if ((*havingAggsItr)->aggregate.op == (*retAggsItr)->aggregate.op) {
+    					//if not count star check attribute name
+    					if ((*havingAggsItr)->aggregate.op != FLOPPYAggregateOperator::CountStarAggregate) {
+    						//if same attribute names DONT ADD
+    						if (strcmp((*havingAggsItr)->aggregate.value->sVal, (*retAggsItr)->aggregate.value->sVal) == 0) {
+    							isInList = true;
+    							break;
+    						}
+    					}
+    					//if operator is count(*)
+    					else {
+    						isInList = true;
+    						break;
+    					}
+    				}
+    			}
+    			
+    			//if its not in the list add it
+    			if (!isInList) {
+    				retAggs->push_back(*havingAggsItr);
+    			}
+    			
+    			havingAggsItr = havingAggs->erase(havingAggsItr);
+    		}
+    		
+    		delete havingAggs;
+    	}
+    }
+    
     return retAggs;
+}
+
+//gets the aggregations from the having clause
+void FLOPPY_DBMS::getAggregationsFromHaving(FLOPPYNode *havingClause, std::vector<FLOPPYSelectItem *> **retAggregations) {
+	if (havingClause->_type == FLOPPYNodeType::ConditionNode || havingClause->_type == FLOPPYNodeType::ExpressionNode) {
+		if (havingClause->node.left) {
+			getAggregationsFromHaving(havingClause->node.left, retAggregations);
+		}
+		
+		if (havingClause->node.left) {
+			getAggregationsFromHaving(havingClause->node.right, retAggregations);
+		}
+	}
+	else if (havingClause->_type == FLOPPYNodeType::AggregateNode) {
+		FLOPPYSelectItem *aggItem = new FLOPPYSelectItem(AttributeType);
+		
+		aggItem->aggregate.op = havingClause->aggregate.op;
+		
+		if (havingClause->aggregate.op != FLOPPYAggregateOperator::CountStarAggregate) {
+			FLOPPYValue *val = new FLOPPYValue(AttributeValue);
+			
+			val->sVal = (char*)calloc(strlen(havingClause->aggregate.value->sVal) + 1,sizeof(char));
+			strcpy(val->sVal, havingClause->aggregate.value->sVal);
+			
+			aggItem->aggregate.value = val;
+		}
+		
+		(*retAggregations)->push_back(aggItem);
+	}
 }

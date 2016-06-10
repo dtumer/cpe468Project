@@ -41,8 +41,8 @@ public:
     FLOPPYResult * deleteRecords(FLOPPYDeleteStatement *statement);
     
 private:
-	/* for testing */
 	std::vector<FLOPPYSelectItem *>* getAggregations(FLOPPYSelectStatement *statement);
+	void getAggregationsFromHaving(FLOPPYNode *havingClause, std::vector<FLOPPYSelectItem *> **retAggregations);
 };
 
 #endif /* FLOPPY_DBMS_h */
