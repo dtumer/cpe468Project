@@ -211,21 +211,39 @@ void FLOPPYQueryPlan::printCrossNode(FLOPPYQueryPlanNode *node) {
    Remember to free the current tree if it exists.
    */
 void createSelectStatementTree(FLOPPYSelectStatement *statement) {
-    if(statement->distinct) {
-        DeduplicateNode *node = new DeduplicateNode();
-    } else {
-        ProjectionNode *node = new ProjectionNode();
+    if(statement->orderBys) {
+        SortNode *node = new SortNode();
+        node.orderBys = statement->orderBys;
     }
 
-    for (unsigned i=0; i<statement->selectItems->size(); i++) {
-        FLOPPYSelectItem *spec = statement->selectItems->at(i);
-        if(spec->_type == FLOPPYSelectItemType::StarType) {
-            //printf("\n\t\t%s", spec->attribute);
-        }
-        else if(spec->_type == FLOPPYSelectItemType::TableAttributeType) {
-            //printf("\n\t\t%s", spec->tableAttribute->attribute);
-        }
+    if(statement->distinct) {
+        DeduplicateNode *dnode = new DeduplicateNode();
+        ProjectionNode *pnode = new ProjectionNode();
+        node->rightChild = dNode;
+        node = dNode;
+        node->rightChild = pnode;
+        node = pnode;
+    } else {
+        ProjectionNode *pnode = new ProjectionNode();
+        node->rightChild = pNode;
     }
+
+    //set projection items
+    node->setItems(statement->selectItems);
+
+    if(statement->groupBy && statement->groupBy->havingCondition) {
+        GroupingNode group;
+        group.setStatement(theStatement);
+        group.loadAggregates();
+        node->rightChild = group;
+        node = group;
+    }
+
+    if(statement->groupBy) {
+        GroupingNode 
+    }
+
+
 }
 //free all nodes in the tree, and any allocated instance variables
 FLOPPYQueryPlan::~FLOPPYQueryPlan() {
