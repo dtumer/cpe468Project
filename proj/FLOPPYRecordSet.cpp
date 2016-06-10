@@ -755,8 +755,6 @@ void FLOPPYRecordSet::distinct() {
 }
 
 void FLOPPYRecordSet::print() {
-    printf("Records:\n");
-    
     std::list<FLOPPYRecord *>::iterator itr = records->begin();
     
     while (itr != records->end()) {
