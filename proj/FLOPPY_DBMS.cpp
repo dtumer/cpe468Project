@@ -104,6 +104,9 @@ FLOPPYResult * FLOPPY_DBMS::insertRecord(FLOPPYInsertStatement *statement) {
  * THIS NEEDS TO NOT JUST USE A HARD CODED TABLE
  */
 FLOPPYResult * FLOPPY_DBMS::selectRecords(FLOPPYSelectStatement *statement) {
+    std::vector<FLOPPYSelectItem *> *aggregations = getAggregations(statement);
+    
+    
     //Get tables and do cross products as needed
     FLOPPYRecordSet *recordSet = NULL, *tempRS, *newRS;
     for (auto itr = statement->tableSpecs->begin() ; itr != statement->tableSpecs->end(); itr++) {
@@ -134,18 +137,24 @@ FLOPPYResult * FLOPPY_DBMS::selectRecords(FLOPPYSelectStatement *statement) {
     if(statement->whereCondition)
         recordSet->filter(statement->whereCondition);
     
+    
     if (statement->groupBy) {
         //GROUP BY
     	if (statement->groupBy->groupByAttributes) {
-            std::vector<FLOPPYSelectItem *> *aggregations = getAggregations(statement);
-    		recordSet->groupBy(statement->groupBy->groupByAttributes, aggregations);
-            delete aggregations;
+            recordSet->groupBy(statement->groupBy->groupByAttributes, aggregations);
     	}
     	
         //HAVING
     	if (statement->groupBy->havingCondition) {
             recordSet->filter(statement->groupBy->havingCondition);
     	}
+    }
+    else {
+        if(aggregations->size() == statement->selectItems->size()) {
+            std::vector<FLOPPYTableAttribute *> *emptyGroupBy = new std::vector<FLOPPYTableAttribute *>();
+        	recordSet->groupBy(emptyGroupBy, getAggregations(statement));
+            delete emptyGroupBy;
+        }
     }
     
     //ORDER BY
@@ -167,6 +176,7 @@ FLOPPYResult * FLOPPY_DBMS::selectRecords(FLOPPYSelectStatement *statement) {
     FLOPPYResult *result = new FLOPPYResult(SelectType);
     result->recordSet = recordSet;
     
+    delete aggregations;
     return result;
 }
 
