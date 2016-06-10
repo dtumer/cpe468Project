@@ -41,6 +41,11 @@ private:
     void mergeSortMerge(FLOPPYRecordSet *setA, FLOPPYRecordSet *setB, std::vector<FLOPPYTableAttribute *> *orderBys);
     
     FLOPPYValue* createInitialFLOPPYValue();
+    
+    //helpers for grouping/aggregation
+    bool shouldBeAddedToGrouping(FLOPPYRecord *record, std::list<FLOPPYRecord *> *retRecords, std::vector<FLOPPYTableAttribute *> *groupByAttributes);
+	void addGroupByColumns(FLOPPYRecord *record, FLOPPYRecord **newRecord, std::vector<FLOPPYTableAttribute *> *groupByAttributes);
+	void initializeAggregations(FLOPPYRecord *record, FLOPPYRecord **newRecord, std::vector<FLOPPYSelectItem *> *aggregates);
 };
 
 

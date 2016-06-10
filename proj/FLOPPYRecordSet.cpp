@@ -296,208 +296,333 @@ FLOPPYRecordSet* FLOPPYRecordSet::crossProduct(FLOPPYRecordSet *set1, FLOPPYReco
 	return retRecordSet;
 }
 
+// returns boolean of whether or not a record should be added to the grouping
+bool FLOPPYRecordSet::shouldBeAddedToGrouping(FLOPPYRecord *record, std::list<FLOPPYRecord *> *retRecords, std::vector<FLOPPYTableAttribute *> *groupByAttributes) {	
+	unsigned int numGroupingEqual;
+	
+	if (retRecords->size() == 0) {
+		return true;
+	}
+	
+	//look through all records to be added and see if it should be added
+	for (auto itr = retRecords->begin(); itr != retRecords->end(); itr++) {
+		numGroupingEqual = 0;
+		
+		//look through each group by attribute and see if the record is equal to both
+		for (auto groupingItr = groupByAttributes->begin(); groupingItr != groupByAttributes->end(); groupingItr++) {
+			if (FLOPPYRecord::compare(record, *itr, *groupingItr) == 0) {
+				numGroupingEqual++;
+			}
+		}
+		
+		if (numGroupingEqual == groupByAttributes->size()) {
+			return false;
+		}
+	}
+	
+	return true;
+}
+
+void FLOPPYRecordSet::addGroupByColumns(FLOPPYRecord *record, FLOPPYRecord **newRecord, std::vector<FLOPPYTableAttribute *> *groupByAttributes) {
+	//go through each grouping attribute, see if its in the record and add it if it is
+	for (auto groupingItr = groupByAttributes->begin(); groupingItr != groupByAttributes->end(); groupingItr++) {
+		auto attrItr = record->columns->begin();
+		
+		while (attrItr != record->columns->end()) {
+			if ((*groupingItr)->tableName) {
+            	if (strcmp((*groupingItr)->tableName, (*attrItr)->tableName) != 0) {
+                    attrItr++;
+                    continue;
+                }
+            }
+                     
+            if (strcmp((*groupingItr)->attribute, (*attrItr)->name) != 0) {
+                attrItr++;
+                continue;
+        	}
+        	
+        	//add attribute to new record
+        	(*newRecord)->columns->push_back((*attrItr)->clone());
+        	break;
+		}
+	}
+}
+//initializes columns for aggregations
+void FLOPPYRecordSet::initializeAggregations(FLOPPYRecord *record, FLOPPYRecord **newRecord, std::vector<FLOPPYSelectItem *> *aggregates) {
+	FLOPPYRecordAttribute *aggregate;
+	
+	for (auto aggItr = aggregates->begin(); aggItr != aggregates->end(); aggItr++) {
+		aggregate = new FLOPPYRecordAttribute();
+		
+		aggregate->isAggregate = true;
+		aggregate->op = (*aggItr)->aggregate.op;
+		
+		//if we're looking at a count(*)
+		if ((*aggItr)->aggregate.op == FLOPPYAggregateOperator::CountStarAggregate) {
+			aggregate->val = new FLOPPYValue(IntValue);
+			aggregate->val->iVal = 0;
+		}
+		//don't do COUNT(<col>)
+		else if ((*aggItr)->aggregate.op == FLOPPYAggregateOperator::CountAggregate) {
+			printf("ERROR - Unsupported aggregation operator COUNT(<col>)\n");
+		}
+		//all others
+		else {
+			//add column name
+			aggregate->name = (char*)calloc(strlen((*aggItr)->aggregate.value->sVal) + 1, sizeof(char));
+    		strcpy(aggregate->name, (*aggItr)->aggregate.value->sVal);
+    		
+			//go through all attributes in tempCurRecord to find type of attribute and create FLOPPY value of that attribute type
+    		for (auto recItr = record->columns->begin(); recItr != record->columns->end(); recItr++) {
+    			if (strcmp((*recItr)->name, (*aggItr)->aggregate.value->sVal) != 0)
+    				continue;
+                        
+    			if ((*recItr)->val->type() == ValueType::IntValue) {
+                    aggregate->val = new FLOPPYValue(IntValue);
+    				aggregate->val->iVal = 0;
+    			}
+    			else if ((*recItr)->val->type() == ValueType::FloatValue) {
+                    aggregate->val = new FLOPPYValue(FloatValue);
+    				aggregate->val->fVal = 0.0;
+    			}
+    			else {
+    				printf("ERROR - Cannot aggregate on that column type\n");
+    			}
+    					
+    			break;
+    		}
+		}
+		
+		(*newRecord)->columns->push_back(aggregate);
+	}
+}
+
 void FLOPPYRecordSet::groupBy(std::vector<FLOPPYTableAttribute *> *groupByAttributes, std::vector<FLOPPYSelectItem *> *aggregates) {
 	std::list<FLOPPYRecord *> *newRecords = new std::list<FLOPPYRecord *>();
 	
-    //go through each record on the table
-    auto recordItr = records->begin();
+	auto recordItr = records->begin();
 	while (recordItr != records->end()) {
-		FLOPPYRecord *tempAggRecord = NULL;
-		FLOPPYRecord *tempCurRecord = *recordItr;
+		if (shouldBeAddedToGrouping(*recordItr, newRecords, groupByAttributes)) {
+			//add initialized aggregation columns
+			FLOPPYRecord *newRecord = new FLOPPYRecord();
+			
+			addGroupByColumns(*recordItr, &newRecord, groupByAttributes);
+			initializeAggregations(*recordItr, &newRecord, aggregates);
+			
+			//push to new records
+			newRecords->push_back(newRecord);
+		}
 		
-    	for (auto newRecordItr = newRecords->begin(); newRecordItr != newRecords->end(); newRecordItr++) {
-    		int cmp = 0;
-        	
-            for (auto groupByItr = groupByAttributes->begin(); groupByItr != groupByAttributes->end(); groupByItr++) {
-        		cmp = FLOPPYRecord::compare(tempCurRecord, *newRecordItr, *groupByItr);
-        		if (cmp != 0)
-        			break;
-        	}
-        	
-        	if (cmp == 0) {
-        		tempAggRecord = *newRecordItr;
-        	}
-        	
-    	}
-    	
-        //grouped record does not exist so we need to create it
-    	if (!tempAggRecord) {
-    		tempAggRecord = new FLOPPYRecord();
-    		
-            //go through each group by attribute and see if it's in the columns and add it to the new record
-            for (auto groupByItr2 = groupByAttributes->begin(); groupByItr2 != groupByAttributes->end(); groupByItr2++) {
-                auto attributeItr = tempCurRecord->columns->begin();
-                
-                while (attributeItr != tempCurRecord->columns->end()) {
-                    FLOPPYRecordAttribute *tempAttr = *attributeItr;
-                    
-                    if ((*groupByItr2)->tableName) {
-                        if (strcmp((*attributeItr)->tableName, (*groupByItr2)->tableName) != 0) {
-                            attributeItr++;
-                            continue;
-                        }
-                    }
-                    
-                    if (strcmp((*attributeItr)->name, (*groupByItr2)->attribute) != 0) {
-                        attributeItr++;
-                        continue;
-                    }
-                    
-                    //create FLOPPYTableAttribute column
-                    FLOPPYRecordAttribute *aggAttr = new FLOPPYRecordAttribute();
-                    
-                    if(tempAttr->tableName) {
-                        aggAttr->tableName = (char*)calloc(strlen(tempAttr->tableName) + 1, sizeof(char));
-                        strcpy(aggAttr->tableName, tempAttr->tableName);
-                    }
-                    
-                    aggAttr->name = (char*)calloc(strlen(tempAttr->name) + 1, sizeof(char));
-                    strcpy(aggAttr->name, tempAttr->name);
-                    
-                    
-                    if(tempAttr->val->type() == ValueType::StringValue) {
-                        aggAttr->val = new FLOPPYValue(StringValue);
-                        aggAttr->val->sVal = (char*)calloc(sizeof(char), strlen(tempAttr->val->sVal) + 1);
-                        strcpy(aggAttr->val->sVal, tempAttr->val->sVal);
-                    }
-                    else if(tempAttr->val->type() == ValueType::IntValue) {
-                        aggAttr->val = new FLOPPYValue(IntValue);
-                        aggAttr->val->iVal = tempAttr->val->iVal;
-                    }
-                    else if(tempAttr->val->type() == ValueType::FloatValue) {
-                        aggAttr->val = new FLOPPYValue(FloatValue);
-                        aggAttr->val->fVal = tempAttr->val->fVal;
-                    }
-                    else if(tempAttr->val->type() == ValueType::BooleanValue) {
-                        aggAttr->val = new FLOPPYValue(BooleanValue);
-                        aggAttr->val->bVal = tempAttr->val->bVal;
-                    }
-                    else if(tempAttr->val->type() == ValueType::NullValue) {
-                        aggAttr->val = new FLOPPYValue(NullValue);
-                    }
-                    
-                    tempAggRecord->columns->push_back(aggAttr);
-                    break;
-                }
-            }
-    		
-    		//add aggregation columns...if exists
-    		for (auto aggItr = aggregates->begin(); aggItr != aggregates->end(); aggItr++) {
-    			//create FLOPPYTableAttribute column
-    			FLOPPYRecordAttribute *aggAttr = new FLOPPYRecordAttribute();
-    			
-    			aggAttr->isAggregate = true;
-    			aggAttr->op = (*aggItr)->aggregate.op;
-    			
-    			//check for star type
-    			if ((*aggItr)->aggregate.op == FLOPPYAggregateOperator::CountStarAggregate) {
-    				aggAttr->val = new FLOPPYValue(IntValue);
-    				aggAttr->val->iVal = 0;
-    			}
-    			else {
-    				aggAttr->name = (char*)calloc(strlen((*aggItr)->aggregate.value->sVal) + 1, sizeof(char));
-    				strcpy(aggAttr->name, (*aggItr)->aggregate.value->sVal);
-    			
-    				//go through all attributes in tempCurRecord to find type of attribute and create FLOPPY value of that attribute type
-    				for (auto tempRecItr = tempCurRecord->columns->begin(); tempRecItr != tempCurRecord->columns->end(); tempRecItr++) {
-                        
-                        //check column
-    					if (strcmp((*tempRecItr)->name, (*aggItr)->aggregate.value->sVal) != 0)
-    						continue;
-                        
-                        //aggregated column is of type INT
-    					if ((*tempRecItr)->val->type() == ValueType::IntValue) {
-                            aggAttr->val = new FLOPPYValue(IntValue);
-    						aggAttr->val->iVal = 0;
-    					}
-    					//aggregated column is of type FLOAT
-    					else if ((*tempRecItr)->val->type() == ValueType::FloatValue) {
-                            aggAttr->val = new FLOPPYValue(FloatValue);
-    						aggAttr->val->fVal = 0.0;
-    					}
-    					else {
-    						printf("ERROR - Cannot aggregate on that column type\n");
-    					}
-    					
-    					break;
-    				}
-    			}
-    			
-    			tempAggRecord->columns->push_back(aggAttr);
-    		}
-            
-            //add aggregation "set to zero"
-            newRecords->push_back(tempAggRecord);
-        }
-        
-        //tempAggRecord
-        
-        //do the math for each aggregation
-        for (auto tempRecItr = tempAggRecord->columns->begin(); tempRecItr != tempAggRecord->columns->end(); tempRecItr++) {
-            FLOPPYRecordAttribute *col = *tempRecItr;
-            
-            //skip non-aggregates
-            if(!col->isAggregate)
-                continue;
-            
-            if (col->op == FLOPPYAggregateOperator::CountStarAggregate) {
-                col->val->iVal++;
-            }
-            else {
-                
-                //loop through cols
-                for (auto dataColItr = tempCurRecord->columns->begin(); dataColItr != tempCurRecord->columns->end(); dataColItr++) {
-                    FLOPPYRecordAttribute *dataCol = *dataColItr;
-                    
-                    //check if name matches
-                    if (strcmp(col->name, col->name) != 0)
-                        continue;
-                    
-                    
-                    
-                    if(col->op == FLOPPYAggregateOperator::CountAggregate)
-                        printf("COUNT(%s) (", col->name);
-                    else if(col->op == FLOPPYAggregateOperator::AverageAggregate)
-                        printf("AVG(%s) (", col->name);
-                    else if(col->op == FLOPPYAggregateOperator::MinAggregate)
-                        printf("MIN(%s) (", col->name);
-                    else if(col->op == FLOPPYAggregateOperator::MaxAggregate)
-                        printf("MAX(%s) (", col->name);
-                    else if(col->op == FLOPPYAggregateOperator::SumAggregate) {
-                        if(col->val->type() == ValueType::IntValue)
-                            col->val->iVal += dataCol->val->iVal;
-                        else if(col->val->type() == ValueType::FloatValue)
-                            col->val->fVal += dataCol->val->fVal;
-                        else
-                            printf("error type SUM(%s)\n", col->name);;
-                    }
-                    
-                            
-                            
-                            /*AttributeValue,
-                            TableAttributeValue,
-                            StringValue,
-                            IntValue,
-                            FloatValue,
-                            BooleanValue,
-                            NullValue
-                             */
-                    }
-            }
-        
-            
-            printf("\n");
-            break;
-        }
-        
-        //delete each record from old records
-        recordItr = records->erase(recordItr);
-        delete tempCurRecord;
-    }
+// 		countAggregateColumns
+		
+		recordItr = records->erase(recordItr);
+	}
 	
 	records->swap(*newRecords);
 	
 	delete newRecords;
+	
+	
+	
+    // go through each record on the table
+    // auto recordItr = records->begin();
+// 	while (recordItr != records->end()) {
+// 		FLOPPYRecord *tempAggRecord = NULL;
+// 		FLOPPYRecord *tempCurRecord = *recordItr;
+// 		
+//     	for (auto newRecordItr = newRecords->begin(); newRecordItr != newRecords->end(); newRecordItr++) {
+//     		int cmp = 0;
+//         	
+//             for (auto groupByItr = groupByAttributes->begin(); groupByItr != groupByAttributes->end(); groupByItr++) {
+//         		cmp = FLOPPYRecord::compare(tempCurRecord, *newRecordItr, *groupByItr);
+//         		if (cmp != 0)
+//         			break;
+//         	}
+//         	
+//         	if (cmp == 0) {
+//         		tempAggRecord = *newRecordItr;
+//         	}
+//         	
+//     	}
+//     	
+//         grouped record does not exist so we need to create it
+//     	if (!tempAggRecord) {
+//     		tempAggRecord = new FLOPPYRecord();
+//     		
+//             go through each group by attribute and see if it's in the columns and add it to the new record
+//             for (auto groupByItr2 = groupByAttributes->begin(); groupByItr2 != groupByAttributes->end(); groupByItr2++) {
+//                 auto attributeItr = tempCurRecord->columns->begin();
+//                 
+//                 while (attributeItr != tempCurRecord->columns->end()) {
+//                     FLOPPYRecordAttribute *tempAttr = *attributeItr;
+//                     
+//                     if ((*groupByItr2)->tableName) {
+//                         if (strcmp((*attributeItr)->tableName, (*groupByItr2)->tableName) != 0) {
+//                             attributeItr++;
+//                             continue;
+//                         }
+//                     }
+//                     
+//                     if (strcmp((*attributeItr)->name, (*groupByItr2)->attribute) != 0) {
+//                         attributeItr++;
+//                         continue;
+//                     }
+//                     
+//                     create FLOPPYTableAttribute column
+//                     FLOPPYRecordAttribute *aggAttr = new FLOPPYRecordAttribute();
+//                     
+//                     if(tempAttr->tableName) {
+//                         aggAttr->tableName = (char*)calloc(strlen(tempAttr->tableName) + 1, sizeof(char));
+//                         strcpy(aggAttr->tableName, tempAttr->tableName);
+//                     }
+//                     
+//                     aggAttr->name = (char*)calloc(strlen(tempAttr->name) + 1, sizeof(char));
+//                     strcpy(aggAttr->name, tempAttr->name);
+//                     
+//                     
+//                     if(tempAttr->val->type() == ValueType::StringValue) {
+//                         aggAttr->val = new FLOPPYValue(StringValue);
+//                         aggAttr->val->sVal = (char*)calloc(sizeof(char), strlen(tempAttr->val->sVal) + 1);
+//                         strcpy(aggAttr->val->sVal, tempAttr->val->sVal);
+//                     }
+//                     else if(tempAttr->val->type() == ValueType::IntValue) {
+//                         aggAttr->val = new FLOPPYValue(IntValue);
+//                         aggAttr->val->iVal = tempAttr->val->iVal;
+//                     }
+//                     else if(tempAttr->val->type() == ValueType::FloatValue) {
+//                         aggAttr->val = new FLOPPYValue(FloatValue);
+//                         aggAttr->val->fVal = tempAttr->val->fVal;
+//                     }
+//                     else if(tempAttr->val->type() == ValueType::BooleanValue) {
+//                         aggAttr->val = new FLOPPYValue(BooleanValue);
+//                         aggAttr->val->bVal = tempAttr->val->bVal;
+//                     }
+//                     else if(tempAttr->val->type() == ValueType::NullValue) {
+//                         aggAttr->val = new FLOPPYValue(NullValue);
+//                     }
+//                     
+//                     tempAggRecord->columns->push_back(aggAttr);
+//                     break;
+//                 }
+//             }
+//     		
+//     		add aggregation columns...if exists
+//     		for (auto aggItr = aggregates->begin(); aggItr != aggregates->end(); aggItr++) {
+//     			create FLOPPYTableAttribute column
+//     			FLOPPYRecordAttribute *aggAttr = new FLOPPYRecordAttribute();
+//     			
+//     			aggAttr->isAggregate = true;
+//     			aggAttr->op = (*aggItr)->aggregate.op;
+//     			
+//     			check for star type
+//     			if ((*aggItr)->aggregate.op == FLOPPYAggregateOperator::CountStarAggregate) {
+//     				aggAttr->val = new FLOPPYValue(IntValue);
+//     				aggAttr->val->iVal = 0;
+//     			}
+//     			else {
+//     				aggAttr->name = (char*)calloc(strlen((*aggItr)->aggregate.value->sVal) + 1, sizeof(char));
+//     				strcpy(aggAttr->name, (*aggItr)->aggregate.value->sVal);
+//     			
+//     				go through all attributes in tempCurRecord to find type of attribute and create FLOPPY value of that attribute type
+//     				for (auto tempRecItr = tempCurRecord->columns->begin(); tempRecItr != tempCurRecord->columns->end(); tempRecItr++) {
+//                         
+//                         check column
+//     					if (strcmp((*tempRecItr)->name, (*aggItr)->aggregate.value->sVal) != 0)
+//     						continue;
+//                         
+//                         aggregated column is of type INT
+//     					if ((*tempRecItr)->val->type() == ValueType::IntValue) {
+//                             aggAttr->val = new FLOPPYValue(IntValue);
+//     						aggAttr->val->iVal = 0;
+//     					}
+//     					aggregated column is of type FLOAT
+//     					else if ((*tempRecItr)->val->type() == ValueType::FloatValue) {
+//                             aggAttr->val = new FLOPPYValue(FloatValue);
+//     						aggAttr->val->fVal = 0.0;
+//     					}
+//     					else {
+//     						printf("ERROR - Cannot aggregate on that column type\n");
+//     					}
+//     					
+//     					break;
+//     				}
+//     			}
+//     			
+//     			tempAggRecord->columns->push_back(aggAttr);
+//     		}
+//             
+//             add aggregation "set to zero"
+//             newRecords->push_back(tempAggRecord);
+//         }
+//         
+//         tempAggRecord
+//         
+//         do the math for each aggregation
+//         for (auto tempRecItr = tempAggRecord->columns->begin(); tempRecItr != tempAggRecord->columns->end(); tempRecItr++) {
+//             FLOPPYRecordAttribute *col = *tempRecItr;
+//             
+//             skip non-aggregates
+//             if(!col->isAggregate)
+//                 continue;
+//             
+//             if (col->op == FLOPPYAggregateOperator::CountStarAggregate) {
+//                 col->val->iVal++;
+//             }
+//             else {
+//                 
+//                 loop through cols
+//                 for (auto dataColItr = tempCurRecord->columns->begin(); dataColItr != tempCurRecord->columns->end(); dataColItr++) {
+//                     FLOPPYRecordAttribute *dataCol = *dataColItr;
+//                     
+//                     check if name matches
+//                     if (strcmp(col->name, col->name) != 0)
+//                         continue;
+//                     
+//                     
+//                     
+//                     if(col->op == FLOPPYAggregateOperator::CountAggregate)
+//                         printf("COUNT(%s) (", col->name);
+//                     else if(col->op == FLOPPYAggregateOperator::AverageAggregate)
+//                         printf("AVG(%s) (", col->name);
+//                     else if(col->op == FLOPPYAggregateOperator::MinAggregate)
+//                         printf("MIN(%s) (", col->name);
+//                     else if(col->op == FLOPPYAggregateOperator::MaxAggregate)
+//                         printf("MAX(%s) (", col->name);
+//                     else if(col->op == FLOPPYAggregateOperator::SumAggregate) {
+//                         if(col->val->type() == ValueType::IntValue)
+//                             col->val->iVal += dataCol->val->iVal;
+//                         else if(col->val->type() == ValueType::FloatValue)
+//                             col->val->fVal += dataCol->val->fVal;
+//                         else
+//                             printf("error type SUM(%s)\n", col->name);;
+//                     }
+//                     
+//                             
+//                             
+//                             /*AttributeValue,
+//                             TableAttributeValue,
+//                             StringValue,
+//                             IntValue,
+//                             FloatValue,
+//                             BooleanValue,
+//                             NullValue
+//                              */
+//                     }
+//             }
+//         
+//             
+//             printf("\n");
+//             break;
+//         }
+//         
+//         delete each record from old records
+//         recordItr = records->erase(recordItr);
+//         delete tempCurRecord;
+//     }
+// 	
+// 	records->swap(*newRecords);
+// 	
+// 	delete newRecords;
 }
 
 void FLOPPYRecordSet::print() {
