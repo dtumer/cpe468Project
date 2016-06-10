@@ -50,10 +50,10 @@ runTestHarness: TestHarness.out
 
 runTestHeapFile: TestHeapFile.out
 	-@rm *.disk
-	./TestHeapFile.out ./test_files/TestHeapFile1.txt
+	valgrind --track-origins=yes --leak-check=full ./TestHeapFile.out ./test_files/TestHeapFile1.txt
 
 runTestParser: TestParser.out
-	./TestParser.out
+	valgrind --track-origins=yes --leak-check=full ./TestParser.out
 
 runFLOPPY_CLI: FLOPPY_CLI.out
 	-@rm *.disk
@@ -61,7 +61,8 @@ runFLOPPY_CLI: FLOPPY_CLI.out
 
 runTestDBMS: TestDBMS.out
 	-@rm *.disk
-	./TestDBMS.out
+	valgrind --track-origins=yes --leak-check=full ./TestDBMS.out
+
 clean:
 	rm -f *.out
 	rm -f *.o

@@ -104,11 +104,6 @@ FLOPPYResult * FLOPPY_DBMS::insertRecord(FLOPPYInsertStatement *statement) {
 FLOPPYResult * FLOPPY_DBMS::selectRecords(FLOPPYSelectStatement *statement) {
     //Get tables and do cross products as needed
     FLOPPYRecordSet *recordSet = NULL, *tempRS, *newRS;
-
-//     std::list<FLOPPYSelectItem *> *aggs = getAggregates(statement);
-//     
-//     printf("AGGREGATE SIZE: %d\n", aggs->size());
-    
     for (auto itr = statement->tableSpecs->begin() ; itr != statement->tableSpecs->end(); itr++) {
         FLOPPYHeapFile *heap = new FLOPPYHeapFile(buf, (*itr)->tableName);
         
@@ -140,22 +135,19 @@ FLOPPYResult * FLOPPY_DBMS::selectRecords(FLOPPYSelectStatement *statement) {
     if(statement->whereCondition)
         recordSet->filter(statement->whereCondition);
     
-<<<<<<< HEAD
     if (statement->groupBy) {
+        //GROUP BY
     	if (statement->groupBy->groupByAttributes) {
-    		printf("GROUP BY\n");
     		recordSet->groupBy(statement->groupBy->groupByAttributes, getAggregations(statement));
     	}
     	
+        //HAVING
     	if (statement->groupBy->havingCondition) {
-    		printf("HAVING\n");
+            recordSet->filter(statement->groupBy->havingCondition);
     	}
     }
     
-    //order by
-=======
     //ORDER BY
->>>>>>> 4a1429d1278a0f47e44522d162f90042e8349427
     if(statement->orderBys)
     	recordSet->sort(statement->orderBys);
     
@@ -165,6 +157,9 @@ FLOPPYResult * FLOPPY_DBMS::selectRecords(FLOPPYSelectStatement *statement) {
     
     //Projection
     recordSet->projection(statement->selectItems);
+    
+    //DISTINCT
+    
     
     //get results
     FLOPPYResult *result = new FLOPPYResult(SelectType);
@@ -186,13 +181,13 @@ FLOPPYResult * FLOPPY_DBMS::dropTable(FLOPPYDropTableStatement *statement) {
 }
 
 std::vector<FLOPPYSelectItem *>* FLOPPY_DBMS::getAggregations(FLOPPYSelectStatement *statement) {
-	std::vector<FLOPPYSelectItem *> *retAggs = new std::vector<FLOPPYSelectItem *>();
-	
-	for (auto itr = statement->selectItems->begin(); itr != statement->selectItems->end(); itr++) {
-		if ((*itr)->_type == FLOPPYSelectItemType::AggregateType) {
-			retAggs->push_back(*itr);
-		}
-	}
-	
-	return retAggs;
+    std::vector<FLOPPYSelectItem *> *retAggs = new std::vector<FLOPPYSelectItem *>();
+    
+    for (auto itr = statement->selectItems->begin(); itr != statement->selectItems->end(); itr++) {
+        if ((*itr)->_type == FLOPPYSelectItemType::AggregateType) {
+            retAggs->push_back(*itr);
+        }
+    }
+    
+    return retAggs;
 }
