@@ -94,8 +94,6 @@ void FLOPPYRecordSet::projection(std::vector<FLOPPYSelectItem *> *items) {
                 selectItr++;
             }
             else if((*selectItr)->_type == FLOPPYSelectItemType::AggregateType) {
-                printf("\t Aggregate: \"%s.%s\n", (*selectItr)->aggregate.value->tableAttribute->tableName, (*selectItr)->aggregate.value->tableAttribute->attribute);
-                
                 //loop through all columns still in record
                 std::vector<FLOPPYRecordAttribute *>::iterator colItr = (*recItr)->columns->begin();
                 while (colItr != (*recItr)->columns->end()) {
@@ -113,18 +111,12 @@ void FLOPPYRecordSet::projection(std::vector<FLOPPYSelectItem *> *items) {
                         continue;
                     }
                     
-                    //skip different table names
-                    if ((*selectItr)->aggregate.value->tableAttribute->tableName) {
-                        if (strcmp((*selectItr)->aggregate.value->tableAttribute->tableName, tempAttr->tableName) != 0) {
+                    if((*selectItr)->aggregate.op != FLOPPYAggregateOperator::CountStarAggregate) {
+                        //skip different attribute
+                        if (strcmp((*selectItr)->aggregate.value->sVal, tempAttr->name) != 0) {
                             colItr++;
                             continue;
                         }
-                    }
-                    
-                    //skip different attribute
-                    if (strcmp((*selectItr)->aggregate.value->tableAttribute->attribute, tempAttr->name) != 0) {
-                        colItr++;
-                        continue;
                     }
                     
                     //add to tempAttr
@@ -444,7 +436,7 @@ void FLOPPYRecordSet::updateMax(FLOPPYRecord *record, FLOPPYSelectItem *aggregat
 	for (auto colItr = record->columns->begin(); colItr != record->columns->end(); colItr++) {
 		if ((*colItr)->isAggregate && (*colItr)->op == FLOPPYAggregateOperator::MaxAggregate) {
 			if (attribute->val->type() == ValueType::IntValue) {
-				printf("ATTR VAL: %d\n", attribute->val->iVal);
+				//printf("ATTR VAL: %d\n", attribute->val->iVal);
 				if (attribute->val->iVal > (*colItr)->val->iVal) {
 					(*colItr)->val->iVal = attribute->val->iVal;
 				}
