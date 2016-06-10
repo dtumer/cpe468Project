@@ -35,14 +35,16 @@ FLOPPYResult* FLOPPY_DBMS::execute(std::string sql) {
             case StatementType::SelectStatement:
                 result = selectRecords((FLOPPYSelectStatement*) parsedCommand->statement);
                 break;
+            case StatementType::DeleteStatement:
+                printf("DELETE\n");
+                result = deleteRecords((FLOPPYDeleteStatement*) parsedCommand->statement);
+                printDeleteStatement((FLOPPYDeleteStatement*) parsedCommand->statement);
+                break;
+                
             /*
             case StatementType::UpdateStatement:
                 printf("UPDATE\n");
                 printUpdateStatement((FLOPPYUpdateStatement*) parsedCommand->statement);
-                break;
-            case StatementType::DeleteStatement:
-                printf("DELETE\n");
-                printDeleteStatement((FLOPPYDeleteStatement*) parsedCommand->statement);
                 break;
             case StatementType::CreateIndexStatement:
                 printf("CREATE INDEX\n");
@@ -117,16 +119,13 @@ FLOPPYResult * FLOPPY_DBMS::selectRecords(FLOPPYSelectStatement *statement) {
         
         //merge record sets if more than one
         if(tempRS) {
-            printf("do crossProduct\n");
             recordSet = FLOPPYRecordSet::crossProduct(tempRS, newRS);
             
             delete tempRS;
             delete newRS;
         }
-        else {
-            printf("one table\n");
+        else
             recordSet = newRS;
-        }
         
         delete heap;
     }
@@ -179,6 +178,28 @@ FLOPPYResult * FLOPPY_DBMS::dropTable(FLOPPYDropTableStatement *statement) {
     
     delete heap;
     
+    return result;
+}
+
+FLOPPYResult * FLOPPY_DBMS::deleteRecords(FLOPPYDeleteStatement *statement) {
+    FLOPPYHeapFile *heap = new FLOPPYHeapFile(buf, statement->name);
+    FLOPPYRecordSet *recordSet = heap->getAllRecords();
+    
+    //WHERE
+    recordSet->filter(statement->where);
+    
+    //do delete
+    heap->deleteRecords(recordSet);
+    
+    FLOPPYResult *result = new FLOPPYResult(MessageType);
+    result->msg = (char*)calloc(sizeof(char), 100);
+    if(recordSet->count() == 1)
+    	sprintf(result->msg, "Deleted 1 record successfully.");
+    else
+        sprintf(result->msg, "Deleted %d records successfully.", recordSet->count());
+    
+    delete heap;
+    delete recordSet;
     return result;
 }
 

@@ -26,6 +26,10 @@ public:
     void projection(std::vector<FLOPPYSelectItem *> *items);
     static FLOPPYRecordSet* crossProduct(FLOPPYRecordSet *set1, FLOPPYRecordSet *set2);
     
+    virtual int count() {
+        return records->size();
+    }
+    
     void print();
     
 	std::list<FLOPPYRecord *> *records;

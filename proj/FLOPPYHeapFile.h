@@ -60,7 +60,8 @@ public:
     
     /* Heap File CRUD operations */
     int insertRecord(char *record);
-    int deleteRecord(int pageId, int recordId);
+    void deleteRecords(FLOPPYRecordSet *recordSet);
+    void deleteRecord(int pageId, int recordId);
     int updateRecord(int pageId, int recordId, char *record);
     FLOPPYRecordSet * getAllRecords();
     FLOPPYRecordSet * getAllRecords(char *alias);

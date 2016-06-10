@@ -13,8 +13,6 @@
 typedef enum {
     ErrorType,
     SelectType,
-    UpdateType,
-    InsertType,
     MessageType
 } FLOPPYResultType;
 
