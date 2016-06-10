@@ -45,10 +45,19 @@ private:
     
     //helpers for grouping/aggregation
     bool shouldBeAddedToGrouping(FLOPPYRecord *record, std::list<FLOPPYRecord *> *retRecords, std::vector<FLOPPYTableAttribute *> *groupByAttributes);
-	void addGroupByColumns(FLOPPYRecord *record, FLOPPYRecord **newRecord, std::vector<FLOPPYTableAttribute *> *groupByAttributes);
+	void addColumns(FLOPPYRecord *record, FLOPPYRecord **newRecord);
+	
+	void pruneColumns(std::list<FLOPPYRecord *> *newRecords, std::vector<FLOPPYTableAttribute *> *groupByAttributes, std::vector<FLOPPYSelectItem *> *aggregates);
+	bool isInGroupingAttrs(FLOPPYRecordAttribute *attr, std::vector<FLOPPYTableAttribute *> *groupByAttributes);
+	bool isInAggregates(FLOPPYRecordAttribute *attr, std::vector<FLOPPYSelectItem *> *aggregates);
+	
 	void initializeAggregations(FLOPPYRecord *record, FLOPPYRecord **newRecord, std::vector<FLOPPYSelectItem *> *aggregates);
 	void countAggregateColumns(FLOPPYRecord *record, std::list<FLOPPYRecord *> *newRecords, std::vector<FLOPPYTableAttribute *> *groupByAttributes, std::vector<FLOPPYSelectItem *> *aggregates);
+	
 	void incrementCountStar(FLOPPYRecord *record);
+	void updateMax(FLOPPYRecord *record, FLOPPYSelectItem *aggregate, FLOPPYRecordAttribute *attribute);
+	void updateMin(FLOPPYRecord *record, FLOPPYSelectItem *aggregate, FLOPPYRecordAttribute *attribute);
+	void updateSum(FLOPPYRecord *record, FLOPPYSelectItem *aggregate, FLOPPYRecordAttribute *attribute);
 };
 
 

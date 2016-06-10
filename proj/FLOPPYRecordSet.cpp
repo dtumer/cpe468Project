@@ -323,27 +323,72 @@ bool FLOPPYRecordSet::shouldBeAddedToGrouping(FLOPPYRecord *record, std::list<FL
 	return true;
 }
 
-void FLOPPYRecordSet::addGroupByColumns(FLOPPYRecord *record, FLOPPYRecord **newRecord, std::vector<FLOPPYTableAttribute *> *groupByAttributes) {
-	//go through each grouping attribute, see if its in the record and add it if it is
-	for (auto groupingItr = groupByAttributes->begin(); groupingItr != groupByAttributes->end(); groupingItr++) {
-		auto attrItr = record->columns->begin();
-		
-		while (attrItr != record->columns->end()) {
-			if ((*groupingItr)->tableName) {
-            	if (strcmp((*groupingItr)->tableName, (*attrItr)->tableName) != 0) {
-                    attrItr++;
-                    continue;
-                }
+void FLOPPYRecordSet::addColumns(FLOPPYRecord *record, FLOPPYRecord **newRecord) {
+	//go through each attribute, add it to the new record
+	for (auto colItr = record->columns->begin(); colItr != record->columns->end(); colItr++) {
+		(*newRecord)->columns->push_back((*colItr)->clone());
+		// auto attrItr = record->columns->begin();
+// 		
+// 		while (attrItr != record->columns->end()) {
+// 			if ((*groupingItr)->tableName) {
+//             	if (strcmp((*groupingItr)->tableName, (*attrItr)->tableName) != 0) {
+//                     attrItr++;
+//                     continue;
+//                 }
+//             }
+//                      
+//             if (strcmp((*groupingItr)->attribute, (*attrItr)->name) != 0) {
+//                 attrItr++;
+//                 continue;
+//         	}
+//         	
+//         	//add attribute to new record
+//         	(*newRecord)->columns->push_back((*attrItr)->clone());
+//         	break;
+// 		}
+	}
+}
+
+//checks if an attribute is in the groupin attributes
+bool FLOPPYRecordSet::isInGroupingAttrs(FLOPPYRecordAttribute *attr, std::vector<FLOPPYTableAttribute *> *groupByAttributes) {
+	for (auto itr = groupByAttributes->begin(); itr != groupByAttributes->end(); itr++) {
+		if ((*itr)->tableName) {
+            if (strcmp((*itr)->tableName, attr->tableName) != 0) {
+                return false;
             }
+        }
                      
-            if (strcmp((*groupingItr)->attribute, (*attrItr)->name) != 0) {
-                attrItr++;
-                continue;
-        	}
-        	
-        	//add attribute to new record
-        	(*newRecord)->columns->push_back((*attrItr)->clone());
-        	break;
+        if (strcmp((*itr)->attribute, attr->name) != 0) {
+			return false;
+        }
+	}
+	
+	return true;
+}
+
+//checks if an attribute is in the aggregates
+bool FLOPPYRecordSet::isInAggregates(FLOPPYRecordAttribute *attr, std::vector<FLOPPYSelectItem *> *aggregates) {
+	for (auto itr = aggregates->begin(); itr != aggregates->end(); itr++) {        
+        if (strcmp((*itr)->aggregate.value->sVal, attr->name) != 0) {
+			return false;
+        }
+	}
+	
+	return true;
+}
+
+void FLOPPYRecordSet::pruneColumns(std::list<FLOPPYRecord *> *newRecords, std::vector<FLOPPYTableAttribute *> *groupByAttributes, std::vector<FLOPPYSelectItem *> *aggregates) {
+	//go through each column attribute, see if its in the grouping attribute and remove it if its not
+	for (auto newRecord = newRecords->begin(); newRecord != newRecords->end(); newRecord++) {
+		auto attrItr = (*newRecord)->columns->begin();
+		
+		while (attrItr != (*newRecord)->columns->end()) {
+			if (!isInGroupingAttrs(*attrItr, groupByAttributes) && !isInAggregates(*attrItr, aggregates)) {
+				attrItr = (*newRecord)->columns->erase(attrItr);	
+				continue;
+			}
+			
+			attrItr++;
 		}
 	}
 }
@@ -405,6 +450,57 @@ void FLOPPYRecordSet::incrementCountStar(FLOPPYRecord *record) {
 	}
 }
 
+//update max value
+void FLOPPYRecordSet::updateMax(FLOPPYRecord *record, FLOPPYSelectItem *aggregate, FLOPPYRecordAttribute *attribute) {
+	for (auto colItr = record->columns->begin(); colItr != record->columns->end(); colItr++) {
+		if ((*colItr)->isAggregate && (*colItr)->op == FLOPPYAggregateOperator::MaxAggregate) {
+			if (attribute->val->type() == ValueType::IntValue) {
+				printf("ATTR VAL: %d\n", attribute->val->iVal);
+				if (attribute->val->iVal > (*colItr)->val->iVal) {
+					(*colItr)->val->iVal = attribute->val->iVal;
+				}
+			}
+			else if (attribute->val->type() == ValueType::FloatValue) {
+				if (attribute->val->fVal > (*colItr)->val->fVal) {
+					(*colItr)->val->fVal = attribute->val->fVal;
+				}
+			}
+		}
+	}
+}
+
+//update min value
+void FLOPPYRecordSet::updateMin(FLOPPYRecord *record, FLOPPYSelectItem *aggregate, FLOPPYRecordAttribute *attribute) {
+	for (auto colItr = record->columns->begin(); colItr != record->columns->end(); colItr++) {
+		if ((*colItr)->isAggregate && (*colItr)->op == FLOPPYAggregateOperator::MaxAggregate) {
+			if (attribute->val->type() == ValueType::IntValue) {
+				if (attribute->val->iVal < (*colItr)->val->iVal) {
+					(*colItr)->val->iVal = attribute->val->iVal;
+				}
+			}
+			else if (attribute->val->type() == ValueType::FloatValue) {
+				if (attribute->val->fVal < (*colItr)->val->fVal) {
+					(*colItr)->val->fVal = attribute->val->fVal;
+				}
+			}
+		}
+	}
+}
+
+//update sum value
+void FLOPPYRecordSet::updateSum(FLOPPYRecord *record, FLOPPYSelectItem *aggregate, FLOPPYRecordAttribute *attribute) {
+	for (auto colItr = record->columns->begin(); colItr != record->columns->end(); colItr++) {
+		if ((*colItr)->isAggregate && (*colItr)->op == FLOPPYAggregateOperator::SumAggregate) {
+			if (attribute->val->type() == ValueType::IntValue) {
+				(*colItr)->val->iVal += attribute->val->iVal;
+			}
+			else if (attribute->val->type() == ValueType::FloatValue) {
+				(*colItr)->val->fVal += attribute->val->fVal;
+			}
+		}
+	}
+}
+
 void FLOPPYRecordSet::countAggregateColumns(FLOPPYRecord *record, std::list<FLOPPYRecord *> *newRecords, std::vector<FLOPPYTableAttribute *> *groupByAttributes, std::vector<FLOPPYSelectItem *> *aggregates) {
 	for (auto aggItr = aggregates->begin(); aggItr != aggregates->end(); aggItr++) {
 		for (auto recItr = newRecords->begin(); recItr != newRecords->end(); recItr++) {
@@ -423,64 +519,33 @@ void FLOPPYRecordSet::countAggregateColumns(FLOPPYRecord *record, std::list<FLOP
 			}
 			//handle all other aggregations
 			else {
-				printf("OTHER AGGREGATES\n");
+				//go through all the columns in this record and find the column represented by the aggregation
+				for (auto colItr = (*recItr)->columns->begin(); colItr != (*recItr)->columns->end(); colItr++) {
+					//get the common column for this aggregation
+					if (strcmp((*aggItr)->aggregate.value->sVal, (*colItr)->name) == 0) {
+						if ((*aggItr)->aggregate.op == FLOPPYAggregateOperator::AverageAggregate) {
+							printf("AVG()\n");
+						}
+						else if ((*aggItr)->aggregate.op == FLOPPYAggregateOperator::MaxAggregate) {
+							//check if current column value is greater than the MAX value
+							updateMax(*recItr, *aggItr, *colItr);
+						}
+						else if ((*aggItr)->aggregate.op == FLOPPYAggregateOperator::MinAggregate) {
+							updateMin(*recItr, *aggItr, *colItr);
+						}
+						else if ((*aggItr)->aggregate.op == FLOPPYAggregateOperator::SumAggregate) {
+							updateSum(*recItr, *aggItr, *colItr);
+						}
+						else {
+							printf("ERROR - Unsupported aggregation type!\n");
+						}
+						
+// 						printf("COL VAL: %d\n", (*colItr)->val->iVal);
+					}
+				}
 			}
 		}
 	}
-	
-	
-	
-	
-	//int numGroupingEqual;
-	
-	// loop through each of the new records looking for the specified record
-	// for (auto recItr = newRecords->begin(); recItr != newRecords->end(); recItr++) {
-// 		// loop through all the aggregations
-// 		for (auto aggItr = aggregates->begin(); aggItr != aggregates->end(); aggItr++) {
-// 			//deal with count(*) by just incrementing
-// 			if ((*aggItr)->aggregate.op == FLOPPYAggregateOperator::CountStarAggregate) {
-// 			
-// 				//check to make sure the record we're looking at is the same as the grouped column
-// 				//look through all records to be added and see if it should be added
-// 				for (auto itr = newRecords->begin(); itr != newRecords->end(); itr++) {
-// 					numGroupingEqual = 0;
-// 		
-// 					//look through each group by attribute and see if the record is equal to both
-// 					for (auto groupingItr = groupByAttributes->begin(); groupingItr != groupByAttributes->end(); groupingItr++) {
-// 						if (FLOPPYRecord::compare(record, *itr, *groupingItr) == 0) {
-// 							numGroupingEqual++;
-// 						}	
-// 					}
-// 		
-// 					//correct column!!!
-// 					if (numGroupingEqual == groupByAttributes->size()) {
-// 						incrementCountStar(*itr);
-// 					}
-// 				}
-// 			}
-// 			//deal with all others by making sure the column referenced in these is the same in the given record and the newRecord
-// 			else {
-// 				if ((*aggItr)->aggregate.op == FLOPPYAggregateOperator::AverageAggregate) {
-// 					printf("AVG()\n");
-// 				}
-// 				else if ((*aggItr)->aggregate.op == FLOPPYAggregateOperator::MaxAggregate) {
-// 					printf("MAX()\n");
-// 				}
-// 				else if ((*aggItr)->aggregate.op == FLOPPYAggregateOperator::MinAggregate) {
-// 					printf("MIN()\n");
-// 				}
-// 				else if ((*aggItr)->aggregate.op == FLOPPYAggregateOperator::SumAggregate) {
-// 					printf("SUM()\n");
-// 				}
-// 				else {
-// 					printf("ERROR - Unsupported aggregation type!\n");
-// 				}
-// 				// if (isColumnEquivilent()) {
-// // 				
-// // 				}
-// 			}
-// 		}
-// 	}
 }
 
 void FLOPPYRecordSet::groupBy(std::vector<FLOPPYTableAttribute *> *groupByAttributes, std::vector<FLOPPYSelectItem *> *aggregates) {
@@ -492,7 +557,7 @@ void FLOPPYRecordSet::groupBy(std::vector<FLOPPYTableAttribute *> *groupByAttrib
 			//add initialized aggregation columns
 			FLOPPYRecord *newRecord = new FLOPPYRecord();
 			
-			addGroupByColumns(*recordItr, &newRecord, groupByAttributes);
+			addColumns(*recordItr, &newRecord);
 			initializeAggregations(*recordItr, &newRecord, aggregates);
 			
 			//push to new records
@@ -503,6 +568,8 @@ void FLOPPYRecordSet::groupBy(std::vector<FLOPPYTableAttribute *> *groupByAttrib
 		
 		recordItr = records->erase(recordItr);
 	}
+	
+	pruneColumns(newRecords, groupByAttributes, aggregates);
 	
 	records->swap(*newRecords);
 	
