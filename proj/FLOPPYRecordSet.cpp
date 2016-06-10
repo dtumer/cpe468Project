@@ -4,6 +4,7 @@
 
 #include "FLOPPYRecordSet.h"
 #include <functional>
+#include <stdlib.h>
 
 
 FLOPPYRecordSet::FLOPPYRecordSet() {
@@ -368,8 +369,48 @@ void FLOPPYRecordSet::groupBy(std::vector<FLOPPYTableAttribute *> *groupByAttrib
     		
     		//add aggregation columns...if exists
     		for (auto aggItr = aggregates->begin(); aggItr != aggregates->end(); aggItr++) {
+    			//create FLOPPYTableAttribute column
+    			FLOPPYRecordAttribute *aggAttr = new FLOPPYRecordAttribute();
     			
-    			printf("ADD AGGREGATIONS\n");
+    			aggAttr->isAggregate = true;
+    			aggAttr->op = (*aggItr)->aggregate.op;
+    			
+    			//check for star type
+    			if ((*aggItr)->aggregate.op == FLOPPYAggregateOperator::CountStarAggregate) {
+    				aggAttr->val = new FLOPPYValue(IntValue);
+    				aggAttr->val->iVal = 0;
+    			}
+    			else {
+//     				printf("ATTRIBUTE NAME: %s\n", (*aggItr)->aggregate.value->sVal);
+    				aggAttr->name = (char*)calloc(strlen((*aggItr)->aggregate.value->sVal) + 1, sizeof(char));
+    				strcpy(aggAttr->name, (*aggItr)->aggregate.value->sVal);
+    			
+    				//go through all attributes in tempCurRecord to find type of attribute and create FLOPPY value of that attribute type
+    				for (auto tempRecItr = tempCurRecord->columns->begin(); tempRecItr != tempCurRecord->columns->end(); tempRecItr++) {
+    					//check column 
+    					if (strcmp((*tempRecItr)->name, (*aggItr)->aggregate.value->sVal) != 0) {
+    						continue;
+    					}
+    				
+    					//aggregated column is of type INT
+    					if ((*tempRecItr)->val->type() == ValueType::IntValue) {
+    						aggAttr->val = new FLOPPYValue(IntValue);
+    						aggAttr->val->iVal = 0;
+    					}
+    					//aggregated column is of type FLOAT
+    					else if ((*tempRecItr)->val->type() == ValueType::FloatValue) {
+    						aggAttr->val = new FLOPPYValue(FloatValue);
+    						aggAttr->val->fVal = 0.0;
+    					}
+    					else {
+    						printf("ERROR - Cannot aggregate on that column type\n");
+    					}
+    					
+    					break;
+    				}
+    			}
+    			
+    			tempAggRecord->columns->push_back(aggAttr);
     		}
     		
     		//add aggregation "set to zero"
@@ -378,7 +419,7 @@ void FLOPPYRecordSet::groupBy(std::vector<FLOPPYTableAttribute *> *groupByAttrib
     	
     	//do the math for each aggregation
     	for (auto aggItr = aggregates->begin(); aggItr != aggregates->end(); aggItr++) {
-    			
+    			//check for FLOPPYTableAttribute 
     			printf("compute AGGREGATIONS\n");
     		}
     	
@@ -405,22 +446,52 @@ void FLOPPYRecordSet::print() {
                 printf(", ");
             
             FLOPPYRecordAttribute *col = (*itr)->columns->at(i);
-            if(col->tableName)
-                printf("%s.",col->tableName);
-            printf("%s (",col->name);
             
-            if(col->val->type() == ValueType::StringValue)
-                printf("STRING \"%s\"", col->val->sVal);
-            else if(col->val->type() == ValueType::IntValue)
-                printf("INT %ld", col->val->iVal);
-            else if(col->val->type() == ValueType::FloatValue)
-                printf("FLOAT %f", col->val->fVal);
-            else if(col->val->type() == ValueType::BooleanValue)
-                printf("BOOLEAN %d", col->val->bVal);
-            else if(col->val->type() == ValueType::NullValue)
-                printf("NULL");
+            printf("\n");
             
-            printf(")");
+            if (col->isAggregate && col->op == FLOPPYAggregateOperator::CountStarAggregate) {
+            	printf("COUNT(*) %ld", col->val->iVal);
+            } 
+            else {
+            	if (col->isAggregate) {
+            		if (col->op == FLOPPYAggregateOperator::CountAggregate) {
+            			printf("COUNT(%s) (", col->name);
+            		}
+            		else if (col->op == FLOPPYAggregateOperator::AverageAggregate) {
+            			printf("AVG(%s) (", col->name);
+            		}
+            		else if (col->op == FLOPPYAggregateOperator::MinAggregate) {
+            			printf("MIN(%s) (", col->name);
+            		}
+            		else if (col->op == FLOPPYAggregateOperator::MaxAggregate) {
+            			printf("MAX(%s) (", col->name);
+            		}
+					else if (col->op == FLOPPYAggregateOperator::SumAggregate) {
+            			printf("SUM(%s) (", col->name);
+            		} 
+            		
+            		printf("\n");         		
+            	}
+            	else {
+            		if(col->tableName)
+                		printf("%s.",col->tableName);
+           			printf("%s (",col->name);
+            	}
+            
+            	printf("TYPE: %d\n", col->val->type());
+            	if(col->val->type() == ValueType::StringValue)
+                	printf("STRING \"%s\"", col->val->sVal);
+            	else if(col->val->type() == ValueType::IntValue)
+                	printf("INT %ld", col->val->iVal);
+            	else if(col->val->type() == ValueType::FloatValue)
+                	printf("FLOAT %f", col->val->fVal);
+            	else if(col->val->type() == ValueType::BooleanValue)
+                	printf("BOOLEAN %d", col->val->bVal);
+            	else if(col->val->type() == ValueType::NullValue)
+                	printf("NULL");
+            
+            printf(")");	
+            }
         }
         
         itr++;

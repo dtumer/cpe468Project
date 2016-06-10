@@ -35,6 +35,8 @@ private:
     
     void mergeSort(std::vector<FLOPPYTableAttribute *> *orderBys);
     void mergeSortMerge(FLOPPYRecordSet *setA, FLOPPYRecordSet *setB, std::vector<FLOPPYTableAttribute *> *orderBys);
+    
+    FLOPPYValue* createInitialFLOPPYValue();
 };
 
 

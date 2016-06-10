@@ -141,6 +141,8 @@ FLOPPYResult * FLOPPY_DBMS::selectRecords(FLOPPYSelectStatement *statement) {
     		recordSet->groupBy(statement->groupBy->groupByAttributes, getAggregations(statement));
     	}
     	
+    	recordSet->print();
+    	
         //HAVING
     	if (statement->groupBy->havingCondition) {
             recordSet->filter(statement->groupBy->havingCondition);
